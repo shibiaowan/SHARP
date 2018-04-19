@@ -2,23 +2,28 @@
 % Please edit documentation in R/SHARP.R
 \name{SHARP_large}
 \alias{SHARP_large}
-\title{Run SHARP for single-cell RNA data clustering}
+\title{Run SHARP for large-size (>= 5000) single-cell RNA datasets}
 \usage{
-SHARP_large(E, ncells, K, p, ng)
+SHARP_large(scExp, ncells, ensize.K, reduced.dim, partition.ncells)
 }
 \arguments{
-\item{E}{input single-cell expression matrix}
+\item{scExp}{input single-cell expression matrix}
 
-\item{K}{number of applications of random projection}
+\item{ncells}{number of single cells}
 
-\item{p}{the dimension to be reduced to}
+\item{ensize.K}{number of applications of random projection for ensemble}
 
-\item{gtc}{the ground-truth clusters}
+\item{reduced.dim}{the dimension to be reduced to}
+
+\item{partition.ncells}{number of cells for each partition when using SHARP_large}
 }
 \description{
-SHARP: \strong{S}ingle-cell RNA-Seq \strong{H}yper-fast and \strong{A}ccurate clustering via ensemble \strong{R}andom \strong{P}rojection.
+For large-size (>= 5000) datasets, we suggest first partitioning the datasets into several groups, then we run SHARP for each group, and finally and we ensemble the results of each group by a similarity-based meta-clustering algorithm.
+}
+\details{
+For each partition (or group), the default number of cells is set to 2000 for each group. The users can also set a different number according to the computational capability of their own local computers. The suggested criteria to set this number is that as long as SHARP_small can run in a fast enough (depending on users' requirements) way for the selected number of single cells.
 }
 \examples{
-enresults = SHARP(scExp)
+enresults = SHARP_large(scExp, ncells, ensize.K, reduced.dim, partition.ncells)
 
 }

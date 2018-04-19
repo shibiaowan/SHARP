@@ -1,4 +1,4 @@
-#' Obtain a random matrix
+#' Obtain a random matrix and its related information
 #'
 #' This function is to generate a random matrix according to a sparse-version Achlioptas distribution (see our paper for details), given the input matrix and the dimension we want to reduce to.
 #'

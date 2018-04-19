@@ -2,7 +2,7 @@
 % Please edit documentation in R/RPmat.R
 \name{RPmat}
 \alias{RPmat}
-\title{Obtain a random matrix}
+\title{Obtain a random matrix and its related information}
 \usage{
 RPmat(scdata, p)
 }

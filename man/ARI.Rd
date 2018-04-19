@@ -2,7 +2,7 @@
 % Please edit documentation in R/ARI.R
 \name{ARI}
 \alias{ARI}
-\title{Calculate the adjusted rand index}
+\title{Calculate the adjusted rand index (ARI), including 5 different ARI-related metrics}
 \usage{
 ARI(ground_true_clusters, pred_clusters)
 }
@@ -12,9 +12,9 @@ ARI(ground_true_clusters, pred_clusters)
 \item{pred_clusters}{the predicted clusters}
 }
 \description{
-This function is to calculate the performance of the algorithm by 5 metrics, including the Rand index, HA, MA, FM and Jaccard.
+This function is to calculate the performance of the algorithm by 5 metrics, including Rand index (Rand), Hubert and Arabie's adjusted Rand index (HA), Morey and Agresti's adjusted Rand index (MA), Fowlkes and Mallows's index (FM), and Jaccard index. HA is the one metric that we often refer to as ARI.
 }
 \examples{
-finalmetrics = ARI(gtc, finalrowColor)
+finalmetrics = ARI(ground_true_clusters, pred_clusters)
 
 }

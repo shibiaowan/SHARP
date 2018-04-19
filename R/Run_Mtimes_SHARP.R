@@ -1,3 +1,25 @@
+#' Run multiple-times SHARP for single-cell RNA data clustering
+#'
+#' This function is to run multiple times of SHARP for evaluating SHARP in clustering of single-cell RNA-Seq data
+#'
+#' @param scExp input single-cell expression matrix
+#' @param ensize.K number of applications of random projection for ensemble
+#' @param reduced.ndim the dimension to be reduced to
+#' @param base.ncells a base threshold of number of cells. When the number of cells of a dataset is smaller than this threshold, we use SHARP_small function; otherwise, we use SHARP_large.
+#' @param partition.ncells number of cells for each partition when using SHARP_large
+#' @param n.cores number of cores to be used. The default is (n-1) cores, where n is the number of cores in your local computer or server.
+#' @param Mtimes number of times to run SHARP
+#' 
+#' @examples
+#' enresults = Run_Mtimes_SHARP(scExp, ensize.K, reduced.ndim, partition.ncells, base.ncells, n.cores, Mtimes)
+#'
+#' @import foreach
+#'
+#' @import parallel
+#'
+#' @import doMC
+#'
+#' @export
 Run_Mtimes_SHARP <- function(scExp, ensize.K, reduced.ndim, partition.ncells, base.ncells, n.cores, Mtimes){
 rm(list=ls())#remove all 
 

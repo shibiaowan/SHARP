@@ -1,4 +1,19 @@
+#' similarity-based ensemble meta-clustering
+#'
+#' This function is to do similarity-based ensemble clustering for combining the results from different partitions of single cells. The similarity is measured by the group-group correlations.
+#'
+#' @param nC a m*n matrix, where m is the number of cells, n is the number of clustering algorithms, and the (i,j)-element of nC represents the cluter for the i-th cell by the j-th clutering predictor.
+#' 
+#' @examples
+#' finalrowColor = sMetaC(rerowColor, sE1, folds)
+#'
+#' @import cluster
+#'
+#' @import clues
+#'
 #' @import clusterCrit
+#'
+#' @export
 sMetaC<- function(rerowColor, sE1, folds){
 #This is to do meta-clustering the results obtained for each smaller group of the original large-scale datasets
     R = unique(rerowColor)#unique clusters

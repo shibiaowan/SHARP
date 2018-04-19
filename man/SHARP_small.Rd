@@ -2,23 +2,23 @@
 % Please edit documentation in R/SHARP.R
 \name{SHARP_small}
 \alias{SHARP_small}
-\title{Run SHARP for single-cell RNA data clustering}
+\title{Run SHARP for small-size (< 5000) single-cell RNA datasets}
 \usage{
-SHARP_small(E, ncells, K, p)
+SHARP_small(scExp, ncells, ensize.K, reduced.dim)
 }
 \arguments{
-\item{E}{input single-cell expression matrix}
+\item{scExp}{input single-cell expression matrix}
 
-\item{K}{number of applications of random projection}
+\item{ncells}{number of single cells}
 
-\item{p}{the dimension to be reduced to}
+\item{ensize.K}{number of applications of random projection for ensemble}
 
-\item{gtc}{the ground-truth clusters}
+\item{reduced.dim}{the dimension to be reduced to}
 }
 \description{
-SHARP: \strong{S}ingle-cell RNA-Seq \strong{H}yper-fast and \strong{A}ccurate clustering via ensemble \strong{R}andom \strong{P}rojection.
+For small-size (< 5000) datasets, we don't need to partition the datasets into several groups. Instead, we simply use ensemble random projection and weighted ensemble meta-clustering algorithms.
 }
 \examples{
-enresults = SHARP(scExp)
+enresults = SHARP_small(scExp, ncells, ensize.K, reduced.dim)
 
 }

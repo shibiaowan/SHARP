@@ -6,7 +6,7 @@
 #' @param ensize.K number of applications of random projection for ensemble
 #' @param reduced.ndim the dimension to be reduced to
 #' @param base.ncells a base threshold of number of cells. When the number of cells of a dataset is smaller than this threshold, we use SHARP_small function; otherwise, we use SHARP_large.
-#' @param partition_ncells number of cells for each partition when using SHARP_large
+#' @param partition.ncells number of cells for each partition when using SHARP_large
 #' @param n.cores number of cores to be used. The default is (n-1) cores, where n is the number of cores in your local computer or server.
 #' 
 #' @examples
@@ -83,24 +83,24 @@ SHARP <- function(scExp, ensize.K, reduced.ndim, base.ncells, partition.ncells, 
 	####################################
 	enresults$N.cells = ncells
 	enresults$N.genes = ngenes
-	enresults$reduced_dim = reduced.ndim
-	enresults$K = ensize.K
+	enresults$reduced.dim = reduced.ndim
+	enresults$ensize.K = ensize.K
 	enresults$time = t
 	
 	return(enresults)
 }
 
-#' Run SHARP for single-cell RNA data clustering
+#' Run SHARP for small-size (< 5000) single-cell RNA datasets
 #'
-#' SHARP: \strong{S}ingle-cell RNA-Seq \strong{H}yper-fast and \strong{A}ccurate clustering via ensemble \strong{R}andom \strong{P}rojection. 
+#' For small-size (< 5000) datasets, we don't need to partition the datasets into several groups. Instead, we simply use ensemble random projection and weighted ensemble meta-clustering algorithms.
 #'
-#' @param E input single-cell expression matrix
-#' @param gtc the ground-truth clusters
-#' @param K number of applications of random projection
-#' @param p the dimension to be reduced to
+#' @param scExp input single-cell expression matrix
+#' @param ncells number of single cells
+#' @param ensize.K number of applications of random projection for ensemble
+#' @param reduced.dim the dimension to be reduced to
 #' 
 #' @examples
-#' enresults = SHARP(scExp)
+#' enresults = SHARP_small(scExp, ncells, ensize.K, reduced.dim)
 #'
 #' @import foreach
 #'
@@ -109,18 +109,18 @@ SHARP <- function(scExp, ensize.K, reduced.ndim, base.ncells, partition.ncells, 
 #' @import doMC
 #'
 #' @export
-SHARP_small <- function(E, ncells, K, p){
+SHARP_small <- function(scExp, ncells, ensize.K, reduced.dim){
 
     enresults = list()
     
-    allrpinfo = foreach(k=1:K)%dopar%{
+    allrpinfo = foreach(k=1:ensize.K)%dopar%{
           print(paste("Random Projection: ", k, sep = ""))
 # 	  print(paste("The ", k, "-th time of random projection", sep=""), quote = FALSE)
-	  E = data.matrix(E)#convert from data frame to normal matrix
-	  newE = RPmat(E, p)#do the RP;the result is a list
+	  scExp = data.matrix(scExp)#convert from data frame to normal matrix
+	  newE = RPmat(scExp, reduced.dim)#do the RP;the result is a list
 	  E1 = t(newE$projmat)#for those which need tranpose
 	  
-	  tag = paste("_RP", p, "_", k,  sep="")#k is the application times of random projection; p is the reduced dimension
+	  tag = paste("_RP", reduced.dim, "_", k,  sep="")#k is the application times of random projection; p is the reduced dimension
 	  tmp = getrowColor(E1)
 	  rowColor = tmp$rowColor
 # 	  rowColor= getrowColor(E1, tag, outdir, colorL)#hierarchical clustering
@@ -143,7 +143,7 @@ SHARP_small <- function(E, ncells, K, p){
 	 }
 	 
          z = length(allrpinfo)
-	 enrp = matrix('0', nrow = ncells, ncol = K)
+	 enrp = matrix('0', nrow = ncells, ncol = ensize.K)
 	 enE <- matrix(0, nrow = ncells, ncol = p)#already tranposed; reshuffled matrix
 	 for(j in 1:z){#partition
             z1 = allrpinfo[[j]]
@@ -171,17 +171,20 @@ SHARP_small <- function(E, ncells, K, p){
 	return(enresults)
 }
 
-#' Run SHARP for single-cell RNA data clustering
+#' Run SHARP for large-size (>= 5000) single-cell RNA datasets
 #'
-#' SHARP: \strong{S}ingle-cell RNA-Seq \strong{H}yper-fast and \strong{A}ccurate clustering via ensemble \strong{R}andom \strong{P}rojection. 
+#' For large-size (>= 5000) datasets, we suggest first partitioning the datasets into several groups, then we run SHARP for each group, and finally and we ensemble the results of each group by a similarity-based meta-clustering algorithm.
 #'
-#' @param E input single-cell expression matrix
-#' @param gtc the ground-truth clusters
-#' @param K number of applications of random projection
-#' @param p the dimension to be reduced to
+#' For each partition (or group), the default number of cells is set to 2000 for each group. The users can also set a different number according to the computational capability of their own local computers. The suggested criteria to set this number is that as long as SHARP_small can run in a fast enough (depending on users' requirements) way for the selected number of single cells.  
+#'
+#' @param scExp input single-cell expression matrix
+#' @param ncells number of single cells
+#' @param ensize.K number of applications of random projection for ensemble
+#' @param reduced.dim the dimension to be reduced to
+#' @param partition.ncells number of cells for each partition when using SHARP_large
 #' 
 #' @examples
-#' enresults = SHARP(scExp)
+#' enresults = SHARP_large(scExp, ncells, ensize.K, reduced.dim, partition.ncells)
 #'
 #' @import foreach
 #'
@@ -190,10 +193,13 @@ SHARP_small <- function(E, ncells, K, p){
 #' @import doMC
 #'
 #' @export
-SHARP_large <- function(E, ncells, K, p, ng){
+SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells){
         print("The Divide-and-Conquer Strategy is selected!")
         ########Partition the large data into several groups###########
+        p = reduced.dim
         entag = paste("_enRP",p)
+        
+        K = ensize.K
 	allrpinfo <- vector("list", length = K)#declare a matrix of lists
 	enresults = list()
 # 	colnames(rpinfo) = c("E", "tag", "rowColor", "metrics")
@@ -202,12 +208,14 @@ SHARP_large <- function(E, ncells, K, p, ng){
         
         reind = sample(ncells)#randomly reshuffle the data
         #reshuffle the data
+        E = scExp
         E = E[, reind]
 # 	ng = 2000#number of cells for each group
 
 # 	if(ncells < 10000){#if it is a small dataset, simply divide it into 5 parts
 #             ng = ceiling(ncells/5)
 # 	}
+        ng = partition.ncells
         T = ceiling(ncells/ng)#number of partitions/groups
         
         # 	  resT = T*ng - nrow(E1)#we need to fill resT 0 for consistency and ease of following processing

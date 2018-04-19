@@ -1,4 +1,13 @@
-library(Matrix)
+#' Prepare a random matrix
+#'
+#' This function is to prepare a random matrix to be used in parallel computation, so that the same random matrix will be applied to different partitions/groups of datasets in the same application of random projection.
+#' 
+#' @param scdata input single-cell expression matrix
+#' @param p the dimension to be reduced to
+#'
+#' @import Matrix
+#'
+#' @export
 ranM <- function(scdata, p){#for random projection; note scdata: m*n, m is the feature dimensions, n is the sample number; p is the reduced dimension
   m = nrow(scdata)#the number of features
   n = ncol(scdata)#number of samples/cells

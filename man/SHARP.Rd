@@ -15,9 +15,9 @@ SHARP(scExp, ensize.K, reduced.ndim, base.ncells, partition.ncells, n.cores)
 
 \item{base.ncells}{a base threshold of number of cells. When the number of cells of a dataset is smaller than this threshold, we use SHARP_small function; otherwise, we use SHARP_large.}
 
-\item{n.cores}{number of cores to be used. The default is (n-1) cores, where n is the number of cores in your local computer or server.}
+\item{partition.ncells}{number of cells for each partition when using SHARP_large}
 
-\item{partition_ncells}{number of cells for each partition when using SHARP_large}
+\item{n.cores}{number of cores to be used. The default is (n-1) cores, where n is the number of cores in your local computer or server.}
 }
 \description{
 SHARP: \strong{S}ingle-cell RNA-Seq \strong{H}yper-fast and \strong{A}ccurate clustering via ensemble \strong{R}andom \strong{P}rojection.

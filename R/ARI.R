@@ -1,12 +1,14 @@
-#' Calculate the adjusted rand index
+#' Calculate the adjusted rand index (ARI), including 5 different ARI-related metrics
 #'
-#' This function is to calculate the performance of the algorithm by 5 metrics, including the Rand index, HA, MA, FM and Jaccard. 
+#' This function is to calculate the performance of the algorithm by 5 metrics, including Rand index (Rand), Hubert and Arabie's adjusted Rand index (HA), Morey and Agresti's adjusted Rand index (MA), Fowlkes and Mallows's index (FM), and Jaccard index. HA is the one metric that we often refer to as ARI. 
 #'
 #' @param ground_true_clusters the ground-truth clusters
 #' @param pred_clusters the predicted clusters
 #' 
 #' @examples
-#' finalmetrics = ARI(gtc, finalrowColor)
+#' finalmetrics = ARI(ground_true_clusters, pred_clusters)
+#'
+#' @import clues
 #'
 #' @export
 ARI <- function(ground_true_clusters, pred_clusters){#w: the ground-truth clusters; rowColor: the predicted clusters

@@ -2,18 +2,17 @@
 #'
 #' This function is to do hierarchical clustering, with the number of clusters determined by a strategy combining Silhouette index, CH index and the heights after hierarchical clustering.
 #'
-#' @param E the feature matrix whose columns represent the features and whose rows represent data/cells.
-#' @param tag the tag for each independent random projection
-#' @param colorL the color set for different clusters
+#' @param Emat the feature matrix whose columns represent the features and whose rows represent data/cells.
 #'
 #' @examples
-#' rowColor= getrowColor(E1, tag, colorL)
+#' rowColor= getrowColor(E1)
 #'
 #' @import cluster
 #'
 #' @import clues
 #'
 #' @import clusterCrit
+#'
 #' @export
 getrowColor <- function(Emat){#hierarchical clustering
 	
@@ -101,7 +100,17 @@ getrowColor <- function(Emat){#hierarchical clustering
 	return(res)
 }
 
-library(clues)
+#' hierarchical clustering with number of clusters determined automatically
+#'
+#' This function is to do hierarchical clustering, with the number of clusters determined by a strategy combining Silhouette index, CH index and the heights after hierarchical clustering.
+#'
+#' @import cluster
+#'
+#' @import clues
+#'
+#' @import clusterCrit
+#'
+#' @export
 gethclust<- function(d, my){
     
 	
