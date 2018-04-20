@@ -4,7 +4,8 @@
 \alias{wMetaC}
 \title{weighted ensemble clustering}
 \usage{
-wMetaC(nC, hmethod, enN.cluster)
+wMetaC(nC, hmethod, enN.cluster, minN.cluster, maxN.cluster, sil.thre,
+  height.Ntimes)
 }
 \arguments{
 \item{nC}{a m*n matrix, where m is the number of cells, n is the number of clustering algorithms, and the (i,j)-element of nC represents the cluter for the i-th cell by the j-th clutering predictor.}

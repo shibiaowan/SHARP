@@ -5,7 +5,9 @@
 \title{Run SHARP for single-cell RNA data clustering}
 \usage{
 SHARP(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partition.ncells,
-  hmethod, finalN.cluster, enpN.cluster, indN.cluster, n.cores, rN.seed)
+  hmethod, finalN.cluster = NULL, enpN.cluster = NULL,
+  indN.cluster = NULL, minN.cluster, maxN.cluster, sil.thre, height.Ntimes,
+  n.cores, rN.seed)
 }
 \arguments{
 \item{scExp}{input single-cell expression matrix}

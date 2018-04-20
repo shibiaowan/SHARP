@@ -4,8 +4,8 @@
 \alias{SHARP_small}
 \title{Run SHARP for small-size (< 5000) single-cell RNA datasets}
 \usage{
-SHARP_small(scExp, ncells, ensize.K, reduced.dim, hmethod, finalN.cluster,
-  indN.cluster, rN.seed)
+SHARP_small(scExp, ncells, ensize.K, reduced.ndim, hmethod, finalN.cluster,
+  indN.cluster, minN.cluster, maxN.cluster, sil.thre, height.Ntimes, rN.seed)
 }
 \arguments{
 \item{scExp}{input single-cell expression matrix}
@@ -14,12 +14,12 @@ SHARP_small(scExp, ncells, ensize.K, reduced.dim, hmethod, finalN.cluster,
 
 \item{ensize.K}{number of applications of random projection for ensemble}
 
-\item{reduced.dim}{the dimension to be reduced to}
+\item{reduced.ndim}{the dimension to be reduced to}
 }
 \description{
 For small-size (< 5000) datasets, we don't need to partition the datasets into several groups. Instead, we simply use ensemble random projection and weighted ensemble meta-clustering algorithms.
 }
 \examples{
-enresults = SHARP_small(scExp, ncells, ensize.K, reduced.dim)
+enresults = SHARP_small(scExp, ncells, ensize.K, reduced.ndim)
 
 }

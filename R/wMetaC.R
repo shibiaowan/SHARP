@@ -12,7 +12,7 @@
 #' @import clues
 #'
 #' @export
-wMetaC <- function(nC, hmethod, enN.cluster){
+wMetaC <- function(nC, hmethod, enN.cluster, minN.cluster, maxN.cluster, sil.thre, height.Ntimes){
   #This is to obtain the weight matrix for each cluster solution for following meta-clustering
   N = nrow(nC)#number of points
   C = ncol(nC)#number of clustering methods/times; or K
@@ -120,11 +120,11 @@ wMetaC <- function(nC, hmethod, enN.cluster){
 # 	}
 #       }
 #     }
-  if(missing(enN.cluster)){  
-    hres = get_opt_hclust(my, hmethod, sil.thre = 0)#solely using the silhouette index as the criteria
-  }else{
-    hres = get_opt_hclust(my, hmethod, sil.thre = 0, N.cluster = enN.cluster)#solely using the silhouette index as the criteria
+  if(missing(sil.thre)){#if sil.thre is not assigned
+    sil.thre = 0
   }
+  hres = get_opt_hclust(S, hmethod, N.cluster = enN.cluster, minN.cluster, maxN.cluster, sil.thre, height.Ntimes)#solely using the silhouette index as the criteria
+ 
   tf = hres$f
   v = hres$v
       

@@ -14,7 +14,7 @@
 #' @import clusterCrit
 #'
 #' @export
-sMetaC<- function(rerowColor, sE1, folds, hmethod, finalN.cluster){
+sMetaC<- function(rerowColor, sE1, folds, hmethod, finalN.cluster, minN.cluster, maxN.cluster, sil.thre, height.Ntimes){
 #This is to do meta-clustering the results obtained for each smaller group of the original large-scale datasets
     R = unique(rerowColor)#unique clusters
     print(R)
@@ -80,11 +80,11 @@ sMetaC<- function(rerowColor, sE1, folds, hmethod, finalN.cluster){
     
 #     res = kmeans(mE, max(t0))
 #     d=as.dist(1-cor(t(mE)))
-      if(missing(finalN.cluster)){
-        hres = get_opt_hclust(my, hmethod, minN.cluster = max(2, min(t0)))
-      }else{
-        hres = get_opt_hclust(my, hmethod, minN.cluster = max(2, min(t0)), N.cluster = finalN.cluster)
+      if(missing(minN.cluster)){
+        minN.cluster = max(2, min(t0))
       }
+      hres = get_opt_hclust(my, hmethod, N.cluster = finalN.cluster, minN.cluster, maxN.cluster, sil.thre, height.Ntimes)
+      
       tf = hres$f
       v = hres$v
 #     d=as.dist(1-S)

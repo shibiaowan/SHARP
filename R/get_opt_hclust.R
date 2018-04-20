@@ -30,27 +30,27 @@
 #' @export
 get_opt_hclust<- function(mat, hmethod, N.cluster, minN.cluster, maxN.cluster, sil.thre, height.Ntimes){
         #if no agglomeration method for hierarchical clustering is provided
-	if(missing(hmethod)){
+	if(missing(hmethod) || is.null(hmethod)){
             hmethod = "ward.D"#the default hierarchical clustering agglomeration method is "ward.D"
 	}
 	
 	#if no minimum number of clusters is provided	
-	if(missing(maxN.cluster)){
+	if(missing(minN.cluster) || is.null(minN.cluster)){
             minN.cluster = 2 #by default, we try the minimum number of clusters starting from 2
 	}
 	
 	#if no maximum number of clusters is provided	
-	if(missing(maxN.cluster)){
+	if(missing(maxN.cluster) || is.null(maxN.cluster)){
             maxN.cluster = 40 #by default, we try the maximum number of clusters as large as 40 or the number of cells minus 1, whichever is smaller.
 	}
 	
 	#if no threshold for the maximum Silhouette index is provided
-	if(missing(maxN.cluster)){
+	if(missing(sil.thre) || is.null(sil.thre)){
             sil.thre = 0.35#by default, we use 0.35 to determine whether we use Silhouette index as the criteria to determine the optimal number of clusters
 	}
 	
 	#if no threshold for the height difference is provided
-	if(missing(height.Ntimes)){
+	if(missing(height.Ntimes) || is.null(height.Ntimes)){
             height.Ntimes = 2#by default, we select the first height which is (height.Ntimes) times larger than the immediate consecutive height
 	}
 	
@@ -66,7 +66,7 @@ get_opt_hclust<- function(mat, hmethod, N.cluster, minN.cluster, maxN.cluster, s
 	h=hclust(d, method = hmethod)#ward to ward.D
 	
 	#if N.cluster is given, we simply use the given N.cluster for hierarchical clustering
-	if(!missing(N.cluster)){
+	if(!missing(N.cluster) && !is.null(N.cluster)){
             if(!is.numeric(N.cluster)){
                 stop("The given N.cluster is not a numeric!")
             }
@@ -86,6 +86,7 @@ get_opt_hclust<- function(mat, hmethod, N.cluster, minN.cluster, maxN.cluster, s
             optN.cluster = N.cluster
 	}else{#if missing, automatically determine the number of clusters
 	
+	my = mat
         nc = minN.cluster:min(maxN.cluster, nrow(my)-1)
 	v = matrix(0, nrow = nrow(my), ncol = length(nc))#for all different numbers of clusters
 	msil = rep(0, length(nc))#declare a vector of zeros
@@ -114,7 +115,7 @@ get_opt_hclust<- function(mat, hmethod, N.cluster, minN.cluster, maxN.cluster, s
 # 	  spl <- split(d, v[,i])
 # 	  wss[i] <- sum(sapply(spl, wss))
 # 	  CHind[i] = get_CH(my, v[,i], disMethod = "1-corr")
-          ch0 = intCriteria(data.matrix(mat),as.integer(v[,i]),"Calinski_Harabasz")
+          ch0 = intCriteria(data.matrix(my),as.integer(v[,i]),"Calinski_Harabasz")
 	  CHind[i] = unlist(ch0, use.names = F)#convert a list to a vector/value
 	}
 
