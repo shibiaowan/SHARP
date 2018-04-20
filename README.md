@@ -3,7 +3,7 @@
 
 # Installation: 
 
-**library(devtools)**
+'**library(devtools)**'
 
 **install_github("shibiaowan/SHARP")**
 
