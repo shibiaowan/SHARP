@@ -1,5 +1,5 @@
 # SHARP
-**_SHARP_**: **S**ingle-cell RNA-Seq **H**yper-fast and **A**ccurate clustering via ensemble **R**andom **P**rojection.
+**_SHARP_**: <b><u><i>S</i></u></b>ingle-cell RNA-Seq <b><u><i>H</i></u></b>yper-fast and <b><u><i>A</i></u></b>ccurate clustering via ensemble <b><u><i>R</i></u></b>andom <b><u><i>P</i></u></b>rojection.
 
 # Installation: 
 
