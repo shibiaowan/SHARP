@@ -135,7 +135,7 @@ SHARP <- function(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partitio
 #'
 #' @import parallel
 #'
-#' @import doMC
+#' @import doParallel
 #'
 #' @export
 SHARP_small <- function(scExp, ncells, ensize.K, reduced.dim, hmethod, finalN.cluster, indN.cluster, rN.seed){
@@ -224,7 +224,7 @@ SHARP_small <- function(scExp, ncells, ensize.K, reduced.dim, hmethod, finalN.cl
 #'
 #' @import parallel
 #'
-#' @import doMC
+#' @import doParallel
 #'
 #' @export
 SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, hmethod, finalN.cluster, enpN.cluster, indN.cluster, rN.seed){
