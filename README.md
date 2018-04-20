@@ -11,9 +11,11 @@
 
 `library(SHARP)`#an example data (i.e., scExp_tpm.RData) has been loaded together with SHARP package
 
-#get to know the number of genes and number of cells of the example data
+#get to know some information of the example data, like the number of genes, number of cells and typical values of the expression matrix
 
 `dim(scExp_tpm)`
+
+`scExp_tpm[1:5,1:5]`
 
 #try SHARP for small-size datasets
 
