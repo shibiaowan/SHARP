@@ -27,7 +27,7 @@
 #'
 #' @import parallel
 #'
-#' @import doMC
+#' @import doParallel
 #'
 #' @export
 SHARP <- function(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partition.ncells, hmethod, finalN.cluster, enpN.cluster, indN.cluster, n.cores, rN.seed){
@@ -71,7 +71,8 @@ SHARP <- function(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partitio
         if(missing(n.cores)){#number of cores to be used, the default is to use all but one cores
             n.cores = detectCores() - 1
         }
-        registerDoMC(n.cores)
+#         registerDoMC(n.cores)
+        registerDoParallel(n.cores)
         
         if(!missing(rN.seed)){#seed number for reproducible results
             if(!is.numeric(rN.seed)){
