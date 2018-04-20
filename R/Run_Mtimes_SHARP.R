@@ -17,7 +17,7 @@
 #'
 #' @import parallel
 #'
-#' @import doMC
+#' @import doParallel
 #'
 #' @export
 Run_Mtimes_SHARP <- function(scExp, ensize.K, reduced.ndim, partition.ncells, base.ncells, n.cores, Mtimes){
