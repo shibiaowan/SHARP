@@ -4,23 +4,38 @@
 \alias{SHARP}
 \title{Run SHARP for single-cell RNA data clustering}
 \usage{
-SHARP(scExp, ensize.K, reduced.ndim, base.ncells, partition.ncells, n.cores)
+SHARP(scExp, ensize.K, reduced.ndim, base.ncells, partition.ncells,
+  finalN.cluster, enpN.cluster, indN.cluster, n.cores, rN.seed)
 }
 \arguments{
 \item{scExp}{input single-cell expression matrix}
 
-\item{ensize.K}{number of applications of random projection for ensemble}
+\item{ensize.K}{number of applications of random projection for ensemble. The default value is 15.}
 
-\item{reduced.ndim}{the dimension to be reduced to}
+\item{reduced.ndim}{the dimension to be reduced to. If missing, the value will be estimated by an equation associated with number of cells (see our paper and supplementary materials for details).}
 
-\item{base.ncells}{a base threshold of number of cells. When the number of cells of a dataset is smaller than this threshold, we use SHARP_small function; otherwise, we use SHARP_large.}
+\item{base.ncells}{a base threshold of number of cells. The default value is 5000. When the number of cells of a dataset is smaller than this threshold, we use SHARP_small function; otherwise, we use SHARP_large.}
 
-\item{partition.ncells}{number of cells for each partition when using SHARP_large}
+\item{partition.ncells}{number of cells for each partition when using SHARP_large. The default value is 2000.}
+
+\item{finalN.cluster}{number of clusters for the final clustering results. The default is NULL, i.e., without giving the number of clusters, and SHARP will automatically determine the optimal number of clusters. If given, SHARP will calculate according to the given number of clusters.}
+
+\item{enpN.cluster}{number of clusters for the weighted ensemble meta-clustering only for SHARP_large. The default is NULL, i.e., without giving the number of clusters, and SHARP will automatically determine the optimal number of clusters. If given, SHARP will calculate according to the given number of clusters.}
+
+\item{indN.cluster}{number of clusters for the individual RP-based hierarchical clustering. The default is NULL, i.e., without giving the number of clusters, and SHARP will automatically determine the optimal number of clusters. If given, SHARP will calculate according to the given number of clusters.}
 
 \item{n.cores}{number of cores to be used. The default is (n-1) cores, where n is the number of cores in your local computer or server.}
+
+\item{rN.seed}{a number using which we can set seeds for SHARP to obtain reproducible results.}
+}
+\value{
+a list containing the SHARP clustering results, the predicted optimal number of clusters, time SHARP consumes for clustering, some intermediate results including clustering results by each random-projection based hierarchical clustering and other related statstical information including number of cells, genes, reduced dimensions and number of applications of random projection.
 }
 \description{
 SHARP: \strong{S}ingle-cell RNA-Seq \strong{H}yper-fast and \strong{A}ccurate clustering via ensemble \strong{R}andom \strong{P}rojection.
+}
+\details{
+This is the main interface for SHARP to process and analyze different kinds of single-cell RNA-Seq data. Only one parameter is manadatory, i.e., scExp, the single-cell expression matrix. In most cases, most of the parameters can be determined automatically or have been optimized, so users don't have to take efforts to try different parameters. While
 }
 \examples{
 enresults = SHARP(scExp)

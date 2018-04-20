@@ -4,7 +4,7 @@
 \alias{ranM}
 \title{Prepare a random matrix}
 \usage{
-ranM(scdata, p)
+ranM(scdata, p, seedn)
 }
 \arguments{
 \item{scdata}{input single-cell expression matrix}

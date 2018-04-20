@@ -4,7 +4,7 @@
 \alias{RPmat}
 \title{Obtain a random matrix and its related information}
 \usage{
-RPmat(scdata, p)
+RPmat(scdata, p, seedn)
 }
 \arguments{
 \item{scdata}{input single-cell expression matrix}

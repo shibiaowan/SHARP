@@ -12,7 +12,7 @@
 #' @import clues
 #'
 #' @export
-wMetaC <- function(nC){
+wMetaC <- function(nC, enN.cluster){
   #This is to obtain the weight matrix for each cluster solution for following meta-clustering
   N = nrow(nC)#number of points
   C = ncol(nC)#number of clustering methods/times; or K
@@ -120,91 +120,98 @@ wMetaC <- function(nC){
 # 	}
 #       }
 #     }
-    
-  d=as.dist(1-S)
-#   print(S)
-#   metah = hclust(d, method="ward.D")
-  metah = hclust(d, method="ward.D")
-  
-#   print(dim(S))
-  maxc = min(40, dim(S)[1]-1)#maximum number of clusters; at most (maxc-1) clusters because maxc clusters mean no needing to cluster
-  v = matrix(0, nrow = dim(S)[1], ncol = maxc-1)#for all different numbers of clusters
-#   print(dim(v))
-  msil = rep(0, maxc-1)#declare a vector of zeros
-  
-#   mdunn = rep(0, maxc-1)#for dunn index
-#   mdb = rep(0, maxc-1)#for DB index
-#   wss = rep(0, maxc-2)#within-cluster sum of squares
-#   CHind = rep(0, maxc-1)#CH index
-  
-
-  allc = c(2:maxc)
-  for(i in 1:length(allc)){
-    v[, i] = cutree(metah, k = allc[i])#for different numbers of clusters
-#     print(v[,i])
-    sil = silhouette(v[, i], d)#calculate the silhouette index 
-    
-#     msil[i-1] = mean(sil[,3])#the mean value of the index
-    msil[i] = median(sil[,3])#the mean value of the index
-    
-#     mdunn[i-1] = dunn(d, v[,i-1])
-    
-#     db = index.DB(d, cl = v[, i-1])
-#     mdb[i-1] = db$DB
-
-#     spl <- split(d, v[, i-2])
-#     wss[i-2] <- sum(sapply(spl, wss))#within-cluster sum of squares
-#     print("OK")
-#     CHind[i] = get_CH(S, v[, i], disMethod = "1-corr")
-#     print(CHind[i])
+  if(missing(enN.cluster)){  
+    hres = get_opt_hclust(my, sil.thre = 0)#solely using the silhouette index as the criteria
+  }else{
+    hres = get_opt_hclust(my, sil.thre = 0, N.cluster = enN.cluster)#solely using the silhouette index as the criteria
   }
-
-#   oind = which.max(msil)#the index corresponding to the max sil index
-  tmp = which(msil == max(msil))#in case there are more than one maximum
-  if(length(tmp)>1){oind = tmp[ceiling(length(tmp)/2)]}else{oind = tmp}
-  print(msil)#the average sil index for different numbers of clusters
-  
-#   print("OK!")
-#   print(CHind)
-  
-#   if(max(msil)<=0.2){
-#     difCH = diff(CHind)
-#     x1 = which(difCH<0)
-#     if(length(x1)>0){
-#       oind = min(x1)#local maximum
-#     }else{
-#       oind = 1
-#     }
-# #   oind = which.max(CH)
+  tf = hres$f
+  v = hres$v
+      
+#   d=as.dist(1-S)
+# #   print(S)
+# #   metah = hclust(d, method="ward.D")
+#   metah = hclust(d, method="ward.D")
+#   
+# #   print(dim(S))
+#   maxc = min(40, dim(S)[1]-1)#maximum number of clusters; at most (maxc-1) clusters because maxc clusters mean no needing to cluster
+#   v = matrix(0, nrow = dim(S)[1], ncol = maxc-1)#for all different numbers of clusters
+# #   print(dim(v))
+#   msil = rep(0, maxc-1)#declare a vector of zeros
+#   
+# #   mdunn = rep(0, maxc-1)#for dunn index
+# #   mdb = rep(0, maxc-1)#for DB index
+# #   wss = rep(0, maxc-2)#within-cluster sum of squares
+# #   CHind = rep(0, maxc-1)#CH index
+#   
+# 
+#   allc = c(2:maxc)
+#   for(i in 1:length(allc)){
+#     v[, i] = cutree(metah, k = allc[i])#for different numbers of clusters
+# #     print(v[,i])
+#     sil = silhouette(v[, i], d)#calculate the silhouette index 
+#     
+# #     msil[i-1] = mean(sil[,3])#the mean value of the index
+#     msil[i] = median(sil[,3])#the mean value of the index
+#     
+# #     mdunn[i-1] = dunn(d, v[,i-1])
+#     
+# #     db = index.DB(d, cl = v[, i-1])
+# #     mdb[i-1] = db$DB
+# 
+# #     spl <- split(d, v[, i-2])
+# #     wss[i-2] <- sum(sapply(spl, wss))#within-cluster sum of squares
+# #     print("OK")
+# #     CHind[i] = get_CH(S, v[, i], disMethod = "1-corr")
+# #     print(CHind[i])
 #   }
-
-#   #if the silhouette index is not reliable, we use the gap statistics
-#   if(max(msil)<=0.1){
-#     
-#     
-#     gskmn <- clusGap(S, FUN = kmeans, nstart = 20, K.max = min(maxc, 15), B = min(50, nrow(S)))
-#     g = gskmn$Tab
-#     gap = g[, "gap"]#the gap info
-#     print(gap)
-#     
-# #     oind = which.max(gap)#maximum gap
-#     
-#     sesim = g[, "SE.sim"]#standard error of the gap
-#     print(sesim)
-#     oind = maxSE(gap, sesim)#maximize the gap with parsimony of the model
-#     
-# #     if(oind >=floor(maxc*0.8)){#if the gap stastic keeps increasing until very big number of cluster, we use the first SE-rule (Gap(k) >= Gap(k+1) - SE)
-# #       sesim = g[, "SE.sim"]#standard error of the gap
-# #       print(sesim)
-# #       oind = maxSE(gap, sesim)#maximize the gap with parsimony of the model
+# 
+# #   oind = which.max(msil)#the index corresponding to the max sil index
+#   tmp = which(msil == max(msil))#in case there are more than one maximum
+#   if(length(tmp)>1){oind = tmp[ceiling(length(tmp)/2)]}else{oind = tmp}
+#   print(msil)#the average sil index for different numbers of clusters
+#   
+# #   print("OK!")
+# #   print(CHind)
+#   
+# #   if(max(msil)<=0.2){
+# #     difCH = diff(CHind)
+# #     x1 = which(difCH<0)
+# #     if(length(x1)>0){
+# #       oind = min(x1)#local maximum
+# #     }else{
+# #       oind = 1
 # #     }
-#   }
-
-#   print(wss)
-#   print(mdunn)
-#   print(mdb)
-#   oind = 3
-  tf = v[,oind]#the optimal clustering results
+# # #   oind = which.max(CH)
+# #   }
+# 
+# #   #if the silhouette index is not reliable, we use the gap statistics
+# #   if(max(msil)<=0.1){
+# #     
+# #     
+# #     gskmn <- clusGap(S, FUN = kmeans, nstart = 20, K.max = min(maxc, 15), B = min(50, nrow(S)))
+# #     g = gskmn$Tab
+# #     gap = g[, "gap"]#the gap info
+# #     print(gap)
+# #     
+# # #     oind = which.max(gap)#maximum gap
+# #     
+# #     sesim = g[, "SE.sim"]#standard error of the gap
+# #     print(sesim)
+# #     oind = maxSE(gap, sesim)#maximize the gap with parsimony of the model
+# #     
+# # #     if(oind >=floor(maxc*0.8)){#if the gap stastic keeps increasing until very big number of cluster, we use the first SE-rule (Gap(k) >= Gap(k+1) - SE)
+# # #       sesim = g[, "SE.sim"]#standard error of the gap
+# # #       print(sesim)
+# # #       oind = maxSE(gap, sesim)#maximize the gap with parsimony of the model
+# # #     }
+# #   }
+# 
+# #   print(wss)
+# #   print(mdunn)
+# #   print(mdb)
+# #   oind = 3
+#   tf = v[,oind]#the optimal clustering results
   
 
 #   tf=cutree(metah,k=N.cluster)

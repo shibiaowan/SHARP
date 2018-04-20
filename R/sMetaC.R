@@ -14,7 +14,7 @@
 #' @import clusterCrit
 #'
 #' @export
-sMetaC<- function(rerowColor, sE1, folds){
+sMetaC<- function(rerowColor, sE1, folds, finalN.cluster){
 #This is to do meta-clustering the results obtained for each smaller group of the original large-scale datasets
     R = unique(rerowColor)#unique clusters
     print(R)
@@ -80,61 +80,68 @@ sMetaC<- function(rerowColor, sE1, folds){
     
 #     res = kmeans(mE, max(t0))
 #     d=as.dist(1-cor(t(mE)))
-    d=as.dist(1-S)
-#     d=as.dist(S)
-#     print(S)
-#   metah = hclust(d, method="ward.D")
-    h = hclust(d, method="ward.D")#although it is also meta, it is for a single large dataset
-
-    
-#     S = mE
-#     nc = 2:min(40, dim(S)[1]-1)
-    nc = max(2, min(t0)):min(40, dim(S)[1]-1)
-    v = matrix(0, nrow = dim(S)[1], ncol = length(nc))#for all different numbers of clusters
-    msil = rep(0, length(nc))#declare a vector of zeros
-    CHind = rep(0, length(nc))
-    
-    print(paste("The height for the top 10 are: ", tail(h$height, n = 10), sep = ""))
-	
-#     stop("Stop here!")
-    for(i in 1:length(nc)){
-#   foreach(i=1:length(nc)) %dopar%{
-	  v[,i] = cutree(h, k = nc[i])#for different numbers of clusters
-	  sil = silhouette(v[,i], d)#calculate the silhouette index 
-# 	  msil[i] = mean(sil[,3])#the mean value of the index
-	  msil[i] = median(sil[,3])#the mean value of the index
-	  
-
-# 	  CHind[i] = get_CH(S, v[,i], disMethod = "Euclidean")
-          ch0 = intCriteria(data.matrix(S),as.integer(v[,i]),"Calinski_Harabasz")
-	  CHind[i] = unlist(ch0, use.names = F)#convert a list to a vector/value
-    }
-
-    print(msil)#the average sil index for all cases
-    print(CHind)
-
-# 	oind = which.max(msil)#the index corresponding to the max sil index
-    tmp = which(msil == max(msil))#in case there are more than one maximum
-    if(length(tmp)>1){oind = tmp[ceiling(length(tmp)/2)]}else{oind = tmp}
-	
-    if(max(msil)<=0.35){
-        oind = which.max(CHind)
-        if(oind ==1){#it's likely that the CH index is not reliable either
-	    tmp = tail(h$height, n =10)#the height
-	    diftmp = diff(tmp)
-	    flag = diftmp > tmp[1:(length(tmp)-1)]#require the height is more than 2 times of the immediate consecutive one
-	    
-	    if(any(flag)){#if any satifies the condition; make sure at least one satisfied
-	      pind = which.max(flag)
-	      opth = (tmp[pind] + tmp[pind+1])/2#the optimal height to cut
-	      optv = cutree(h, h = opth)#using the appropriate height to cut
-	      oind = length(unique(optv)) - 1#for consistency
-	    }
-        }
-    }
-  
-#   oind = 1
-  tf = v[,oind]#the optimal clustering results
+      if(missing(finalN.cluster)){
+        hres = get_opt_hclust(my, minN.cluster = max(2, min(t0)))
+      }else{
+        hres = get_opt_hclust(my, minN.cluster = max(2, min(t0)), N.cluster = finalN.cluster)
+      }
+      tf = hres$f
+      v = hres$v
+#     d=as.dist(1-S)
+# #     d=as.dist(S)
+# #     print(S)
+# #   metah = hclust(d, method="ward.D")
+#     h = hclust(d, method="ward.D")#although it is also meta, it is for a single large dataset
+# 
+#     
+# #     S = mE
+# #     nc = 2:min(40, dim(S)[1]-1)
+#     nc = max(2, min(t0)):min(40, dim(S)[1]-1)
+#     v = matrix(0, nrow = dim(S)[1], ncol = length(nc))#for all different numbers of clusters
+#     msil = rep(0, length(nc))#declare a vector of zeros
+#     CHind = rep(0, length(nc))
+#     
+#     print(paste("The height for the top 10 are: ", tail(h$height, n = 10), sep = ""))
+# 	
+# #     stop("Stop here!")
+#     for(i in 1:length(nc)){
+# #   foreach(i=1:length(nc)) %dopar%{
+# 	  v[,i] = cutree(h, k = nc[i])#for different numbers of clusters
+# 	  sil = silhouette(v[,i], d)#calculate the silhouette index 
+# # 	  msil[i] = mean(sil[,3])#the mean value of the index
+# 	  msil[i] = median(sil[,3])#the mean value of the index
+# 	  
+# 
+# # 	  CHind[i] = get_CH(S, v[,i], disMethod = "Euclidean")
+#           ch0 = intCriteria(data.matrix(S),as.integer(v[,i]),"Calinski_Harabasz")
+# 	  CHind[i] = unlist(ch0, use.names = F)#convert a list to a vector/value
+#     }
+# 
+#     print(msil)#the average sil index for all cases
+#     print(CHind)
+# 
+# # 	oind = which.max(msil)#the index corresponding to the max sil index
+#     tmp = which(msil == max(msil))#in case there are more than one maximum
+#     if(length(tmp)>1){oind = tmp[ceiling(length(tmp)/2)]}else{oind = tmp}
+# 	
+#     if(max(msil)<=0.35){
+#         oind = which.max(CHind)
+#         if(oind ==1){#it's likely that the CH index is not reliable either
+# 	    tmp = tail(h$height, n =10)#the height
+# 	    diftmp = diff(tmp)
+# 	    flag = diftmp > tmp[1:(length(tmp)-1)]#require the height is more than 2 times of the immediate consecutive one
+# 	    
+# 	    if(any(flag)){#if any satifies the condition; make sure at least one satisfied
+# 	      pind = which.max(flag)
+# 	      opth = (tmp[pind] + tmp[pind+1])/2#the optimal height to cut
+# 	      optv = cutree(h, h = opth)#using the appropriate height to cut
+# 	      oind = length(unique(optv)) - 1#for consistency
+# 	    }
+#         }
+#     }
+#   
+# #   oind = 1
+#   tf = v[,oind]#the optimal clustering results
 
 #   tf=cutree(metah,k=N.cluster)
   rerowColor[] <- vapply(rerowColor, function(x) tf[match(x, R)], numeric(1))#apply to every element;this is for matrices

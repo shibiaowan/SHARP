@@ -14,16 +14,22 @@
 #' @import clusterCrit
 #'
 #' @export
-getrowColor <- function(Emat){#hierarchical clustering
+getrowColor <- function(Emat, indN.cluster){#hierarchical clustering
 	
         my = Emat
 	my = my[apply(my,1,function(x) sd(x)!=0),]
 	my <- t(scale(t(my)))
 
         
-        d=as.dist(1-cor(t(my)))
-  
-        hres = gethclust(d, my)
+#         d=as.dist(1-cor(t(my)))
+#   
+#         hres = gethclust(d, my)
+        
+        if(missing(indN.cluster)){
+            hres = get_opt_hclust(my, height.Ntimes = 1)#get the optimal hierarchical clustering results; use both Silhouette index and CH index, without the heights criteria
+        }else{
+            hres = get_opt_hclust(my, height.Ntimes = 1, N.cluster = indN.cluster)
+        }
         f = hres$f
   
         nf = as.character(f)
@@ -145,6 +151,8 @@ gethclust<- function(d, my){
 # 	  spl <- split(d, v[,i])
 # 	  wss[i] <- sum(sapply(spl, wss))
 	  CHind[i] = get_CH(my, v[,i], disMethod = "1-corr")
+#           ch0 = intCriteria(data.matrix(S),as.integer(v[,i]),"Calinski_Harabasz")
+# 	  CHind[i] = unlist(ch0, use.names = F)#convert a list to a vector/value
 	}
 
 # 	print(msil)#the average sil index for all cases

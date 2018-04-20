@@ -4,7 +4,8 @@
 \alias{SHARP_small}
 \title{Run SHARP for small-size (< 5000) single-cell RNA datasets}
 \usage{
-SHARP_small(scExp, ncells, ensize.K, reduced.dim)
+SHARP_small(scExp, ncells, ensize.K, reduced.dim, finalN.cluster, indN.cluster,
+  rN.seed)
 }
 \arguments{
 \item{scExp}{input single-cell expression matrix}
