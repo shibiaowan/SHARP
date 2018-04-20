@@ -3,25 +3,25 @@
 
 # Installation: 
 
-'**library(devtools)**'
+`**library(devtools)**`
 
-**install_github("shibiaowan/SHARP")**
+`**install_github("shibiaowan/SHARP")**`
 
 # Quick Start: 
 
-**library(SHARP)**#an example data (i.e., scExp_tpm.RData) has been loaded together with SHARP package
+`**library(SHARP)**`#an example data (i.e., scExp_tpm.RData) has been loaded together with SHARP package
 
 #get to know the number of genes and number of cells of the example data
 
-**dim(scExp_tpm)**
+`**dim(scExp_tpm)**`
 
 #try SHARP for small-size datasets
 
-**results_small = SHARP(scExp_tpm)**
+`**results_small = SHARP(scExp_tpm)**`
 
 #try SHARP for large-size datasets
 
-**results_large = SHARP(scExp_tpm, base.ncells = 300)**
+`**results_large = SHARP(scExp_tpm, base.ncells = 300)**`
 
 # Introduction: 
 
