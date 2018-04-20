@@ -3,6 +3,7 @@
 #' SHARP: \strong{S}ingle-cell RNA-Seq \strong{H}yper-fast and \strong{A}ccurate clustering via ensemble \strong{R}andom \strong{P}rojection. 
 #'
 #' @param scExp input single-cell expression matrix
+#' @param exp.type  the data type of single-cell expression matrix. Common types include "count", "UMI", "CPM", "TPM", "FPRKM" and "RPKM". If missing, SHARP regards scExp as already normalized expression matrix.
 #' @param ensize.K  number of applications of random projection for ensemble. The default value is 15.
 #' @param reduced.ndim  the dimension to be reduced to. If missing, the value will be estimated by an equation associated with number of cells (see our paper and supplementary materials for details).
 #' @param base.ncells   a base threshold of number of cells. The default value is 5000. When the number of cells of a dataset is smaller than this threshold, we use SHARP_small function; otherwise, we use SHARP_large.
@@ -13,12 +14,14 @@
 #' @param n.cores   number of cores to be used. The default is (n-1) cores, where n is the number of cores in your local computer or server.
 #' @param rN.seed   a number using which we can set seeds for SHARP to obtain reproducible results.
 #' 
-#' @details This is the main interface for SHARP to process and analyze different kinds of single-cell RNA-Seq data. Only one parameter is manadatory, i.e., scExp, the single-cell expression matrix. In most cases, most of the parameters can be determined automatically or have been optimized, so users don't have to take efforts to try different parameters. While 
+#' @details This is the main interface for SHARP to process and analyze different kinds of single-cell RNA-Seq data. Only one parameter is manadatory, i.e., scExp, the single-cell expression matrix. In most cases, most of the parameters can be determined automatically or have been optimized, so users don't have to take efforts to try different parameters. While for some other cases where users need to change parameters, SHARP also provides various parameters, including algorithm-related parameters, hierarchical-clustering-related parameters, parallel-computing parameters and parameters to obtain reproducible results, for better optimizing the performance.
 #'
 #' @return a list containing the SHARP clustering results, the predicted optimal number of clusters, time SHARP consumes for clustering, some intermediate results including clustering results by each random-projection based hierarchical clustering and other related statstical information including number of cells, genes, reduced dimensions and number of applications of random projection.
 #'
 #' @examples
 #' enresults = SHARP(scExp)
+#'
+#' @author Shibiao Wan <shibiaowan.work@gmail.com>, Junil Kim, Kyoung Jae Won <wonk@pennmedicine.upenn.edu>
 #'
 #' @import foreach
 #'
@@ -27,7 +30,7 @@
 #' @import doMC
 #'
 #' @export
-SHARP <- function(scExp, ensize.K, reduced.ndim, base.ncells, partition.ncells, finalN.cluster, enpN.cluster, indN.cluster, n.cores, rN.seed){
+SHARP <- function(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partition.ncells, hmethod, finalN.cluster, enpN.cluster, indN.cluster, n.cores, rN.seed){
 
         #timing
         start_time <- Sys.time()#we exclude the time for loading the input matrix
@@ -40,6 +43,14 @@ SHARP <- function(scExp, ensize.K, reduced.ndim, base.ncells, partition.ncells, 
         
         ngenes = nrow(scExp)#number of genes
         ncells = ncol(scExp)#number of cells
+        
+        if(!missing(exp.type)){
+            if(exp.type == "count" || exp.type == "UMI"){
+                scExp = log10(t(t(scExp)/colSums(scExp))*1e6 + 1)
+            }else if(exp.type == "CPM" || exp.type == "TPM" || exp.type == "FPKM" || exp.type == "RPKM"){
+                scExp = log10(scExp + 1)
+            }
+        }
         
         if(missing(ensize.K)){#default times of random projection
 	  ensize.K = 15#K times of random projection
@@ -88,9 +99,9 @@ SHARP <- function(scExp, ensize.K, reduced.ndim, base.ncells, partition.ncells, 
 	print(paste("The dimension has been reduced from ", ngenes, " to ", reduced.ndim, sep=""))
 	
 	if(ncells < base.ncells){
-            enresults = SHARP_small(scExp, ncells, ensize.K, reduced.ndim, finalN.cluster, indN.cluster, rN.seed)
+            enresults = SHARP_small(scExp, ncells, ensize.K, reduced.ndim, hmethod, finalN.cluster, indN.cluster, rN.seed)
 	}else{
-            enresults = SHARP_large(scExp, ncells, ensize.K, reduced.ndim, partition.ncells, finalN.cluster, enpN.cluster, indN.cluster, rN.seed)
+            enresults = SHARP_large(scExp, ncells, ensize.K, reduced.ndim, partition.ncells, hmethod, finalN.cluster, enpN.cluster, indN.cluster, rN.seed)
 	}
 	
 	end_time <- Sys.time()
@@ -126,7 +137,7 @@ SHARP <- function(scExp, ensize.K, reduced.ndim, base.ncells, partition.ncells, 
 #' @import doMC
 #'
 #' @export
-SHARP_small <- function(scExp, ncells, ensize.K, reduced.dim, finalN.cluster, indN.cluster, rN.seed){
+SHARP_small <- function(scExp, ncells, ensize.K, reduced.dim, hmethod, finalN.cluster, indN.cluster, rN.seed){
 
     enresults = list()
     
@@ -215,7 +226,7 @@ SHARP_small <- function(scExp, ncells, ensize.K, reduced.dim, finalN.cluster, in
 #' @import doMC
 #'
 #' @export
-SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, finalN.cluster, enpN.cluster, indN.cluster, rN.seed){
+SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, hmethod, finalN.cluster, enpN.cluster, indN.cluster, rN.seed){
         print("The Divide-and-Conquer Strategy is selected!")
         ########Partition the large data into several groups###########
         p = reduced.dim

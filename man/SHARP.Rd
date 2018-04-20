@@ -4,11 +4,13 @@
 \alias{SHARP}
 \title{Run SHARP for single-cell RNA data clustering}
 \usage{
-SHARP(scExp, ensize.K, reduced.ndim, base.ncells, partition.ncells,
-  finalN.cluster, enpN.cluster, indN.cluster, n.cores, rN.seed)
+SHARP(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partition.ncells,
+  hmethod, finalN.cluster, enpN.cluster, indN.cluster, n.cores, rN.seed)
 }
 \arguments{
 \item{scExp}{input single-cell expression matrix}
+
+\item{exp.type}{the data type of single-cell expression matrix. Common types include "count", "UMI", "CPM", "TPM", "FPRKM" and "RPKM". If missing, SHARP regards scExp as already normalized expression matrix.}
 
 \item{ensize.K}{number of applications of random projection for ensemble. The default value is 15.}
 
@@ -35,9 +37,12 @@ a list containing the SHARP clustering results, the predicted optimal number of 
 SHARP: \strong{S}ingle-cell RNA-Seq \strong{H}yper-fast and \strong{A}ccurate clustering via ensemble \strong{R}andom \strong{P}rojection.
 }
 \details{
-This is the main interface for SHARP to process and analyze different kinds of single-cell RNA-Seq data. Only one parameter is manadatory, i.e., scExp, the single-cell expression matrix. In most cases, most of the parameters can be determined automatically or have been optimized, so users don't have to take efforts to try different parameters. While
+This is the main interface for SHARP to process and analyze different kinds of single-cell RNA-Seq data. Only one parameter is manadatory, i.e., scExp, the single-cell expression matrix. In most cases, most of the parameters can be determined automatically or have been optimized, so users don't have to take efforts to try different parameters. While for some other cases where users need to change parameters, SHARP also provides various parameters, including algorithm-related parameters, hierarchical-clustering-related parameters, parallel-computing parameters and parameters to obtain reproducible results, for better optimizing the performance.
 }
 \examples{
 enresults = SHARP(scExp)
 
+}
+\author{
+Shibiao Wan <shibiaowan.work@gmail.com>, Junil Kim, Kyoung Jae Won <wonk@pennmedicine.upenn.edu>
 }

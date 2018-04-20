@@ -4,7 +4,7 @@
 \alias{sMetaC}
 \title{similarity-based ensemble meta-clustering}
 \usage{
-sMetaC(rerowColor, sE1, folds, finalN.cluster)
+sMetaC(rerowColor, sE1, folds, hmethod, finalN.cluster)
 }
 \arguments{
 \item{nC}{a m*n matrix, where m is the number of cells, n is the number of clustering algorithms, and the (i,j)-element of nC represents the cluter for the i-th cell by the j-th clutering predictor.}

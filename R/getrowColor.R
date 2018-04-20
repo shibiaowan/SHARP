@@ -14,7 +14,7 @@
 #' @import clusterCrit
 #'
 #' @export
-getrowColor <- function(Emat, indN.cluster){#hierarchical clustering
+getrowColor <- function(Emat, hmethod, indN.cluster){#hierarchical clustering
 	
         my = Emat
 	my = my[apply(my,1,function(x) sd(x)!=0),]
@@ -26,9 +26,9 @@ getrowColor <- function(Emat, indN.cluster){#hierarchical clustering
 #         hres = gethclust(d, my)
         
         if(missing(indN.cluster)){
-            hres = get_opt_hclust(my, height.Ntimes = 1)#get the optimal hierarchical clustering results; use both Silhouette index and CH index, without the heights criteria
+            hres = get_opt_hclust(my, hmethod, height.Ntimes = 1)#get the optimal hierarchical clustering results; use both Silhouette index and CH index, without the heights criteria
         }else{
-            hres = get_opt_hclust(my, height.Ntimes = 1, N.cluster = indN.cluster)
+            hres = get_opt_hclust(my, hmethod, height.Ntimes = 1, N.cluster = indN.cluster)
         }
         f = hres$f
   
