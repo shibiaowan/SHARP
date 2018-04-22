@@ -34,3 +34,7 @@ Briefly speaking, SHARP integrates the following algorithms and techniques to ac
 # Citation:
 
 Shibiao Wan, Junil Kim and Kyoung Jae Won. SHARP: Single-Cell RNA-Seq Hyper-Fast and Accurate Clustering via Ensemble Random Projection, submitted, 2018.
+
+# Bug Report:
+
+SHARP is maintained and updated by Dr. Shibiao Wan in Dr. Kyoung Jae Won's lab at UPenn. If you come across any problems or have any suggestions about SHARP, please don't hesitate to contact us at Kyoung Jae Won (wonk@pennmedicine.upenn.edu) or Shibiao Wan (shibiao@pennmedicine.upenn.edu).
