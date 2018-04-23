@@ -3,15 +3,27 @@
 
 # Installation: 
 
-library(devtools)
+`library(devtools)`
 
-install_github("shibiaowan/SHARP")
+`install_github("shibiaowan/SHARP")`
 
 # Quick Start: 
 
-library(SHARP)
+`library(SHARP)`#an example data (i.e., scExp_tpm.RData) has been loaded together with SHARP package
 
-results = SHARP(scExp)
+#get to know some information of the example data, like the number of genes, number of cells and typical values of the expression matrix
+
+`dim(scExp_tpm)`
+
+`scExp_tpm[1:5,1:5]`
+
+#try SHARP for small-size datasets
+
+`results_small = SHARP(scExp_tpm)`
+
+#try SHARP for large-size datasets
+
+`results_large = SHARP(scExp_tpm, base.ncells = 300)`
 
 # Introduction: 
 
@@ -22,3 +34,7 @@ Briefly speaking, SHARP integrates the following algorithms and techniques to ac
 # Citation:
 
 Shibiao Wan, Junil Kim and Kyoung Jae Won. SHARP: Single-Cell RNA-Seq Hyper-Fast and Accurate Clustering via Ensemble Random Projection, submitted, 2018.
+
+# Bug Report:
+
+SHARP is maintained and updated by Dr. Shibiao Wan in Dr. Kyoung Jae Won's lab at UPenn. If you come across any problems or have any suggestions about SHARP, please don't hesitate to contact us at Kyoung Jae Won (wonk@pennmedicine.upenn.edu) or Shibiao Wan (shibiao@pennmedicine.upenn.edu).
