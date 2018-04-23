@@ -37,7 +37,8 @@ getrowColor <- function(Emat, hmethod, indN.cluster, minN.cluster, maxN.cluster,
 
         unf = unique(nf)
         N.cluster = length(unf)
-	print(paste("The optimal number of clusters for individual RP is: ", N.cluster, sep = ""))
+# 	print(paste("The optimal number of clusters for individual RP is: ", N.cluster, sep = ""))
+	cat("The optimal number of clusters for individual RP is: ", N.cluster, "\n")
 	
 	
 	rowColor=vector(mode="character",length=nrow(my))

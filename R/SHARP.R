@@ -1,8 +1,8 @@
 #' Run SHARP for single-cell RNA data clustering
 #'
-#' SHARP: \strong{S}ingle-cell RNA-Seq \strong{H}yper-fast and \strong{A}ccurate clustering via ensemble \strong{R}andom \strong{P}rojection. 
+#' SHARP: Single-cell RNA-Seq Hyper-fast and Accurate clustering via ensemble Random Projection. 
 #'
-#' @param scExp input single-cell expression matrix
+#' @param scExp input single-cell expression matrix, where each column represents a cell and each row represents a gene.
 #' @param exp.type  the data type of single-cell expression matrix. Common types include "count", "UMI", "CPM", "TPM", "FPRKM" and "RPKM". If missing, SHARP regards scExp as already normalized expression matrix.
 #' @param ensize.K  number of applications of random projection for ensemble. The default value is 15.
 #' @param reduced.ndim  the dimension to be reduced to. If missing, the value will be estimated by an equation associated with number of cells (see our paper and supplementary materials for details).
@@ -21,7 +21,7 @@
 #' @examples
 #' enresults = SHARP(scExp)
 #'
-#' @author Shibiao Wan <shibiaowan.work@gmail.com>, Junil Kim, Kyoung Jae Won <wonk@pennmedicine.upenn.edu>
+#' @author Shibiao Wan <shibiao@pennmedicine.upenn.edu>, Junil Kim <junilkim@pennmedicine.upenn.edu>, Kyoung Jae Won <wonk@pennmedicine.upenn.edu>
 #'
 #' @import foreach
 #'
@@ -121,16 +121,21 @@ SHARP <- function(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partitio
 	
 	
         
-	print(paste("Number of cells: ", ncells, sep = ""))
-	print(paste("Number of genes: ", ngenes, sep = ""))
-# 	print(paste("Ground-truth Number of clusters: ", length(unique(gtc$cellType)), sep = ""))
-	print(paste("The dimension has been reduced from ", ngenes, " to ", reduced.ndim, sep=""))
+# 	print(paste("Number of cells: ", ncells, sep = ""))
+# 	print(paste("Number of genes: ", ngenes, sep = ""))
+# # 	print(paste("Ground-truth Number of clusters: ", length(unique(gtc$cellType)), sep = ""))
+# 	print(paste("The dimension has been reduced from ", ngenes, " to ", reduced.ndim, sep=""))
 	
+	cat("Number of cells: ", ncells, "\n")
+	cat("Number of genes: ", ngenes, "\n")
+	cat("The dimension has been reduced from ", ngenes, " to ", reduced.ndim, "\n")
 	if(ncells < base.ncells){
-            print("Using SHARP_small...")
+#             print("Using SHARP_small...")
+            cat("Using SHARP_small...\n")
             enresults = SHARP_small(scExp, ncells, ensize.K, reduced.ndim, hmethod, finalN.cluster, indN.cluster, minN.cluster, maxN.cluster, sil.thre, height.Ntimes, rN.seed)
 	}else{
-            print("Using SHARP_large...")
+#             print("Using SHARP_large...")
+            cat("Using SHARP_large...\n")
             enresults = SHARP_large(scExp, ncells, ensize.K, reduced.ndim, partition.ncells, hmethod, finalN.cluster, enpN.cluster, indN.cluster, minN.cluster, maxN.cluster, sil.thre, height.Ntimes, rN.seed)
 	}
 	
@@ -173,7 +178,8 @@ SHARP_small <- function(scExp, ncells, ensize.K, reduced.ndim, hmethod, finalN.c
     
     p = reduced.ndim
     allrpinfo = foreach(k=1:ensize.K)%dopar%{
-          print(paste("Random Projection: ", k, sep = ""))
+#           print(paste("Random Projection: ", k, sep = ""))
+          cat("Random Projection: ", k,"\n")
 # 	  print(paste("The ", k, "-th time of random projection", sep=""), quote = FALSE)
 	  scExp = data.matrix(scExp)#convert from data frame to normal matrix
           if(rN.seed == 0.5){
@@ -228,7 +234,9 @@ SHARP_small <- function(scExp, ncells, ensize.K, reduced.ndim, hmethod, finalN.c
 	
 # 	enresults$enrp = enrp#we have already saved the rowColor for each individual RP, thus we do not need to save enrp
 	
-	enresults$finalrowColor = finalrowColor
+# 	enresults$finalrowColor = finalrowColor$finalC
+	enresults$final_pred_clusters = finalrowColor$finalC
+	enresults$unique_pred_clusters = unique(finalrowColor$finalC)
 # 	enresults$finalmetrics = finalmetrics
 	enresults$N.pred_cluster = length(unique(finalrowColor))
 	enresults$allrpinfo = allrpinfo
@@ -259,7 +267,8 @@ SHARP_small <- function(scExp, ncells, ensize.K, reduced.ndim, hmethod, finalN.c
 #'
 #' @export
 SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, hmethod, finalN.cluster, enpN.cluster, indN.cluster, minN.cluster, maxN.cluster, sil.thre, height.Ntimes, rN.seed){
-        print("The Divide-and-Conquer Strategy is selected!")
+#         print("The Divide-and-Conquer Strategy is selected!")
+        cat("The Divide-and-Conquer Strategy is selected!\n")
         ########Partition the large data into several groups###########
         p = reduced.dim
         entag = paste("_enRP",p)
@@ -297,7 +306,8 @@ SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, 
             folds[nind[floor(nt/2) + 1: ng]] = T#To avoid imbalanced problems, the last two folds are roughly averaged.
             folds = folds[1:ncells]
 #             }
-            print(paste("The number of cells in Folds ", names(table(folds)), "are: ", table(folds)))
+#             print(paste("The number of cells in Fold ", names(table(folds)), "are: ", table(folds)))
+            cat("The number of cells in Folds ", names(table(folds)), "are: ", table(folds), "\n")
             
             np = table(folds)
         }else{
@@ -325,8 +335,8 @@ SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, 
 #                 tind = tind[tind<=ncells]#select only those within the indices
 #             }
             
-            print(paste("Random Projection: ", k, ", Fold: ", t, ", Cell Number: ", length(tind), sep = ""))
-	    
+#             print(paste("Random Projection: ", k, ", Fold: ", t, ", Cell Number: ", length(tind), sep = ""))
+	    cat("Random Projection: ", k, ", Fold: ", t, ", Cell Number: ", length(tind), "\n")
 	    ########Cluster each group########
             newE = E[, tind]#the matrix for each group
 #             newE = log10(newE + 1)#logarithm transform
@@ -410,6 +420,7 @@ SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, 
             SrowColor = frowColor
             N.cluster = length(unique(SrowColor))#note that the number of clusters is determined by the unique number in the final round.
             print(paste("The optimal number of clusters is: ", N.cluster, sep = ""))
+            cat("The optimal number of clusters is: ", N.cluster, "\n")
 	 }else{
 #             newinE = RPmat(data.matrix(E), p)#do the RP;the result is a list
 # 	    E1 = t(newinE$projmat)#for those which need tranpose
@@ -457,7 +468,9 @@ SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, 
 # 	save(finalmetrics, file = paste(outdir,"finalmetrics_", K, "times.RData", sep = ""))
 	
 	
-	enresults$finalrowColor = finalrowColor
+# 	enresults$finalrowColor = finalrowColor
+	enresults$final_pred_clusters = finalrowColor
+	enresults$unique_pred_clusters = unique(finalrowColor)
 # 	enresults$finalmetrics = finalmetrics
 	enresults$N.pred_cluster = length(unique(finalrowColor))
 	

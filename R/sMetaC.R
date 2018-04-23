@@ -17,7 +17,8 @@
 sMetaC<- function(rerowColor, sE1, folds, hmethod, finalN.cluster, minN.cluster, maxN.cluster, sil.thre, height.Ntimes){
 #This is to do meta-clustering the results obtained for each smaller group of the original large-scale datasets
     R = unique(rerowColor)#unique clusters
-    print(R)
+#     print(R)
+    cat("Unique clusters for similarity-based meta-clustering are: ", R, "\n")
     
     nC = length(unique(rerowColor))#number of unique clusters
     
@@ -83,7 +84,7 @@ sMetaC<- function(rerowColor, sE1, folds, hmethod, finalN.cluster, minN.cluster,
       if(missing(minN.cluster)){
         minN.cluster = max(2, min(t0))
       }
-      hres = get_opt_hclust(my, hmethod, N.cluster = finalN.cluster, minN.cluster, maxN.cluster, sil.thre, height.Ntimes)
+      hres = get_opt_hclust(S, hmethod, N.cluster = finalN.cluster, minN.cluster, maxN.cluster, sil.thre, height.Ntimes)
       
       tf = hres$f
       v = hres$v
@@ -181,7 +182,8 @@ sMetaC<- function(rerowColor, sE1, folds, hmethod, finalN.cluster, minN.cluster,
   
   N.cluster = length(unique(finalColor))#note that the number of clusters for meta-clustering is not determined by previous selection, but by the unique number in the final round.
   
-  print(paste("The optimal number of clusters for combining partitions is: ", N.cluster, sep = ""))
+#   print(paste("The optimal number of clusters for combining partitions is: ", N.cluster, sep = ""))
+  cat("The optimal number of clusters for combining partitions is: ", N.cluster, "\n")
   
   finalres = list()
   finalres$finalColor = finalColor

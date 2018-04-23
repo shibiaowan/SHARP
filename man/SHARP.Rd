@@ -10,7 +10,7 @@ SHARP(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partition.ncells,
   n.cores, rN.seed)
 }
 \arguments{
-\item{scExp}{input single-cell expression matrix}
+\item{scExp}{input single-cell expression matrix, where each column represents a cell and each row represents a gene.}
 
 \item{exp.type}{the data type of single-cell expression matrix. Common types include "count", "UMI", "CPM", "TPM", "FPRKM" and "RPKM". If missing, SHARP regards scExp as already normalized expression matrix.}
 
@@ -36,7 +36,7 @@ SHARP(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partition.ncells,
 a list containing the SHARP clustering results, the predicted optimal number of clusters, time SHARP consumes for clustering, some intermediate results including clustering results by each random-projection based hierarchical clustering and other related statstical information including number of cells, genes, reduced dimensions and number of applications of random projection.
 }
 \description{
-SHARP: \strong{S}ingle-cell RNA-Seq \strong{H}yper-fast and \strong{A}ccurate clustering via ensemble \strong{R}andom \strong{P}rojection.
+SHARP: Single-cell RNA-Seq Hyper-fast and Accurate clustering via ensemble Random Projection.
 }
 \details{
 This is the main interface for SHARP to process and analyze different kinds of single-cell RNA-Seq data. Only one parameter is manadatory, i.e., scExp, the single-cell expression matrix. In most cases, most of the parameters can be determined automatically or have been optimized, so users don't have to take efforts to try different parameters. While for some other cases where users need to change parameters, SHARP also provides various parameters, including algorithm-related parameters, hierarchical-clustering-related parameters, parallel-computing parameters and parameters to obtain reproducible results, for better optimizing the performance.
@@ -46,5 +46,5 @@ enresults = SHARP(scExp)
 
 }
 \author{
-Shibiao Wan <shibiaowan.work@gmail.com>, Junil Kim, Kyoung Jae Won <wonk@pennmedicine.upenn.edu>
+Shibiao Wan <shibiao@pennmedicine.upenn.edu>, Junil Kim <junilkim@pennmedicine.upenn.edu>, Kyoung Jae Won <wonk@pennmedicine.upenn.edu>
 }

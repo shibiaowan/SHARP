@@ -46,6 +46,8 @@ for(k in K){
     for(j in 1:A){#times of using SHARP
       print("=========================================================================", quote = FALSE)
       print(paste("SHARP: Ensemble Size-", k, ", Run-", j, sep = ""), quote = FALSE)
+      cat("=========================================================================\n")
+      cat("SHARP: Ensemble Size-", k, ", Run-", j, "\n")
 # 	enresults = getallresults_large(Files, K = k)#using the default Dim
 	enresults = SHARP(scExp, k, reduced.ndim, partition.ncells, base.ncells, n.cores)
       jname = paste("Run_", j, sep = "")
@@ -58,6 +60,7 @@ for(k in K){
 }
 
 
-    print("Done!", quote = FALSE)
+#     print("Done!", quote = FALSE)
+    cat("Done!\n")
     return(allresults)
 }
