@@ -1,7 +1,9 @@
 # SHARP
 **_SHARP_**: <b><u><i>S</i></u></b>ingle-cell RNA-Seq <b><u><i>H</i></u></b>yper-fast and <b><u><i>A</i></u></b>ccurate clustering via ensemble <b><u><i>R</i></u></b>andom <b><u><i>P</i></u></b>rojection.
 
-# Installation: 
+# Installation:
+
+`install.packages("devtools")`#if you do not install the package "devtools"
 
 `library(devtools)`
 

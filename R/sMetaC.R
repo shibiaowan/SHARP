@@ -18,7 +18,7 @@ sMetaC<- function(rerowColor, sE1, folds, hmethod, finalN.cluster, minN.cluster,
 #This is to do meta-clustering the results obtained for each smaller group of the original large-scale datasets
     R = unique(rerowColor)#unique clusters
 #     print(R)
-    cat("Unique clusters for similarity-based meta-clustering are: ", R, "\n")
+    cat("Unique clusters for similarity-based meta-clustering are: \n", R, "\n")
     
     nC = length(unique(rerowColor))#number of unique clusters
     

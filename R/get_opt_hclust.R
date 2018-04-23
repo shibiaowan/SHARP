@@ -59,11 +59,13 @@ get_opt_hclust<- function(mat, hmethod, N.cluster, minN.cluster, maxN.cluster, s
             d=as.dist(1-mat)
             flag = 1
         }else{
+            
             d=as.dist(1-cor(t(mat)))
             flag = 0
         }
 	
 	h=hclust(d, method = hmethod)#ward to ward.D
+	
 	
 	#if N.cluster is given, we simply use the given N.cluster for hierarchical clustering
 	if(!missing(N.cluster) && !is.null(N.cluster)){
@@ -88,6 +90,7 @@ get_opt_hclust<- function(mat, hmethod, N.cluster, minN.cluster, maxN.cluster, s
 	
 	my = mat
         nc = minN.cluster:min(maxN.cluster, nrow(my)-1)
+#         cat("trying cluster number as: ", nc)
 	v = matrix(0, nrow = nrow(my), ncol = length(nc))#for all different numbers of clusters
 	msil = rep(0, length(nc))#declare a vector of zeros
 # 	wss = rep(0, length(nc))#within-cluster sum of squares
@@ -99,13 +102,19 @@ get_opt_hclust<- function(mat, hmethod, N.cluster, minN.cluster, maxN.cluster, s
 	
 	my1 = as.matrix(my)#convert to full matrix
 	my = my1
+# 	cat(dim(my))
 	for(i in 1:length(nc)){
+# 	for(i in 1:1){
 # 	foreach(i=1:length(nc)) %dopar%{
+# 	  cat("fast\n")
+	 
 	  v[,i] = cutree(h, k = nc[i])#for different numbers of clusters
+	  
 	  sil = silhouette(v[,i], d)#calculate the silhouette index 
+	 
 # 	  msil[i] = mean(sil[,3])#the mean value of the index
 	  msil[i] = median(sil[,3])#the mean value of the index
-	  
+# 	  cat(Sys.time(), "\n")
 # 	  mdunn[i] = dunn(d, v[,i])
 	  
 # 	  db = index.DB(d, cl = v[, i])
@@ -114,10 +123,14 @@ get_opt_hclust<- function(mat, hmethod, N.cluster, minN.cluster, maxN.cluster, s
 # 	  #within-cluster sum of squares
 # 	  spl <- split(d, v[,i])
 # 	  wss[i] <- sum(sapply(spl, wss))
-# 	  CHind[i] = get_CH(my, v[,i], disMethod = "1-corr")
-          ch0 = intCriteria(data.matrix(my),as.integer(v[,i]),"Calinski_Harabasz")
-	  CHind[i] = unlist(ch0, use.names = F)#convert a list to a vector/value
+	  CHind[i] = get_CH(my, v[,i], disMethod = "1-corr")
+          
+#           ch0 = intCriteria(data.matrix(my),as.integer(v[,i]),"Calinski_Harabasz")
+# 	  CHind[i] = unlist(ch0, use.names = F)#convert a list to a vector/value
+# 	  cat(Sys.time(), "\n")
+	 
 	}
+# 	cat("Should be not slow!")
 
 # 	print(msil)#the average sil index for all cases
 # 	print(CHind)
@@ -181,7 +194,6 @@ get_opt_hclust<- function(mat, hmethod, N.cluster, minN.cluster, maxN.cluster, s
 	optN.cluster = length(unique(f))
 	
 	}
-	
 	
     
         hres = list()
