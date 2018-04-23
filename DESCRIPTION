@@ -4,7 +4,7 @@ Title: hyperfast and accurate single-cell RNA-Seq data clustering
 Version: 1.0
 Date: 2018-04-23
 Authors@R: person("Shibiao", "Wan", email = "shibiaowan.work@gmail.com", role = c("aut", "cre"))
-Maintainer: Shibiao Wan (shibiaowan.work@gmail.com)
+Maintainer: Shibiao Wan <shibiaowan.work@gmail.com>
 Description: SHARP: Single-Cell RNA-Seq Hyper-Fast and Accurate Clustering via Ensemble Random Projection
 Depends: R (>= 3.3)
 License: GNU General Public License v3.0
