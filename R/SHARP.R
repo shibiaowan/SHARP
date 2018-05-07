@@ -369,7 +369,7 @@ SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, 
             "\n")
         ######## Cluster each group########
         newE = E[, tind]  #the matrix for each group
-        # newE = log10(newE + 1)#logarithm transform
+        newE = log10(newE + 1)#logarithm transform
         
         inE = data.matrix(newE)
         
