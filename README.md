@@ -19,11 +19,11 @@
 
 `scExp_tpm[1:5,1:5]`
 
-#try SHARP for small-size datasets; by default, "small-size dataset" means a dataset containing less than 2000 single cells
+#try SHARP for small-size datasets (by default, "small-size dataset" means a dataset containing less than 2000 single cells)
 
 `results_small = SHARP(scExp_tpm)`
 
-#try SHARP for large-size datasets; suppose you think that a dataset containing 300+ single cells is already very large for your local computational resources
+#try SHARP for large-size datasets (suppose you think that a dataset containing 300+ single cells is already very large for your local computational resources)
 
 `results_large = SHARP(scExp_tpm, base.ncells = 300)`
 
