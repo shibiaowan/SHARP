@@ -21,7 +21,7 @@
 #' @examples
 #' enresults = SHARP(scExp)
 #'
-#' @author Shibiao Wan <shibiao@pennmedicine.upenn.edu>, Junil Kim <junilkim@pennmedicine.upenn.edu>, Kyoung Jae Won <wonk@pennmedicine.upenn.edu>
+#' @author Shibiao Wan <shibiao@pennmedicine.upenn.edu>
 #'
 #' @import foreach
 #'
