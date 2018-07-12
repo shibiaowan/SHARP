@@ -145,7 +145,7 @@ wMetaC <- function(nC, hmethod, enN.cluster, minN.cluster, maxN.cluster, sil.thr
     
     # print(paste('The optimal number of clusters for ensemble clustering is: ',
     # N.cluster, sep = ''))
-    cat("The optimal number of clusters for ensemble clustering is: ", N.cluster, 
+    cat("The optimal number of clusters for ensemble clustering is:", N.cluster, 
         "\n")
     
     

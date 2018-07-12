@@ -13,8 +13,8 @@ getss(pind, R, x, w1)
 This function is to obtain the weighted co-location matrix from the clustering result for following ensemble clustering.
 }
 \examples{
- x = as.vector(sapply(1:C, function(i){paste(nC[,i], "_", i, sep = "")}))#convert the matrix (N*C) to vector (concatenating them)
+ x = as.vector(sapply(1:C, function(i){paste(nC[,i], '_', i, sep = '')}))#convert the matrix (N*C) to vector (concatenating them)
  R = unique(x)#all unique labels
- alls = apply(cb, 2, getss, R = R, x = x, w1 = w1)#calculate the weight s for all combinations 
+ alls = apply(cb, 2, getss, R = R, x = x, w1 = w1)#calculate the weight s for all combinations
 
 }

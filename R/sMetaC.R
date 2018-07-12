@@ -20,7 +20,7 @@ sMetaC <- function(rerowColor, sE1, folds, hmethod, finalN.cluster, minN.cluster
     # the original large-scale datasets
     R = unique(rerowColor)  #unique clusters
     # print(R)
-    cat("Unique clusters for similarity-based meta-clustering are: \n", R, "\n")
+    # cat("Unique clusters for similarity-based meta-clustering are: \n", R, "\n")
     
     nC = length(unique(rerowColor))  #number of unique clusters
     
@@ -126,7 +126,7 @@ sMetaC <- function(rerowColor, sE1, folds, hmethod, finalN.cluster, minN.cluster
     
     # print(paste('The optimal number of clusters for combining partitions is: ',
     # N.cluster, sep = ''))
-    cat("The optimal number of clusters for combining partitions is: ", N.cluster, 
+    cat("The optimal number of clusters for combining partitions is:", N.cluster, 
         "\n")
     
     finalres = list()

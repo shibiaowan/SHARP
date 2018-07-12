@@ -142,6 +142,7 @@ get_opt_hclust <- function(mat, hmethod, N.cluster, minN.cluster, maxN.cluster, 
         } else {
             oind = tmp
         }
+        cat("The maximum Silhouette index is", max(msil), "\n")
         
         # if the maximum Silhouette index is smaller than the threshold, we use CH index
         if (max(msil) <= sil.thre) {

@@ -11,6 +11,12 @@
 #' @param finalN.cluster    number of clusters for the final clustering results. The default is NULL, i.e., without giving the number of clusters, and SHARP will automatically determine the optimal number of clusters. If given, SHARP will calculate according to the given number of clusters.
 #' @param enpN.cluster  number of clusters for the weighted ensemble meta-clustering only for SHARP_large. The default is NULL, i.e., without giving the number of clusters, and SHARP will automatically determine the optimal number of clusters. If given, SHARP will calculate according to the given number of clusters.
 #' @param indN.cluster  number of clusters for the individual RP-based hierarchical clustering. The default is NULL, i.e., without giving the number of clusters, and SHARP will automatically determine the optimal number of clusters. If given, SHARP will calculate according to the given number of clusters.
+#' @param minN.cluster  the minimum number of clusters that SHARP will try when determining the optimal number of clusters
+#' @param maxN.cluster  the maximum number of clusters that SHARP will try when determining the optimal number of clusters
+#' @param sil.thre  the threshold of Silhouette index that SHARP will use the Silhouette index to determine the optimal number of clusters. In other words, if the maximum Silhouette index is larger than sil.thre, then SHARP uses the Silhouette index to determine the number of clusters; otherwise, SHARP uses the other indices (i.e., CH index and/or hierarchical heights) to determine 
+#' @param height.Ntimes the number of times of the height versus the immediate next height in the hierarchical clustering. SHARP uses this parameter as a threshold to determine the location where to cut the hierarchical tree. In other words, if the current height is (height.Ntimes) times larger than the immediate next height in the descending order of heights, then SHARP cuts the tree at the median of these two heights.
+#' @param logflag   a logical to determine whether to check a log-transform of the input expression matrix. By default, logflag = TRUE, i.e., SHARP will check the log-transform operation.
+#' @param sncells   number of cells randomly selected for checking log-transform is necessary or not. By default, sncells = 100.
 #' @param n.cores   number of cores to be used. The default is (n-1) cores, where n is the number of cores in your local computer or server.
 #' @param rN.seed   a number using which we can set seeds for SHARP to obtain reproducible results.
 #'
@@ -21,7 +27,7 @@
 #' @examples
 #' enresults = SHARP(scExp)
 #'
-#' @author Shibiao Wan <shibiao@pennmedicine.upenn.edu>, Junil Kim <junilkim@pennmedicine.upenn.edu>, Kyoung Jae Won <wonk@pennmedicine.upenn.edu>
+#' @author Shibiao Wan <shibiao@pennmedicine.upenn.edu>
 #'
 #' @import foreach
 #'
@@ -32,29 +38,48 @@
 #' @export
 SHARP <- function(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partition.ncells, 
     hmethod, finalN.cluster = NULL, enpN.cluster = NULL, indN.cluster = NULL, minN.cluster, 
-    maxN.cluster, sil.thre, height.Ntimes, n.cores, rN.seed) {
+    maxN.cluster, sil.thre, height.Ntimes, logflag, sncells, n.cores, rN.seed) {
     # timing
     start_time <- Sys.time()  #we exclude the time for loading the input matrix
     
     title = "scRNA-Seq Clustering"
     
-    if (missing(scExp)) {
+    if (missing(scExp)) {#scRNA-seq expression matrix
         stop("No expression data is provided!")
     }
     
     ngenes = nrow(scExp)  #number of genes
     ncells = ncol(scExp)  #number of cells
+    cat("-----------------------------------------------------------------------\n")
+    cat("Data info:\n")
+    cat("Number of cells:", ncells, "\n")
+    cat("Number of genes:", ngenes, "\n")
     
-    if (!missing(exp.type)) {
-        if (exp.type == "count" || exp.type == "UMI") {
-            scExp = log10(t(t(scExp)/colSums(scExp)) * 1e+06 + 1)
-        } else if (exp.type == "CPM" || exp.type == "TPM" || exp.type == "FPKM" || 
-            exp.type == "RPKM") {
-            scExp = log10(scExp + 1)
-        }
+#     if (!missing(exp.type)) {
+#         if (exp.type == "count" || exp.type == "UMI") {
+#             scExp = log10(t(t(scExp)/colSums(scExp)) * 1e+06 + 1)
+#         } else if (exp.type == "CPM" || exp.type == "TPM" || exp.type == "FPKM" || 
+#             exp.type == "RPKM") {
+#             scExp = log10(scExp + 1)
+#         }
+#     }
+    
+    cat("-----------------------------------------------------------------------\n")
+    cat("Preprocessing:\n")
+    if(any(scExp < 0)){
+        warning("Your expression matrix contain negative values! SHARP will replace negative values with 0!\n")
+        scExp[scExp < 0] = 0
     }
-    
-    if (missing(reduced.ndim)) {
+    cat("Normalization...\n")
+    if (!missing(exp.type)) {#expression type
+        if (exp.type != "CPM" && exp.type != "TPM") {#if the type is neither CPM nor TPM
+            scExp = t(t(scExp)/colSums(scExp)) * 1e+06#we do normalization
+        }
+    }else{
+        # scExp = t(t(scExp)/colSums(scExp)) * 1e+06#we do normalization
+    }
+   
+    if (missing(reduced.ndim)) {#reduced dimension
         # default dimensions to be reduced
         reduced.ndim = ceiling(log2(ncells)/(0.2^2))  #reduced 100 times of dimensions; about 200-dim
     }
@@ -65,13 +90,11 @@ SHARP <- function(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partitio
         base.ncells = 5000
     }
     
-    if (missing(partition.ncells)) {
-        # number of cells for each partition group
+    if (missing(partition.ncells)) {# number of cells for each partition group
         partition.ncells = 2000
     }
     
-    if (missing(hmethod)) {
-        # hierarchical clustering aggolomeration method
+    if (missing(hmethod)) {# hierarchical clustering aggolomeration method
         hmethod = "ward.D"
     }
     
@@ -102,8 +125,7 @@ SHARP <- function(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partitio
     # registerDoMC(n.cores)
     registerDoParallel(n.cores)
     
-    
-    if (!missing(rN.seed)) {
+    if (!missing(rN.seed)) {#random seed for reproducible results
         # seed number for reproducible results
         if (!is.numeric(rN.seed)) {
             stop("The rN.seed should be a numeric!")
@@ -123,7 +145,28 @@ SHARP <- function(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partitio
         "darkorchid", "darkseagreen", "darkslategray", "deeppink", "lightcoral", 
         "lightcyan")
     
+    if (missing(logflag)){#whether we need to check log-transform
+        logflag = TRUE
+    }
     
+    if (logflag){#if we want to check whether log-transform or not
+        if (missing(sncells)){#number of cells selected for determining whether log transform or not
+            #by default, we randomly select 100 cells to determine log transform or not
+            sncells = 100
+        }
+        flag = testlog(scExp, ncells, reduced.ndim, sncells)#test whether log transform is necessary or not; by default, it will randomly select 100 cells to test
+        
+        # better not directly do this, because it may involve huge computations for log transform
+        if (flag){#if log transform is better
+            # scExp = log2(scExp + 1)#better not directly do this, because it may involve huge computations for log transform; do it later
+            cat("Log-transform is necessary!\n")
+        }else{
+            cat("Log-transform is not necessary!\n")
+        }
+    }else{
+        cat("Log-transform is not checked!\n")
+    }
+   
     # print(paste('For Dataset: ', dir1, sep = ''), quote = FALSE)
     
     # tcfile = 'id2celltype.txt' file1 = paste(dir1, '/', tcfile , sep = '') gtc =
@@ -136,10 +179,9 @@ SHARP <- function(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partitio
     # genes: ', ngenes, sep = '')) # print(paste('Ground-truth Number of clusters: ',
     # length(unique(gtc$cellType)), sep = '')) print(paste('The dimension has been
     # reduced from ', ngenes, ' to ', reduced.ndim, sep=''))
-    
-    cat("Number of cells: ", ncells, "\n")
-    cat("Number of genes: ", ngenes, "\n")
-    cat("The dimension has been reduced from ", ngenes, " to ", reduced.ndim, "\n")
+    cat("-----------------------------------------------------------------------\n")
+    cat("Parameter Setting:\n")
+    # cat("The dimension has been reduced from ", ngenes, " to ", reduced.ndim, "\n")
     if (ncells < base.ncells) {
         # print('Using SHARP_small...')
         cat("Using SHARP_small...\n")
@@ -147,8 +189,13 @@ SHARP <- function(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partitio
             # default times of random projection
             ensize.K = 15  #K times of random projection
         }
+        cat("Ensemble size:", ensize.K, "\n")
+        cat("The dimension has been reduced from", ngenes, "to", reduced.ndim, "\n")
+        cat("No partition is required!\n")
+        cat("-----------------------------------------------------------------------\n")
+        cat("Analysis starts...\n")
         enresults = SHARP_small(scExp, ncells, ensize.K, reduced.ndim, hmethod, finalN.cluster, 
-            indN.cluster, minN.cluster, maxN.cluster, sil.thre, height.Ntimes, rN.seed)
+            indN.cluster, minN.cluster, maxN.cluster, sil.thre, height.Ntimes, flag, rN.seed)
     } else {
         # print('Using SHARP_large...')
         cat("Using SHARP_large...\n")
@@ -156,15 +203,24 @@ SHARP <- function(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partitio
             # default times of random projection
             ensize.K = 5  #K times of random projection
         }
+        cat("Ensemble size:", ensize.K, "\n")
+        cat("The dimension has been reduced from", ngenes, "to", reduced.ndim, "\n")
+        cat("Partition block size:", partition.ncells, "\n")
+        cat("-----------------------------------------------------------------------\n")
+        cat("Analysis starts...\n")
         enresults = SHARP_large(scExp, ncells, ensize.K, reduced.ndim, partition.ncells, 
             hmethod, finalN.cluster, enpN.cluster, indN.cluster, minN.cluster, maxN.cluster, 
-            sil.thre, height.Ntimes, rN.seed)
+            sil.thre, height.Ntimes, flag, rN.seed)
     }
     
     end_time <- Sys.time()
     
     t <- difftime(end_time, start_time, units = "mins")  #difference time in minutes
-    print(t)
+    # print(t)
+    
+    cat("Analysis complete!\n")
+    cat("-----------------------------------------------------------------------\n")
+    cat("Total running time:", t, "minutes\n")
     #################################### 
     enresults$N.cells = ncells
     enresults$N.genes = ngenes
@@ -195,12 +251,16 @@ SHARP <- function(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partitio
 #'
 #' @export
 SHARP_small <- function(scExp, ncells, ensize.K, reduced.ndim, hmethod, finalN.cluster, 
-    indN.cluster, minN.cluster, maxN.cluster, sil.thre, height.Ntimes, rN.seed) {
+    indN.cluster, minN.cluster, maxN.cluster, sil.thre, height.Ntimes, flag, rN.seed) {
     enresults = list()
+    
+    if(flag){
+        scExp = log10(scExp + 1)#logarithm transform
+    }
     
     p = reduced.ndim
     allrpinfo = foreach(k = 1:ensize.K) %dopar% {
-        # print(paste('Random Projection: ', k, sep = ''))
+#         print(paste('Random Projection: ', k, sep = ''))
         cat("Random Projection: ", k, "\n")
         # print(paste('The ', k, '-th time of random projection', sep=''), quote = FALSE)
         scExp = data.matrix(scExp)  #convert from data frame to normal matrix
@@ -292,9 +352,9 @@ SHARP_small <- function(scExp, ncells, ensize.K, reduced.ndim, hmethod, finalN.c
 #' @export
 SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, hmethod, 
     finalN.cluster, enpN.cluster, indN.cluster, minN.cluster, maxN.cluster, sil.thre, 
-    height.Ntimes, rN.seed) {
+    height.Ntimes, flag, rN.seed) {
     # print('The Divide-and-Conquer Strategy is selected!')
-    cat("The Divide-and-Conquer Strategy is selected!\n")
+    # cat("The Divide-and-Conquer Strategy is selected!\n")
     ######## Partition the large data into several groups###########
     p = reduced.dim
     entag = paste("_enRP", p)
@@ -369,7 +429,9 @@ SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, 
             "\n")
         ######## Cluster each group########
         newE = E[, tind]  #the matrix for each group
-        # newE = log10(newE + 1)#logarithm transform
+        if(flag){
+            newE = log10(newE + 1)#logarithm transform
+        }
         
         inE = data.matrix(newE)
         
@@ -453,7 +515,7 @@ SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, 
         # if the dataset is not partitioned
         SrowColor = frowColor
         N.cluster = length(unique(SrowColor))  #note that the number of clusters is determined by the unique number in the final round.
-        print(paste("The optimal number of clusters is: ", N.cluster, sep = ""))
+        # print(paste("The optimal number of clusters is: ", N.cluster, sep = ""))
         cat("The optimal number of clusters is: ", N.cluster, "\n")
     } else {
         # newinE = RPmat(data.matrix(E), p)#do the RP;the result is a list E1 =
@@ -510,4 +572,76 @@ SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, 
     # save(enresults, file=paste(outdir,'enresults_', K, 'times.RData', sep = ''))
     # saveRDS(enresults, file=paste(outdir,'largeresults_', dir1, '.rds', sep = ''))
     return(enresults)
+}
+
+#' Test if log-transformation is necessary.
+#'
+#' Somtimes log-transformation can boost the clustering performance; however, it is not always the case. By this function, SHARP can automatically determine whether a log-transformation is necessary.
+#'
+#' @param scExp input single-cell expression matrix
+#'
+#' @param ncells number of cells in the expression matrix
+#' 
+#' @param p number of reduced dimensions by random projection
+#' 
+#' @param sncells number of cells randomly selected for checking log-transform. By default, sncells = 100
+#' 
+#' @examples
+#' flag = testlog(scExp)
+#'
+#' @import Matrix
+#'
+#' @import foreach
+#'
+#' @import parallel
+#'
+#' @import doParallel
+#' 
+#' @export
+testlog<- function(scExp, ncells, p, sncells){
+
+    if (missing(sncells)) {
+        sncells = 100
+    }
+    sncells = min(sncells, ncells)#if the dataset is smaller than 100, use the original number of cells
+    
+    reind = sample(ncells)
+    
+    E = scExp
+    sE = E[, reind[1:sncells]]#selected subset
+    #random matrix
+    rM0 = ranM(E, p, 5)#reproducible
+    rM0 = as.matrix(rM0)
+    
+    k = 2
+    
+    msil = foreach(k = 1:2, .combine = c) %dopar% {
+    # msil = foreach(k = 1:2, .combine = c) %do% {
+        if(k == 2){
+            # cat("log-transform when k = ", k, "\n")
+            sE = log2(sE + 1)#logarithm transform
+        }
+        
+        newsE = as.matrix(sE)
+        sE1 = 1/sqrt(p) * t(rM0) %*% newsE#Random Projection
+#         print("works1")
+        newsE1 = data.matrix(t(sE1))
+    
+        tmp = invisible(getrowColor(newsE1, "ward.D", indN.cluster = NULL, 2, 40, 
+            0, 2))
+        
+#         tmp = getrowColor(newsE1, "ward.D", indN.cluster = NULL, 2, 40, 
+#                                     0, 2)
+        return(tmp$maxsil)
+    }
+    
+    # msil = tmp$maxsil
+    print(msil)
+#     if(msil[1] < msil[2]){#log transform
+    if(msil[1] < 0.75 && msil[1] >= 0.95*msil[2]){
+        flag = TRUE
+    }else{#no need to transform
+        flag = FALSE
+    }
+    return(flag)
 }

@@ -10,7 +10,7 @@ get_opt_hclust(mat, hmethod, N.cluster, minN.cluster, maxN.cluster, sil.thre,
 \arguments{
 \item{mat}{either a feature matrix or a similarity matrix derived from the single-cell expression matrix}
 
-\item{hmethod}{agglomeration method for hierarchical clustering, the default is "ward.D". Certainly, some other methods can also be used, like "ward.D2", "single", "complete", "average" (= UPGMA), "mcquitty" (= WPGMA), "median" (= WPGMC) or "centroid" (= UPGMC).}
+\item{hmethod}{agglomeration method for hierarchical clustering, the default is 'ward.D'. Certainly, some other methods can also be used, like 'ward.D2', 'single', 'complete', 'average' (= UPGMA), 'mcquitty' (= WPGMA), 'median' (= WPGMC) or 'centroid' (= UPGMC).}
 
 \item{minN.cluster}{minimum number of clusters to be tested, the default is 2.}
 

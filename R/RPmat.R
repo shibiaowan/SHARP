@@ -41,7 +41,7 @@ RPmat <- function(scdata, p, seedn) {
     
     # projmat = t(projmat)
     list1 = list()
-    list1$R = t(x)
+    list1$R = x
     list1$projmat = projmat
     return(list1)  #the same format, feature*sample
 }

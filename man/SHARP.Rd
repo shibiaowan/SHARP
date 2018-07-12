@@ -7,12 +7,12 @@
 SHARP(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partition.ncells,
   hmethod, finalN.cluster = NULL, enpN.cluster = NULL,
   indN.cluster = NULL, minN.cluster, maxN.cluster, sil.thre, height.Ntimes,
-  n.cores, rN.seed)
+  logflag, sncells, n.cores, rN.seed)
 }
 \arguments{
 \item{scExp}{input single-cell expression matrix, where each column represents a cell and each row represents a gene.}
 
-\item{exp.type}{the data type of single-cell expression matrix. Common types include "count", "UMI", "CPM", "TPM", "FPRKM" and "RPKM". If missing, SHARP regards scExp as already normalized expression matrix.}
+\item{exp.type}{the data type of single-cell expression matrix. Common types include 'count', 'UMI', 'CPM', 'TPM', 'FPRKM' and 'RPKM'. If missing, SHARP regards scExp as already normalized expression matrix.}
 
 \item{ensize.K}{number of applications of random projection for ensemble. The default value is 15.}
 
@@ -27,6 +27,18 @@ SHARP(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partition.ncells,
 \item{enpN.cluster}{number of clusters for the weighted ensemble meta-clustering only for SHARP_large. The default is NULL, i.e., without giving the number of clusters, and SHARP will automatically determine the optimal number of clusters. If given, SHARP will calculate according to the given number of clusters.}
 
 \item{indN.cluster}{number of clusters for the individual RP-based hierarchical clustering. The default is NULL, i.e., without giving the number of clusters, and SHARP will automatically determine the optimal number of clusters. If given, SHARP will calculate according to the given number of clusters.}
+
+\item{minN.cluster}{the minimum number of clusters that SHARP will try when determining the optimal number of clusters}
+
+\item{maxN.cluster}{the maximum number of clusters that SHARP will try when determining the optimal number of clusters}
+
+\item{sil.thre}{the threshold of Silhouette index that SHARP will use the Silhouette index to determine the optimal number of clusters. In other words, if the maximum Silhouette index is larger than sil.thre, then SHARP uses the Silhouette index to determine the number of clusters; otherwise, SHARP uses the other indices (i.e., CH index and/or hierarchical heights) to determine}
+
+\item{height.Ntimes}{the number of times of the height versus the immediate next height in the hierarchical clustering. SHARP uses this parameter as a threshold to determine the location where to cut the hierarchical tree. In other words, if the current height is (height.Ntimes) times larger than the immediate next height in the descending order of heights, then SHARP cuts the tree at the median of these two heights.}
+
+\item{logflag}{a logical to determine whether to check a log-transform of the input expression matrix. By default, logflag = TRUE, i.e., SHARP will check the log-transform operation.}
+
+\item{sncells}{number of cells randomly selected for checking log-transform is necessary or not. By default, sncells = 100.}
 
 \item{n.cores}{number of cores to be used. The default is (n-1) cores, where n is the number of cores in your local computer or server.}
 
@@ -46,5 +58,5 @@ enresults = SHARP(scExp)
 
 }
 \author{
-Shibiao Wan <shibiao@pennmedicine.upenn.edu>, Junil Kim <junilkim@pennmedicine.upenn.edu>, Kyoung Jae Won <wonk@pennmedicine.upenn.edu>
+Shibiao Wan <shibiao@pennmedicine.upenn.edu>
 }
