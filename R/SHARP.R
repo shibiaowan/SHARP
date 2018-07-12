@@ -429,13 +429,10 @@ SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, 
             "\n")
         ######## Cluster each group########
         newE = E[, tind]  #the matrix for each group
-<<<<<<< HEAD
-        if(flag){
+        if(flag){#whether log-transform
             newE = log10(newE + 1)#logarithm transform
         }
-=======
-        newE = log10(newE + 1)#logarithm transform
->>>>>>> 697afda9680fb44c6dc0ecc811e5463cb6f282ee
+# # #         newE = log10(newE + 1)#logarithm transform
         
         inE = data.matrix(newE)
         
