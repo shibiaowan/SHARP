@@ -1,5 +1,5 @@
 # SHARP
-**_SHARP_**: <b><u><i>S</i></u></b>ingle-cell RNA-Seq <b><u><i>H</i></u></b>yper-fast and <b><u><i>A</i></u></b>ccurate clustering via ensemble <b><u><i>R</i></u></b>andom <b><u><i>P</i></u></b>rojection.
+**_SHARP_**: <b><u><i>S</i></u></b>ingle-cell RNA-Seq <b><u><i>H</i></u></b>yper-fast and <b><u><i>A</i></u></b>ccurate processing via ensemble <b><u><i>R</i></u></b>andom <b><u><i>P</i></u></b>rojection.
 
 # Installation:
 
@@ -19,11 +19,11 @@
 
 `scExp_tpm[1:5,1:5]`
 
-#try SHARP for small-size datasets
+#try SHARP for small-size datasets (by default, "small-size dataset" means a dataset containing less than 2000 single cells)
 
 `results_small = SHARP(scExp_tpm)`
 
-#try SHARP for large-size datasets
+#try SHARP for large-size datasets (suppose you think that a dataset containing 300+ single cells is already very large for your local computational resources)
 
 `results_large = SHARP(scExp_tpm, base.ncells = 300)`
 
@@ -35,8 +35,4 @@ Briefly speaking, SHARP integrates the following algorithms and techniques to ac
 
 # Citation:
 
-Shibiao Wan, Junil Kim and Kyoung Jae Won. SHARP: Single-Cell RNA-Seq Hyper-Fast and Accurate Clustering via Ensemble Random Projection, submitted, 2018.
-
-# Bug Report:
-
-SHARP is maintained and updated by Dr. Shibiao Wan in Dr. Kyoung Jae Won's lab at UPenn. If you come across any problems or have any suggestions about SHARP, please don't hesitate to contact us at Kyoung Jae Won (wonk@pennmedicine.upenn.edu) or Shibiao Wan (shibiao@pennmedicine.upenn.edu).
+Shibiao Wan, Junil Kim and Kyoung Jae Won. SHARP: Single-Cell RNA-Seq Hyper-Fast and Accurate Processing via Ensemble Random Projection, submitted, 2018.
