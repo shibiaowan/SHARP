@@ -321,7 +321,7 @@ SHARP_small <- function(scExp, ncells, ensize.K, reduced.ndim, hmethod, finalN.c
     enresults$final_pred_clusters = finalrowColor$finalC
     enresults$unique_pred_clusters = unique(finalrowColor$finalC)
     # enresults$finalmetrics = finalmetrics
-    enresults$N.pred_cluster = length(unique(finalrowColor))
+    enresults$N.pred_cluster = length(unique(finalrowColor$finalC))
     enresults$allrpinfo = allrpinfo
     # save(enresults, file=paste(outdir,'enresults_', p, 'dim_', K, 'times.RData',
     # sep = ''))
