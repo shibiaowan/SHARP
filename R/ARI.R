@@ -3,7 +3,10 @@
 #' This function is to calculate the performance of the algorithm by 5 metrics, including Rand index (Rand), Hubert and Arabie's adjusted Rand index (HA), Morey and Agresti's adjusted Rand index (MA), Fowlkes and Mallows's index (FM), and Jaccard index. HA is the one metric that we often refer to as ARI.
 #'
 #' @param ground_true_clusters the ground-truth clusters
-#' @param pred_clusters the predicted clusters
+#'
+#' @param y the results after running the SHARP function
+#'
+#' @return Five clustering metrics, including Rand index (Rand), Hubert and Arabie's adjusted Rand index (HA), Morey and Agresti's adjusted Rand index (MA), Fowlkes and Mallows's index (FM), and Jaccard index. HA is the one metric that we often refer to as ARI.
 #'
 #' @examples
 #' finalmetrics = ARI(ground_true_clusters, pred_clusters)
@@ -11,12 +14,12 @@
 #' @import clues
 #'
 #' @export
-ARI <- function(ground_true_clusters, pred_clusters) {
+ARI <- function(ground_true_clusters, y) {
     # w: the ground-truth clusters; rowColor: the predicted clusters
     
     truelabel = ground_true_clusters  #get the label (categorical)
     
-    rowColor = pred_clusters  #the predicted clusters
+    rowColor = y$pred_clusters  #the predicted clusters
     
     truec = truelabel  #make a copy
     levels(truec) = c(1:length(levels(truec)))  #convert the categorical to numeric
@@ -30,5 +33,6 @@ ARI <- function(ground_true_clusters, pred_clusters) {
     
     metrics = adjustedRand(truecl, t1)  #the ARI performance metrics
     
+    cat("HA is the metric that we often refer to as ARI (adjusted Rand index), i.e., Hubert and Arabie's ARI.\n")
     return(metrics)
 }
