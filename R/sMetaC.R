@@ -131,7 +131,7 @@ sMetaC <- function(rerowColor, sE1, folds, hmethod, finalN.cluster, minN.cluster
     
     finalres = list()
     finalres$finalColor = finalColor
-    finalres$v = v
+    finalres$tf = tf#optimal clustering results
     return(finalres)
     # return(finalColor)
 }

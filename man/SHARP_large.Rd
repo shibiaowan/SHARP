@@ -5,8 +5,8 @@
 \title{Run SHARP for large-size (>= 5000) single-cell RNA datasets}
 \usage{
 SHARP_large(scExp, ncells, ensize.K, reduced.dim, partition.ncells, hmethod,
-  finalN.cluster, enpN.cluster, indN.cluster, minN.cluster, maxN.cluster,
-  sil.thre, height.Ntimes, flag, rN.seed)
+  N.cluster, enpN.cluster, indN.cluster, minN.cluster, maxN.cluster, sil.thre,
+  height.Ntimes, flag, rN.seed)
 }
 \arguments{
 \item{scExp}{input single-cell expression matrix}

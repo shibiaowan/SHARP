@@ -11,7 +11,7 @@
 #' @param Mtimes number of times to run SHARP
 #'
 #' @examples
-#' enresults = Run_Mtimes_SHARP(scExp, ensize.K, reduced.ndim, partition.ncells, base.ncells, n.cores, Mtimes)
+#' enresults = run_Mtimes_SHARP(scExp, ensize.K, reduced.ndim, partition.ncells, base.ncells, n.cores, Mtimes)
 #'
 #' @import foreach
 #'
@@ -20,7 +20,7 @@
 #' @import doParallel
 #'
 #' @export
-Run_Mtimes_SHARP <- function(scExp, ensize.K, reduced.ndim, partition.ncells, base.ncells, 
+run_Mtimes_SHARP <- function(scExp, ensize.K, reduced.ndim, partition.ncells, base.ncells, 
     n.cores, Mtimes) {
     rm(list = ls())  #remove all
     

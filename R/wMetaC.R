@@ -100,6 +100,7 @@ wMetaC <- function(nC, hmethod, enN.cluster, minN.cluster, maxN.cluster, sil.thr
     
     tf = hres$f
     v = hres$v
+    cat("The number of clusters before voting is: ", hres$optN.cluster, "\n")
     
     # d=as.dist(1-S) # print(S) # metah = hclust(d, method='ward.D') metah =
     # hclust(d, method='ward.D') # print(dim(S)) maxc = min(40, dim(S)[1]-1)#maximum
@@ -161,14 +162,39 @@ wMetaC <- function(nC, hmethod, enN.cluster, minN.cluster, maxN.cluster, sil.thr
     
     
     # For ease of visualization
-    x0 = apply(newnC, 1, function(x) {
-        t = rep(0, N.cluster)
-        for (i in c(1:N.cluster)) {
-            t[i] = length(which(x %in% i))
-        }
-        return(t)
-    })
-    x0 = t(x0)  #transpose
+    uC = unique(finalC)#unique clusters
+# print(uC)
+# #   x0 = apply(newnC, 1, function(x){t = rep(0, N.cluster); for(i in c(1:N.cluster)){t[i] = length(which(x %in% i))}; return(t)})
+  y0 = apply(newnC, 1, function(x){t = rep(0, N.cluster); for(i in c(1:N.cluster)){t[i] = length(which(x %in% uC[i]))}; return(t)})#need to reorganize before counting
+#   print(dim(y0))
+  y0 = t(y0)#transpose
+  
+  
+  x0 = matrix(0, nrow = N, ncol = N.cluster)
+#   print(dim(x0))
+  
+  
+  tw = 0.5
+#   print(uC)
+  for(i in 1:N){
+    xind = which(finalC[i]==uC)
+    x0[i, xind] = 1#the correct clustering result
+    allind = which(y0[i,]!=0)#all the counts
+    diffind = setdiff(allind, xind)#some other counts which are not the correct cluster
+    if(length(diffind) != 0){
+        x0[i, diffind] = tw* y0[i, diffind]/y0[i, xind]#use a reduced weight
+    }
+  }
+  
+  
+#     x0 = apply(newnC, 1, function(x) {
+#         t = rep(0, N.cluster)
+#         for (i in c(1:N.cluster)) {
+#             t[i] = length(which(x %in% i))
+#         }
+#         return(t)
+#     })
+#     x0 = t(x0)  #transpose
     
     out = list()  #declare
     out$finalC = finalC

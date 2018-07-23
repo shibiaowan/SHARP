@@ -5,9 +5,9 @@
 \title{Run SHARP for single-cell RNA data clustering}
 \usage{
 SHARP(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partition.ncells,
-  hmethod, finalN.cluster = NULL, enpN.cluster = NULL,
-  indN.cluster = NULL, minN.cluster, maxN.cluster, sil.thre, height.Ntimes,
-  logflag, sncells, n.cores, rN.seed)
+  hmethod, N.cluster = NULL, enpN.cluster = NULL, indN.cluster = NULL,
+  minN.cluster, maxN.cluster, sil.thre, height.Ntimes, logflag, sncells,
+  n.cores, rN.seed)
 }
 \arguments{
 \item{scExp}{input single-cell expression matrix, where each column represents a cell and each row represents a gene.}
@@ -22,7 +22,7 @@ SHARP(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partition.ncells,
 
 \item{partition.ncells}{number of cells for each partition when using SHARP_large. The default value is 2000.}
 
-\item{finalN.cluster}{number of clusters for the final clustering results. The default is NULL, i.e., without giving the number of clusters, and SHARP will automatically determine the optimal number of clusters. If given, SHARP will calculate according to the given number of clusters.}
+\item{N.cluster}{number of clusters for the final clustering results. The default is NULL, i.e., without giving the number of clusters, and SHARP will automatically determine the optimal number of clusters. If given, SHARP will calculate according to the given number of clusters.}
 
 \item{enpN.cluster}{number of clusters for the weighted ensemble meta-clustering only for SHARP_large. The default is NULL, i.e., without giving the number of clusters, and SHARP will automatically determine the optimal number of clusters. If given, SHARP will calculate according to the given number of clusters.}
 
@@ -45,7 +45,7 @@ SHARP(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partition.ncells,
 \item{rN.seed}{a number using which we can set seeds for SHARP to obtain reproducible results.}
 }
 \value{
-a list containing the SHARP clustering results, the predicted optimal number of clusters, time SHARP consumes for clustering, some intermediate results including clustering results by each random-projection based hierarchical clustering and other related statstical information including number of cells, genes, reduced dimensions and number of applications of random projection.
+a list containing the SHARP clustering results, distribution of the clustering results, the predicted optimal number of clusters, time SHARP consumes for clustering, some intermediate results including clustering results by each random-projection based hierarchical clustering and other related statstical information including number of cells, genes, reduced dimensions and number of applications of random projection.
 }
 \description{
 SHARP: Single-cell RNA-Seq Hyper-fast and Accurate clustering via ensemble Random Projection.

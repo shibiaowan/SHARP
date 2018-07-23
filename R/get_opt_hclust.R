@@ -71,7 +71,8 @@ get_opt_hclust <- function(mat, hmethod, N.cluster, minN.cluster, maxN.cluster, 
     
     # if N.cluster is given, we simply use the given N.cluster for hierarchical
     # clustering
-    if (!missing(N.cluster) && !is.null(N.cluster)) {
+#     if (!missing(N.cluster) && is.numeric(N.cluster)) {
+    if (is.numeric(N.cluster)) {
         if (!is.numeric(N.cluster)) {
             stop("The given N.cluster is not a numeric!")
         }
@@ -186,8 +187,8 @@ get_opt_hclust <- function(mat, hmethod, N.cluster, minN.cluster, maxN.cluster, 
     
     
     hres = list()
-    hres$f = f
-    hres$v = v
+    hres$f = f#optimal clustering results
+    hres$v = v#different numbers of clustering results
     hres$maxsil = max(msil)
     hres$msil = msil
     hres$CHind = CHind
