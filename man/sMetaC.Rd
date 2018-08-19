@@ -14,6 +14,6 @@ sMetaC(rerowColor, sE1, folds, hmethod, finalN.cluster, minN.cluster,
 This function is to do similarity-based ensemble clustering for combining the results from different partitions of single cells. The similarity is measured by the group-group correlations.
 }
 \examples{
-finalrowColor = sMetaC(rerowColor, sE1, folds)
+finalrowColor = sMetaC(fColor, E1, folds, hmethod, N.cluster, minN.cluster, maxN.cluster, sil.thre, height.Ntimes)
 
 }

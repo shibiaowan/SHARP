@@ -5,7 +5,7 @@
 #' @param nC a m*n matrix, where m is the number of cells, n is the number of clustering algorithms, and the (i,j)-element of nC represents the cluter for the i-th cell by the j-th clutering predictor.
 #'
 #' @examples
-#' finalrowColor = sMetaC(rerowColor, sE1, folds)
+#' finalrowColor = sMetaC(fColor, E1, folds, hmethod, N.cluster, minN.cluster, maxN.cluster, sil.thre, height.Ntimes)
 #'
 #' @import cluster
 #'
@@ -37,8 +37,9 @@ sMetaC <- function(rerowColor, sE1, folds, hmethod, finalN.cluster, minN.cluster
     
     # pind = which.max(t0)#the partition which has the most predicted clusters rind =
     # setdiff(1:T, pind) #preprocessing
-    sE1 = sE1[apply(sE1, 1, function(x) sd(x) != 0), ]  #avoid NA when sd is 0 during scaling
-    sE1 <- t(scale(t(sE1)))  #vector scaling
+    ###using similarity matrix instead of correlation, we do not need these pre-processing steps
+#     sE1 = sE1[apply(sE1, 1, function(x) sd(x) != 0), ]  #avoid NA when sd is 0 during scaling
+#     sE1 <- t(scale(t(sE1)))  #vector scaling
     
     # mE = matrix(0, nrow = length(R), ncol = dim(sE1)[2]) for(i in 1:length(R)){ G =
     # sE1[rerowColor == R[i], , drop = FALSE] mE[i, ] = colMeans(G)*dim(G)[1] } mf =
@@ -174,6 +175,10 @@ getpaircor <- function(pairind, rerowColor, sE1, R) {
     aG2 = colMeans(G2)
     # corss = dist(rbind(aG1, aG2)) corss = exp(-sum((aG1 - aG2)^2)/t)
     corss = cor(aG1, aG2)
+    
+    if(is.na(corss)){#if not available or missing, one fo the sd's is 0, and then correlation is 0
+        corss = 0
+    }
     # as1 = 1/(1 + exp(-aG1)) as2 = 1/(1 + exp(-aG2)) ass =
     # sum(aG1*aG2)/sqrt(sum(aG1^2)*sum(aG2^2)) corss = 1/(1 + exp(-ass)) cor1 =
     # foreach(i = 1:dim(G1)[1], .combine = 'cbind') %:% foreach(j = 1:dim(G2)[1],
