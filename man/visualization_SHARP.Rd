@@ -21,7 +21,7 @@ visualization_SHARP(y, label, w, filename, filetype, width = 900,
 \item{width, }{height the width and height of the outpuf figure.}
 }
 \description{
-This function is to visualize the data in 2D scatter plots similar to tSNE. The difference between SHARP and tSNE in terms of visualization is that the latter uses the original high-dimensional data, whereas the former uses the clustered output to form a small-dimensional feature matrix for visualization.
+This function is to visualize the data in 2D scatter plots. For visualization, SHARP uses a weighted combination of the dimension-reduced feature matrix and the output location matrix produced by the clustering results of SHARP. The output scatter plot will be saved in a figure file (by default, the file is named as "vi_SHARP.pdf" or "vi_SHARP.png")
 }
 \examples{
 y = SHARP(scExp)

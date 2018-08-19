@@ -3,15 +3,12 @@
 #' This function is to run multiple times of SHARP for evaluating SHARP in clustering of single-cell RNA-Seq data
 #'
 #' @param scExp input single-cell expression matrix
-#' @param ensize.K number of applications of random projection for ensemble
-#' @param reduced.ndim the dimension to be reduced to
-#' @param base.ncells a base threshold of number of cells. When the number of cells of a dataset is smaller than this threshold, we use SHARP_small function; otherwise, we use SHARP_large.
-#' @param partition.ncells number of cells for each partition when using SHARP_large
-#' @param n.cores number of cores to be used. The default is (n-1) cores, where n is the number of cores in your local computer or server.
-#' @param Mtimes number of times to run SHARP
+#' @param Mtimes number of times to run SHARP. By default, 10 times will be tried
+#' @param Kset a set of ensemble sizes (ensize.K) to be tried. By default, only one element (i.e., ensize.K = 15) will be tried
+#' @param ... other parameters of SHARP that have not been listed here
 #'
 #' @examples
-#' enresults = run_Mtimes_SHARP(scExp, ensize.K, reduced.ndim, partition.ncells, base.ncells, n.cores, Mtimes)
+#' enresults = run_Mtimes_SHARP(scExp, Mtimes = 10, Kset = 5, partition.ncells = 2000, n.cores = 1)
 #'
 #' @import foreach
 #'
@@ -20,8 +17,7 @@
 #' @import doParallel
 #'
 #' @export
-run_Mtimes_SHARP <- function(scExp, ensize.K, reduced.ndim, partition.ncells, base.ncells, 
-    n.cores, Mtimes) {
+run_Mtimes_SHARP <- function(scExp, Mtimes = 10, Kset = 15, ...) {
     rm(list = ls())  #remove all
     
     ########## Input matrix files###########
@@ -31,7 +27,7 @@ run_Mtimes_SHARP <- function(scExp, ensize.K, reduced.ndim, partition.ncells, ba
     # is feature * samples Files = c('Goolam/Goolam_expression_log10.txt') Files =
     # c('Park/Park_CPM.rds')
     A = Mtimes
-    K = ensize.K
+    K = Kset
     
     # eps = c(0.3, 0.25, 0.2, 0.15, 0.1, 0.05)
     allresults <- vector("list", length = length(K))  #declare a matrix of lists
@@ -49,8 +45,7 @@ run_Mtimes_SHARP <- function(scExp, ensize.K, reduced.ndim, partition.ncells, ba
             cat("=========================================================================\n")
             cat("SHARP: Ensemble Size-", k, ", Run-", j, "\n")
             # enresults = getallresults_large(Files, K = k)#using the default Dim
-            enresults = SHARP(scExp, k, reduced.ndim, partition.ncells, base.ncells, 
-                n.cores)
+            enresults = SHARP(scExp, ensize.K = k, forview = FALSE, ...)
             jname = paste("Run_", j, sep = "")
             info[[jname]] = enresults
         }

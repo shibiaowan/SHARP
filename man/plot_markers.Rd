@@ -16,7 +16,7 @@ plot_markers(scExp, sginfo, label, N.marker, filename)
 \item{y}{the clustering results after running SHARP.R}
 }
 \value{
-
+The heatmap of cell-type-specific marker gene expression will be saved into a file (by default the file will be named as "markers_heatmap.pdf"). Besides, all of the cluser-specific marker genes and their associated information will be returned.
 }
 \description{
 This function is to plot a heatmap showing the cluster-specific marker genes. Only the top 10 marker genes for each cluster are shown.

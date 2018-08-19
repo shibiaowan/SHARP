@@ -20,6 +20,8 @@
 #'
 #' @import Rtsne
 #'
+#' @import RColorBrewer
+#'
 #' @export
 
 visualization_SHARP<- function(y, label, w, filename, filetype, width = 900, height = 900){
@@ -75,8 +77,19 @@ visualization_SHARP<- function(y, label, w, filename, filetype, width = 900, hei
     
     tt = "2D SHARP Visualization"
     
+#     allcol =  c("purple",  "pink",  "black",  "orange", "turquoise", "yellow", "beige", "gray", 
+#          "coral",    "khaki",  "violet", "magenta",
+#          "salmon", "goldenrod", "orchid", "seagreen", "slategray", "darkred", 
+#         "darkblue", "darkcyan", "darkgreen", "darkgray", "darkkhaki", "darkorange", 
+#         "darkmagenta", "darkviolet", "darkturquoise", "darksalmon", "darkgoldenrod", 
+#         "darkorchid", "darkseagreen", "darkslategray", "deeppink", "lightcoral", 
+#         "lightcyan")
+
     cat("Draw the scatter plots...\n")
     if(!missing(label)){#if the reference clustering label is given
+        uc = length(unique(label))
+        palette(brewer.pal(n = uc, name = "Set1"))
+        
         plot(rtsne_out$Y, asp = 1, pch = 20, col = label, cex = 0.75, cex.axis = 1.25, cex.lab = 1.25, cex.main = 1.5, xlab = "SHARP Dim-1", ylab = "SHARP Dim-2", main = tt)
     }else{
         plot(rtsne_out$Y, asp = 1, pch = 20, cex = 0.75, cex.axis = 1.25, cex.lab = 1.25, cex.main = 1.5, xlab = "SHARP Dim-1", ylab = "SHARP Dim-2", main = tt)

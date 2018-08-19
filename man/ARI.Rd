@@ -4,17 +4,21 @@
 \alias{ARI}
 \title{Calculate the adjusted rand index (ARI), including 5 different ARI-related metrics}
 \usage{
-ARI(ground_true_clusters, pred_clusters)
+ARI(ground_true_clusters, y)
 }
 \arguments{
 \item{ground_true_clusters}{the ground-truth clusters}
 
-\item{pred_clusters}{the predicted clusters}
+\item{y}{the results after running the SHARP function}
+}
+\value{
+Five clustering metrics, including Rand index (Rand), Hubert and Arabie's adjusted Rand index (HA), Morey and Agresti's adjusted Rand index (MA), Fowlkes and Mallows's index (FM), and Jaccard index. HA is the one metric that we often refer to as ARI.
 }
 \description{
 This function is to calculate the performance of the algorithm by 5 metrics, including Rand index (Rand), Hubert and Arabie's adjusted Rand index (HA), Morey and Agresti's adjusted Rand index (MA), Fowlkes and Mallows's index (FM), and Jaccard index. HA is the one metric that we often refer to as ARI.
 }
 \examples{
-finalmetrics = ARI(ground_true_clusters, pred_clusters)
+y = SHARP(scExp)
+finalmetrics = ARI(ground_true_clusters, y)
 
 }

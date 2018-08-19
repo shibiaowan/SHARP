@@ -18,6 +18,7 @@
 #' @param logflag   a logical to determine whether to check a log-transform of the input expression matrix. By default, logflag = TRUE, i.e., SHARP will check the log-transform operation.
 #' @param sncells   number of cells randomly selected for checking log-transform is necessary or not. By default, sncells = 100.
 #' @param n.cores   number of cores to be used. The default is (n-1) cores, where n is the number of cores in your local computer or server.
+#' @param forview   a logical to indicate whether those feature-vectors for data visualization should be saved or not. By default, it is TRUE.
 #' @param rN.seed   a number using which we can set seeds for SHARP to obtain reproducible results.
 #'
 #' @details This is the main interface for SHARP to process and analyze different kinds of single-cell RNA-Seq data. Only one parameter is manadatory, i.e., scExp, the single-cell expression matrix. In most cases, most of the parameters can be determined automatically or have been optimized, so users don't have to take efforts to try different parameters. While for some other cases where users need to change parameters, SHARP also provides various parameters, including algorithm-related parameters, hierarchical-clustering-related parameters, parallel-computing parameters and parameters to obtain reproducible results, for better optimizing the performance.
@@ -38,7 +39,7 @@
 #' @export
 SHARP <- function(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partition.ncells, 
     hmethod, N.cluster = NULL, enpN.cluster = NULL, indN.cluster = NULL, minN.cluster, 
-    maxN.cluster, sil.thre, height.Ntimes, logflag, sncells, n.cores, rN.seed) {
+    maxN.cluster, sil.thre, height.Ntimes, logflag, sncells, n.cores, forview = TRUE, prep = TRUE, rN.seed) {
     # timing
     start_time <- Sys.time()  #we exclude the time for loading the input matrix
     
@@ -66,10 +67,16 @@ SHARP <- function(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partitio
     
     cat("-----------------------------------------------------------------------\n")
     cat("Preprocessing:\n")
-    if(any(scExp < 0)){
-        warning("Your expression matrix contain negative values! SHARP will replace negative values with 0!\n")
-        scExp[scExp < 0] = 0
+    if(prep){
+        if(any(scExp < 0)){
+            warning("Your expression matrix contain negative values! SHARP will replace negative values with 0!\n")
+            scExp[scExp < 0] = 0
+        }
+    
+        scExp = scExp[rowSums(scExp) != 0, ]#remove those all-zero genes
     }
+    
+    
     cat("Normalization...\n")
     if (!missing(exp.type)) {#expression type
         if (exp.type != "CPM" && exp.type != "TPM") {#if the type is neither CPM nor TPM
@@ -105,7 +112,7 @@ SHARP <- function(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partitio
     
     # if no maximum number of clusters is provided
     if (missing(maxN.cluster)) {
-        maxN.cluster = 40  #by default, we try the maximum number of clusters as large as 40 or the number of cells minus 1, whichever is smaller.
+        maxN.cluster = max(40, ceiling(ncells/5000))  #by default, we try the maximum number of clusters as large as 40 or the number of cells minus 1, whichever is smaller.
     }
     
     # if no threshold for the maximum Silhouette index is provided
@@ -139,8 +146,8 @@ SHARP <- function(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partitio
     
     if (!missing(N.cluster)){#if the number of clusters is pre-defined, we adopted divide-and-conquer strategies regardless of the number of single cells
 #         enpN.cluster = N.cluster#for ensemble clustering
-        indN.cluster = N.cluster
         if (ncells < base.ncells){
+            indN.cluster = N.cluster
             base.ncells= ceiling(ncells/2)
             partition.ncells=ceiling(ncells/2)
             if (missing(ensize.K)) {
@@ -149,14 +156,15 @@ SHARP <- function(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partitio
         }
     }
     
-    colorL <<- c("red", "purple", "blue", "yellow", "green", "orange", "brown", "gray", 
-        "black", "coral", "beige", "cyan", "turquoise", "pink", "khaki", "magenta", 
-        "violet", "salmon", "goldenrod", "orchid", "seagreen", "slategray", "darkred", 
-        "darkblue", "darkcyan", "darkgreen", "darkgray", "darkkhaki", "darkorange", 
-        "darkmagenta", "darkviolet", "darkturquoise", "darksalmon", "darkgoldenrod", 
-        "darkorchid", "darkseagreen", "darkslategray", "deeppink", "lightcoral", 
-        "lightcyan")
+
     
+#     colorL = c("purple",  "pink",  "black",  "orange", "turquoise", "yellow", "beige", "gray", 
+#          "coral",    "khaki",  "violet", "magenta",
+#          "salmon", "goldenrod", "orchid", "seagreen", "slategray", "darkred", 
+#         "darkblue", "darkcyan", "darkgreen", "darkgray", "darkkhaki", "darkorange", 
+#         "darkmagenta", "darkviolet", "darkturquoise", "darksalmon", "darkgoldenrod", 
+#         "darkorchid", "darkseagreen", "darkslategray", "deeppink", "lightcoral", 
+#         "lightcyan")
     if (missing(logflag)){#whether we need to check log-transform
         logflag = TRUE
     }
@@ -176,7 +184,8 @@ SHARP <- function(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partitio
             cat("Log-transform is not necessary!\n")
         }
     }else{
-        cat("Log-transform is not checked!\n")
+        cat("Log-transform is employed!\n")
+        flag = TRUE
     }
    
     # print(paste('For Dataset: ', dir1, sep = ''), quote = FALSE)
@@ -207,7 +216,7 @@ SHARP <- function(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partitio
         cat("-----------------------------------------------------------------------\n")
         cat("Analysis starts...\n")
         enresults = SHARP_small(scExp, ncells, ensize.K, reduced.ndim, hmethod, N.cluster, 
-            indN.cluster, minN.cluster, maxN.cluster, sil.thre, height.Ntimes, flag, rN.seed)
+            indN.cluster, minN.cluster, maxN.cluster, sil.thre, height.Ntimes, flag, forview, rN.seed)
     } else {
         # print('Using SHARP_large...')
         cat("Using SHARP_large...\n")
@@ -222,7 +231,7 @@ SHARP <- function(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partitio
         cat("Analysis starts...\n")
         enresults = SHARP_large(scExp, ncells, ensize.K, reduced.ndim, partition.ncells, 
             hmethod, N.cluster, enpN.cluster, indN.cluster, minN.cluster, maxN.cluster, 
-            sil.thre, height.Ntimes, flag, rN.seed)
+            sil.thre, height.Ntimes, flag, forview, rN.seed)
     }
     
     end_time <- Sys.time()
@@ -239,6 +248,24 @@ SHARP <- function(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partitio
     enresults$reduced.dim = reduced.ndim
     enresults$ensize.K = ensize.K
     enresults$time = t
+    
+    ###parameter saving###
+    paras = list()
+    paras$ensize.K = ensize.K
+    paras$reduced.ndim = reduced.ndim
+    paras$base.ncells = base.ncells
+    paras$partition.ncells = partition.ncells
+    paras$hmethod = hmethod
+    paras$N.cluster = N.cluster
+    paras$minN.cluster = minN.cluster
+    paras$maxN.cluster = maxN.cluster
+    paras$sil.thre = sil.thre
+    paras$height.Ntimes = height.Ntimes
+    paras$n.cores = n.cores
+    
+    enresults$paras = paras
+    
+    stopImplicitCluster()
     
     return(enresults)
 }
@@ -263,7 +290,7 @@ SHARP <- function(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partitio
 #'
 #' @export
 SHARP_small <- function(scExp, ncells, ensize.K, reduced.ndim, hmethod, N.cluster, 
-    indN.cluster, minN.cluster, maxN.cluster, sil.thre, height.Ntimes, flag, rN.seed) {
+    indN.cluster, minN.cluster, maxN.cluster, sil.thre, height.Ntimes, flag, forview, rN.seed) {
     enresults = list()
     
     if(flag){
@@ -274,7 +301,8 @@ SHARP_small <- function(scExp, ncells, ensize.K, reduced.ndim, hmethod, N.cluste
     p = reduced.ndim
     allrpinfo = foreach(k = 1:ensize.K) %dopar% {
 #         print(paste('Random Projection: ', k, sep = ''))
-        cat("Random Projection: ", k, "\n")
+        pid = Sys.getpid()
+        cat("Process ", pid, "----Random Projection: ", k, " out of ", K, "\n", sep = "")
         # print(paste('The ', k, '-th time of random projection', sep=''), quote = FALSE)
         scExp = data.matrix(scExp)  #convert from data frame to normal matrix
         if (rN.seed == 0.5) {
@@ -347,8 +375,11 @@ SHARP_small <- function(scExp, ncells, ensize.K, reduced.ndim, hmethod, N.cluste
     # enresults$finalmetrics = finalmetrics
     enresults$N.pred_cluster = length(newuy)
     enresults$allrpinfo = allrpinfo
-    enresults$x0 = finalrowColor$x0
-    enresults$viE = viE
+    if(forview){#if we want to visualiza data, we need to save the dimension-reduced matrices/feature vectors
+        enresults$x0 = finalrowColor$x0
+        enresults$viE = viE
+    }
+    
     # save(enresults, file=paste(outdir,'enresults_', p, 'dim_', K, 'times.RData',
     # sep = ''))
     return(enresults)
@@ -378,7 +409,7 @@ SHARP_small <- function(scExp, ncells, ensize.K, reduced.ndim, hmethod, N.cluste
 #' @export
 SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, hmethod, 
     N.cluster, enpN.cluster, indN.cluster, minN.cluster, maxN.cluster, sil.thre, 
-    height.Ntimes, flag, rN.seed) {
+    height.Ntimes, flag, forview, rN.seed) {
     # print('The Divide-and-Conquer Strategy is selected!')
     # cat("The Divide-and-Conquer Strategy is selected!\n")
     ######## Partition the large data into several groups###########
@@ -389,7 +420,7 @@ SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, 
     allrpinfo <- vector("list", length = K)  #declare a matrix of lists
     enresults = list()
     # colnames(rpinfo) = c('E', 'tag', 'rowColor', 'metrics')
-    enrp <- matrix("0", ncells, K)  #the ensemble results after several random projection;namely several rowColor's
+#     enrp <- matrix("0", nrow = ncells, ncol = K)  #the ensemble results after several random projection;namely several rowColor's
     
     if (rN.seed == 0.5) {
         # for reproducible results
@@ -401,7 +432,12 @@ SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, 
     
     # reshuffle the data
     E = scExp
-    E = E[, reind]
+    rm(scExp)#remove unnecessary objects for saving memory
+    if(ncol(E) < 5e4){
+        cat("Reshuffling the order of single cells...\n")
+        E = E[, reind]
+    }#if the number is larger than 50000, we do not need to reshuffle
+    
     # ng = 2000#number of cells for each group
     
     # if(ncells < 10000){#if it is a small dataset, simply divide it into 5 parts ng
@@ -421,7 +457,7 @@ SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, 
         folds = folds[1:ncells]
         # } print(paste('The number of cells in Fold ', names(table(folds)), 'are: ',
         # table(folds)))
-        cat("The number of cells in Folds ", names(table(folds)), "are: ", table(folds), 
+        cat("The number of cells in Folds", names(table(folds)), "are:", table(folds), 
             "\n")
         
         np = table(folds)
@@ -442,7 +478,7 @@ SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, 
     }
     
     #### parallel programming#### rerowColor = foreach(t=1:T, .combine = 'c') %dopar%{
-    enlist = foreach(k = 1:K, .combine = rbind) %:% foreach(t = 1:T) %dopar% {
+    enlist = foreach(k = 1:K, .combine= "c") %:% foreach(t = 1:T) %dopar% {
         # nested looping; the first for different applications of random projection; the
         # second for different partitions print(paste('The ', k, '-th random projection;
         # the ', t, '-th partition', sep=''))
@@ -451,16 +487,20 @@ SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, 
         
         # print(paste('Random Projection: ', k, ', Fold: ', t, ', Cell Number: ',
         # length(tind), sep = ''))
-        cat("Random Projection: ", k, ", Fold: ", t, ", Cell Number: ", length(tind), 
-            "\n")
+        pid = Sys.getpid()
+        cat("Process ", pid, "----Random Projection: ", k, " out of ", K, ", Fold: ", t, " out of ", T, ", Cell Number: ", length(tind), 
+            "\n", sep = "")
         ######## Cluster each group########
         newE = E[, tind]  #the matrix for each group
+#         cat("newE completed for:", k, "-th RP and", t, "-th partition\n")
         if(flag){#whether log-transform
             newE = log10(newE + 1)#logarithm transform
         }
 # # #         newE = log10(newE + 1)#logarithm transform
         
         inE = data.matrix(newE)
+        
+#         cat("inE completed for:", k, "-th RP and", t, "-th partition\n")
         
         # using the k-th random matrix
         E1 = 1/sqrt(p) * t(rM[[k]]) %*% inE
@@ -475,51 +515,99 @@ SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, 
         # dimensions (>10000) in the original data, the values of E1 may be very large,
         # better to normalize to a small scale for later clustering }
         
+#         cat("Dim reduction completed for:", k, "-th RP and", t, "-th partition\n")
         tmp = getrowColor(newE1, hmethod, indN.cluster, minN.cluster, maxN.cluster, 
             sil.thre, height.Ntimes)  #hierarchical clustering; the result is a list containing both the predicted clusters and the maximum silhouette index
         # metrics= ARI(gtc[reind[tind], ], tmp$rowColor)#performance evaluation
         # print(metrics) rerowColor[, t] = paste(tmp, '_', t, sep = '')#for
         # distinguishing for each smaller group clustering rind = c((t-1)*ng + 1:
         # (t-1)*ng + length(tind))
+#         cat("hierarchical clusteirng completed for:", k, "-th RP and", t, "-th partition\n")
         ptc = paste(tmp$rowColor, "p", t, sep = "")  #using the letter 'p' to represent the 'partial', t is the t-th part of the data
-        # print(paste('ptc length is: ', length(ptc), sep = ''))
+        
+#         print(paste('ptc length is: ', length(ptc), " for: ", k, "-th RP and ", t, "-th partition", sep = ''))
         
         tmplist = list()
         tmplist$rpc = ptc
         tmplist$pE1 = newE1
         tmplist$ind = c(k, t)
         tmplist$maxsil = tmp$maxsil
+        
+#         cat(str(tmplist), "for:", k, "-th RP and", t, "-th partition\n")
+        
+#         if(length(tmplist) == 0){
+#             cat("tmplist is null!\n")
+#         }
         return(tmplist)
         # rerowColor[rind] = paste(tmp, '_', t, sep = '')#for distinguishing for each
         # smaller group clustering
     }
     
     
-    z = dim(enlist)
-    Elist = vector("list", length = T)
+#     z = dim(enlist)
+    z = length(enlist)
+#     cat("The length of enlist is", z, "\n")
+    
+#     cat("The dimension of z is", z, "\n")
+#     Elist = vector("list", length = T)
+    enrp <- matrix("0", nrow = ncells, ncol = K)  #the ensemble results after several random projection;namely several rowColor's
     enE <- matrix(0, nrow = ncells, ncol = p)  #already tranposed; reshuffled matrix
-    for (j in 1:z[2]) {
-        # partition
-        eind = which(folds == j)
-        for (i in 1:z[1]) {
-            # applications of random projection
-            z1 = enlist[i, j]
-            nz = names(z1)
-            ptc = z1[[nz]]$rpc  #the clustering results by RP for a partitio of the data
-            pE = z1[[nz]]$pE1  #the partial dim-reduced matrix
-            maxsil = z1[[nz]]$maxsil
-            
-            
-            enrp[eind, i] = ptc  #the clustering results of different random projection
-            # print(paste('enrp[folds == j, i] length is: ', length(enrp[folds == j, i]), sep
-            # = ''))
-            
-            # enE[folds == j, ] = enE[folds == j, ] + pE*maxsil
-            
-            enE[eind, ] = enE[eind, ] + pE
-            
-        }
+    for(i in 1:z){
+        z1 = enlist[[i]]
+        matind = z1$ind#RP index and partition index
+        eind = which(folds == matind[2])
+        enrp[eind, matind[1]] = z1$rpc
+        enE[eind, ] = enE[eind, ] + z1$pE#the sum of the ensemble RP matrix
     }
+    
+    
+#     for (j in 1:z[2]) {
+# #         cat("The ", j, "-th partition; ", sep = "")
+#         # partition
+#         eind = which(folds == j)
+#         for (i in 1:z[1]) {
+# #             cat("The ", i, "-th RP\n", sep = "")
+#             # applications of random projection
+#             
+#             z1 = enlist[[i, j]]
+#             if(is.null(z1)){
+#                 cat("z1 with", i, "and", j, "is null\n")
+#                 cat(str(enlist[i,j]), "\n")
+#             }
+# #             if(is.null(enlist[i, j])){
+# #                 cat("enlist[i, j] with", i, "and", j, "is null\n")
+# #             }
+# #             cat("The ", j, "-th partition, ", "The ", i, "-th RP: ", names(z1), "\n", sep = "")
+#             ptc = z1$rpc
+#             pE = z1$pE1
+# #             vE = z1$vE1
+#             maxsil = z1$maxsil
+#                 
+# #             z1 = enlist[i, j]
+# #             nz = names(z1)
+# #             ptc = z1[[nz]]$rpc  #the clustering results by RP for a partitio of the data
+# #             pE = z1[[nz]]$pE1  #the partial dim-reduced matrix
+# #             maxsil = z1[[nz]]$maxsil
+#             
+# #             if(sum(is.na(ptc))){#ptc is NULL
+# #                 cat("ptc contains NA!\n")
+# #             }
+#             if(length(eind) == length(ptc)){
+#                 enrp[eind, i] = ptc  #the clustering results of different random projection
+#             }else{
+#                 cat("ptc is", ptc, "and the length of eind is", length(eind), "\n")
+#                 enrp[eind, i] = ptc  #the clustering results of different random projection
+#             }
+#             
+#             # print(paste('enrp[folds == j, i] length is: ', length(enrp[folds == j, i]), sep
+#             # = ''))
+#             
+#             # enE[folds == j, ] = enE[folds == j, ] + pE*maxsil
+#             
+#             enE[eind, ] = enE[eind, ] + pE
+#             
+#         }
+#     }
     
     
     # finalrowColor = wMetaC(enrp) 
@@ -605,12 +693,16 @@ SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, 
             }
         }
     }
-    finalrowColor = vector(mode = "character", length = length(SrowColor))  #initialization
-    finalrowColor[reind] = SrowColor  #reorganizing the final results
-    
-    x0[reind, ] = x0#reorganizing
+#     finalrowColor = vector(mode = "character", length = length(SrowColor))  #initialization
+    finalrowColor = SrowColor
     viE = enE/K
-    viE[reind, ] = viE#reorganizing
+    if(ncol(E) < 5e4){
+        finalrowColor[reind] = SrowColor  #reorganizing the final results
+    
+        x0[reind, ] = x0#reorganizing
+    
+        viE[reind, ] = viE#reorganizing
+    }
     # finalmetrics = ARI(gtc, finalrowColor)#performance evaluation #
     # print(paste('The predicted number of clusters is: ',
     # length(unique(finalrowColor)), sep = '')) print('The ensemble performance
@@ -655,8 +747,10 @@ SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, 
     enresults$distr_pred_clusters = table(newy)
     # enresults$finalmetrics = finalmetrics
     enresults$N.pred_cluster = length(newuy)
-    enresults$x0 = x0
-    enresults$viE = viE
+    if(forview){#if we want to visualiza data, we need to save the dimension-reduced matrices/feature vectors
+        enresults$x0 = x0
+        enresults$viE = viE
+    }
     # save(enresults, file=paste(outdir,'enresults_', K, 'times.RData', sep = ''))
     # saveRDS(enresults, file=paste(outdir,'largeresults_', dir1, '.rds', sep = ''))
     return(enresults)

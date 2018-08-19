@@ -45,6 +45,13 @@ getrowColor <- function(Emat, hmethod, indN.cluster, minN.cluster, maxN.cluster,
     
     rowColor = vector(mode = "character", length = nrow(my))
     
+    colorL <<- c("red", "purple", "blue", "yellow", "green", "orange", "brown", "gray", 
+        "black", "coral", "beige", "cyan", "turquoise", "pink", "khaki", "magenta", 
+        "violet", "salmon", "goldenrod", "orchid", "seagreen", "slategray", "darkred", 
+        "darkblue", "darkcyan", "darkgreen", "darkgray", "darkkhaki", "darkorange", 
+        "darkmagenta", "darkviolet", "darkturquoise", "darksalmon", "darkgoldenrod", 
+        "darkorchid", "darkseagreen", "darkslategray", "deeppink", "lightcoral", 
+        "lightcyan")
     for (j in 1:N.cluster) {
         # sub.tf=cutree(h,k=N.cluster)==j
         sub.tf = nf == unf[j]

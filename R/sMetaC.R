@@ -70,14 +70,40 @@ sMetaC <- function(rerowColor, sE1, folds, hmethod, finalN.cluster, minN.cluster
     # nrow(G2))#similarity between two clusters S[j, i] = S[i, j] } S[i, i] = 1 }
     
     # res = kmeans(mE, max(t0)) d=as.dist(1-cor(t(mE)))
-    if (missing(minN.cluster)) {
-        minN.cluster = max(2, min(t0))
+    
+    mm = floor(length(rerowColor)/10000)
+    baseN = max(mm, 2)
+    if(minN.cluster == 2){
+        minN.cluster = baseN
     }
+#     if (missing(minN.cluster)) {
+#         minN.cluster = max(baseN, min(t0))
+#     }
+#     if (missing(maxN.cluster)) {
+#         maxN.cluster = max(mm*2, 40)
+#     }
     hres = get_opt_hclust(S, hmethod, N.cluster = finalN.cluster, minN.cluster, maxN.cluster, 
         sil.thre, height.Ntimes)
     
-    tf = hres$f
     v = hres$v
+#     cat("Dim of v is:", dim(v), "\n")
+    if (length(unique(hres$f)) == 2 && hres$maxsil > sil.thre) {
+        s0 = hres$msil
+#         cat("Dim of s0 is:", dim(s0), "\n")
+        n = length(s0)
+#         cat("n:", n, "\n")
+        s1 = sort(s0,partial=n-1)[n-1]#the second largest value
+#         cat("s1:", s1, "\n")
+        s2 = which(s0 == s1)#the index
+#         cat("Selected s2/index is", s2, "\n")
+        s3 = hres$v[, s2]
+        
+        tf = s3
+    }else{
+        tf = hres$f
+    }
+   
+    
     # d=as.dist(1-S) # d=as.dist(S) # print(S) # metah = hclust(d, method='ward.D') h
     # = hclust(d, method='ward.D')#although it is also meta, it is for a single large
     # dataset # S = mE # nc = 2:min(40, dim(S)[1]-1) nc = max(2, min(t0)):min(40,

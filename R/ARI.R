@@ -9,7 +9,8 @@
 #' @return Five clustering metrics, including Rand index (Rand), Hubert and Arabie's adjusted Rand index (HA), Morey and Agresti's adjusted Rand index (MA), Fowlkes and Mallows's index (FM), and Jaccard index. HA is the one metric that we often refer to as ARI.
 #'
 #' @examples
-#' finalmetrics = ARI(ground_true_clusters, pred_clusters)
+#' y = SHARP(scExp)
+#' finalmetrics = ARI(ground_true_clusters, y)
 #'
 #' @import clues
 #'
@@ -33,6 +34,6 @@ ARI <- function(ground_true_clusters, y) {
     
     metrics = adjustedRand(truecl, t1)  #the ARI performance metrics
     
-    cat("HA is the metric that we often refer to as ARI (adjusted Rand index), i.e., Hubert and Arabie's ARI.\n")
+#     cat("HA is the metric that we often refer to as ARI (adjusted Rand index), i.e., Hubert and Arabie's ARI.\n")
     return(metrics)
 }
