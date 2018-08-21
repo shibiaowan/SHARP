@@ -118,10 +118,13 @@ SHARP_unlimited <- function(scExp, viewflag = TRUE, ...) {
     uf = unique(finalrowColor)
     luf = length(uf)#length of unique pred-clusters
     
+    tn = table(finalrowColor)
+    tn1 = tn[order(as.numeric(names(tn)))]#order the distributions of the clustering results
+    
     enresults = list()
     enresults$pred_clusters = finalrowColor
     enresults$unique_pred_clusters = uf
-    enresults$distr_pred_clusters = table(finalrowColor)
+    enresults$distr_pred_clusters = tn1
     enresults$N.pred_clusters = luf
     enresults$N.cells = sum(nnc)
     enresults$N.genes = nng[1]

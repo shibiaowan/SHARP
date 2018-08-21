@@ -12,7 +12,7 @@
 #'
 #' @param filetype the type of the output file. Suggested file types are PDF or PNG, while other common types (e.g., JPEG or TIFF) are also acceptable. If not given, the type will be determined as follows: when the number of single cells is less than 5000, the type will be PDF; otherwise, it will be PNG.
 #'
-#' @param width, height the width and height of the outpuf figure.
+#' @param width/height the width/height of the outpuf figure.
 #'
 #' @examples
 #' y = SHARP(scExp)
@@ -24,7 +24,7 @@
 #'
 #' @export
 
-visualization_SHARP<- function(y, label, w, filename, filetype, width = 900, height = 900){
+visualization_SHARP<- function(y, label, w, filename, filetype, width = 900, height = 900, ...){
 
     # timing
     start_time <- Sys.time()  #we exclude the time for loading the input matrix
@@ -65,7 +65,7 @@ visualization_SHARP<- function(y, label, w, filename, filetype, width = 900, hei
     }
     
     set.seed(10) # Sets seed for reproducibility
-    rtsne_out <- Rtsne(as.matrix(x1), check_duplicates = FALSE, pca = flag)
+    rtsne_out <- Rtsne(as.matrix(x1), check_duplicates = FALSE, pca = flag, ...)
     cat("Project to 2-D space...\n")
     file_plot <- filename
     

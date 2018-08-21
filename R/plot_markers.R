@@ -6,17 +6,19 @@
 #'
 #' @param scExp the original expression matrix
 #'
-#' @param y the clustering results after running SHARP.R
+#' @param label the clustering labels, either using ground-truth labels or predicted clustering results.
 #'
-#' @param N.marker the maximum number of marker genes selected for each cluster
+#' @param N.marker the maximum number of marker genes selected for each cluster. The default value is 10.
+#'
+#' @param filename the output file name to save the heatmap figure. By default ,the filename is "markers_heatmap.pdf".
 #'
 #' @return The heatmap of cell-type-specific marker gene expression will be saved into a file (by default the file will be named as "markers_heatmap.pdf"). Besides, all of the cluser-specific marker genes and their associated information will be returned.
 #'
 #' @examples
 #'
 #' y = SHARP(scExp)
-#' sginfo = get_marker_genes(y)
-#' sortmarker = plot_markers(sginfo, y)
+#' sginfo = get_marker_genes(scExp, y)
+#' sortmarker = plot_markers(scExp, sginfo, y$pred_clusters)
 #'
 #' @import pheatmap
 #'
@@ -29,7 +31,7 @@
 #' @import gplots
 #'
 #' @export
-plot_markers <- function(scExp, sginfo, label, N.marker, filename){
+plot_markers <- function(scExp, sginfo, label, N.marker, filename, ...){
 
     d = cbind(rownames(sginfo), sginfo)
     colnames(d) = c("genes", colnames(sginfo))
@@ -129,6 +131,9 @@ plot_markers <- function(scExp, sginfo, label, N.marker, filename){
         scale             = 'column',
     #   kmeans_k          = uc,
         clustering_method = "ward.D",
+#         cutree_rows       = uc,
+#         cutree_cols       = uc,
+        ...
 #         main              = "Marker-gene expression matrix"
     )   
     dev.off()

@@ -368,10 +368,13 @@ SHARP_small <- function(scExp, ncells, ensize.K, reduced.ndim, hmethod, N.cluste
     newy = match(y, uy)#we use the index instead
     newuy = unique(newy)
     
+    tn = table(newy)
+    tn1 = tn[order(as.numeric(names(tn)))]#order the distributions of the clustering results
+    
     # enresults$finalrowColor = finalrowColor$finalC
     enresults$pred_clusters = newy
     enresults$unique_pred_clusters = newuy
-    enresults$distr_pred_clusters = table(newy)
+    enresults$distr_pred_clusters = tn1
     # enresults$finalmetrics = finalmetrics
     enresults$N.pred_cluster = length(newuy)
     enresults$allrpinfo = allrpinfo
@@ -741,10 +744,13 @@ SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, 
     newy = match(y, uy)#we use the index instead
     newuy = unique(newy)
     
+    tn = table(newy)
+    tn1 = tn[order(as.numeric(names(tn)))]#order the distributions of the clustering results
+    
     # enresults$finalrowColor = finalrowColor
     enresults$pred_clusters = newy
     enresults$unique_pred_clusters = newuy
-    enresults$distr_pred_clusters = table(newy)
+    enresults$distr_pred_clusters = tn1
     # enresults$finalmetrics = finalmetrics
     enresults$N.pred_cluster = length(newuy)
     if(forview){#if we want to visualiza data, we need to save the dimension-reduced matrices/feature vectors

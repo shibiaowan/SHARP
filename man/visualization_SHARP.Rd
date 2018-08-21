@@ -5,7 +5,7 @@
 \title{SHARP visualization}
 \usage{
 visualization_SHARP(y, label, w, filename, filetype, width = 900,
-  height = 900)
+  height = 900, ...)
 }
 \arguments{
 \item{y}{the results after running the SHARP function}
@@ -18,7 +18,7 @@ visualization_SHARP(y, label, w, filename, filetype, width = 900,
 
 \item{filetype}{the type of the output file. Suggested file types are PDF or PNG, while other common types (e.g., JPEG or TIFF) are also acceptable. If not given, the type will be determined as follows: when the number of single cells is less than 5000, the type will be PDF; otherwise, it will be PNG.}
 
-\item{width, }{height the width and height of the outpuf figure.}
+\item{width/height}{the width/height of the outpuf figure.}
 }
 \description{
 This function is to visualize the data in 2D scatter plots. For visualization, SHARP uses a weighted combination of the dimension-reduced feature matrix and the output location matrix produced by the clustering results of SHARP. The output scatter plot will be saved in a figure file (by default, the file is named as "vi_SHARP.pdf" or "vi_SHARP.png")
