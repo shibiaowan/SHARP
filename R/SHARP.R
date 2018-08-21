@@ -631,26 +631,26 @@ SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, 
         return(wres)
     }
     
-     fColor = character(length = 0)#declare an empty character
-	 for(t in 1:T){
-            fColor = c(fColor, frowColor[[t]]$fC)
-	 }
+    fColor = character(length = 0)#declare an empty character
+    for(t in 1:T){
+        fColor = c(fColor, frowColor[[t]]$fC)
+    }
 	
-	 uC = unique(fColor)
-	 print(uC)
-	 lenuC = length(uC)#number of meta clusters for sMetaC
-	 sx0 = matrix(0, ncells, lenuC)
-	 j1 = 0
-	 j2 = 0
-	 for(t in 1:T){
-            p = length(frowColor[[t]]$fC)#number of cells in block t
-            q = frowColor[[t]]$nwC#number of unique clusters in block t
-            sx0[seq(j1+1, j1+p, by = 1), seq(j2+1, j2+q, by = 1)] = frowColor[[t]]$x0##no transpose
+    uC = unique(fColor)
+    print(uC)
+    lenuC = length(uC)#number of meta clusters for sMetaC
+    sx0 = matrix(0, ncells, lenuC)
+    j1 = 0
+    j2 = 0
+    for(t in 1:T){
+        p = length(frowColor[[t]]$fC)#number of cells in block t
+        q = frowColor[[t]]$nwC#number of unique clusters in block t
+        sx0[seq(j1+1, j1+p, by = 1), seq(j2+1, j2+q, by = 1)] = frowColor[[t]]$x0##no transpose
 #             print(dim(frowColor[[t]]$x0))
 #             print(dim(sx0[(j1+1):(j1+p), (j2+1):(j2+q)]))
-            j1 = j1 + p
-            j2 = j2 + q
-	 }
+        j1 = j1 + p
+        j2 = j2 + q
+    }
     # stop('Trial 1 success!') frowColor = unlist(sapply(1:T, function(t){tind =
     # seq((t-1)*ng + 1, t*ng); if(t == T){tind = seq((T-1)*ng + 1, ncells)}; ftmp =
     # wMetaC(enrp[tind,]); paste(ftmp$finalC, '_', t, sep = '')}))

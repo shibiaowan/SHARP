@@ -138,7 +138,7 @@ wMetaC <- function(nC, hmethod, enN.cluster, minN.cluster, maxN.cluster, sil.thr
     
     
     # tf=cutree(metah,k=N.cluster)
-    newnC[] <- vapply(newnC, function(x) tf[match(x, R)], numeric(1))  #apply to every element; reorganizing the clusters for different results
+    newnC[] <- vapply(newnC, function(q) tf[match(q, R)], numeric(1))  #apply to every element; reorganizing the clusters for different results
     
     finalC = apply(newnC, 1, function(d) names(sort(table(d), decreasing = TRUE)[1]))  #find the most repeated elements for each row
     
@@ -165,26 +165,32 @@ wMetaC <- function(nC, hmethod, enN.cluster, minN.cluster, maxN.cluster, sil.thr
     uC = unique(finalC)#unique clusters
 # print(uC)
 # #   x0 = apply(newnC, 1, function(x){t = rep(0, N.cluster); for(i in c(1:N.cluster)){t[i] = length(which(x %in% i))}; return(t)})
-  y0 = apply(newnC, 1, function(x){t = rep(0, N.cluster); for(i in c(1:N.cluster)){t[i] = length(which(x %in% uC[i]))}; return(t)})#need to reorganize before counting
+    y0 = apply(newnC, 1, function(q){
+        t = rep(0, N.cluster) 
+        for(i in c(1:N.cluster)){
+            t[i] = length(which(q %in% uC[i]))
+        }
+        return(t)
+    })#need to reorganize before counting
 #   print(dim(y0))
-  y0 = t(y0)#transpose
+    y0 = t(y0)#transpose
   
   
-  x0 = matrix(0, nrow = N, ncol = N.cluster)
+    x0 = matrix(0, nrow = N, ncol = N.cluster)
 #   print(dim(x0))
   
   
-  tw = 0.5
+    tw = 0.5
 #   print(uC)
-  for(i in 1:N){
-    xind = which(finalC[i]==uC)
-    x0[i, xind] = 1#the correct clustering result
-    allind = which(y0[i,]!=0)#all the counts
-    diffind = setdiff(allind, xind)#some other counts which are not the correct cluster
-    if(length(diffind) != 0){
-        x0[i, diffind] = tw* y0[i, diffind]/y0[i, xind]#use a reduced weight
+    for(i in 1:N){
+        xind = which(finalC[i]==uC)
+        x0[i, xind] = 1#the correct clustering result
+        allind = which(y0[i,]!=0)#all the counts
+        diffind = setdiff(allind, xind)#some other counts which are not the correct cluster
+        if(length(diffind) != 0){
+            x0[i, diffind] = tw* y0[i, diffind]/y0[i, xind]#use a reduced weight
+        }
     }
-  }
   
   
 #     x0 = apply(newnC, 1, function(x) {

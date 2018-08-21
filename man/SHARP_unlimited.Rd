@@ -4,10 +4,12 @@
 \alias{SHARP_unlimited}
 \title{Run SHARP for clustering single-cell RNA data whose size (e.g., dim > 2,147,483,647) is beyond R to handle.}
 \usage{
-SHARP_unlimited(scExp, ...)
+SHARP_unlimited(scExp, viewflag = TRUE, ...)
 }
 \arguments{
 \item{scExp}{a list of input single-cell expression matrices, where each element represents a partition of the huge-size single-cell RNA-seq data matrix.}
+
+\item{viewflag}{a logic to indicate whether to save the ensemble random-projection feature vectors for further visualization. The default is TRUE.}
 
 \item{...}{other parameters similar to those used in SHARP() function. Please refer to SHARP() for details.}
 }

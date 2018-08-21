@@ -4,6 +4,8 @@
 #'
 #' @param scExp a list of input single-cell expression matrices, where each element represents a partition of the huge-size single-cell RNA-seq data matrix.
 #'
+#' @param viewflag a logic to indicate whether to save the ensemble random-projection feature vectors for further visualization. The default is TRUE.
+#'
 #' @param ... other parameters similar to those used in SHARP() function. Please refer to SHARP() for details.
 #'
 #' @details This is a complementary SHARP function to deal with the case where R itself can not handle a matrix whose non-zero element is over 2,147,483,647. The huge-size matrix is first divided into several partitions which are susequently saved into a list. SHARP_unlimited() can directly deal with this list.
@@ -21,8 +23,10 @@
 #'
 #' @import doParallel
 #'
+#' @import Matrix
+#'
 #' @export
-SHARP_unlimited <- function(scExp, ...) {
+SHARP_unlimited <- function(scExp, viewflag = TRUE, ...) {
     # timing
     start_time <- Sys.time()  #we exclude the time for loading the input matrix
     
@@ -100,6 +104,8 @@ SHARP_unlimited <- function(scExp, ...) {
     
     
     
+    
+    
     end_time <- Sys.time()
     
     t <- difftime(end_time, start_time, units = "mins")  #difference time in minutes
@@ -109,16 +115,28 @@ SHARP_unlimited <- function(scExp, ...) {
     cat("=======================================================================\n")
     cat("Total running time:", t, "minutes\n")
     #################################### 
+    uf = unique(finalrowColor)
+    luf = length(uf)#length of unique pred-clusters
+    
     enresults = list()
     enresults$pred_clusters = finalrowColor
-    enresults$unique_pred_clusters = unique(finalrowColor)
+    enresults$unique_pred_clusters = uf
     enresults$distr_pred_clusters = table(finalrowColor)
-    enresults$N.pred_clusters = length(unique(finalrowColor))
+    enresults$N.pred_clusters = luf
     enresults$N.cells = sum(nnc)
     enresults$N.genes = nng[1]
     enresults$reduced.dim = y[[1]]$reduced.ndim
     enresults$ensize.K = y[[1]]$ensize.K
-    enresults$viE = E1
+    if(viewflag){
+        enresults$viE = E1
+        
+#         x0 = matrix(0, ncells, luf)
+#         for(i in 1:ncells){
+#             x0[i, finalrowColor[i] == uf] = 1
+#         }
+        x0 = sparseMatrix(i = 1:ncells, j = as.numeric(finalrowColor), x = 1, dims = c(ncells, luf))
+        enresults$x0 = x0
+    }
     enresults$time = t
     enresults$paras = y[[1]]$paras
     

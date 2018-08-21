@@ -24,15 +24,15 @@ sMetaC <- function(rerowColor, sE1, folds, hmethod, finalN.cluster, minN.cluster
     
     nC = length(unique(rerowColor))  #number of unique clusters
     
-    # get the number of clusters for each partition groups
-    T = unique(folds)
-    t0 = vector(mode = "numeric", length = length(T))
-    # ff = numeric()
-    for (t in 1:length(T)) {
-        tmp = which(folds == T[t])
-        t0[t] = length(unique(rerowColor[tmp]))  #number of clusters for each partition
-        # ff = c(ff, rep(t, each = t0[t]))
-    }
+#     # get the number of clusters for each partition groups
+#     T = unique(folds)
+#     t0 = vector(mode = "numeric", length = length(T))
+#     # ff = numeric()
+#     for (t in 1:length(T)) {
+#         tmp = which(folds == T[t])
+#         t0[t] = length(unique(rerowColor[tmp]))  #number of clusters for each partition
+#         # ff = c(ff, rep(t, each = t0[t]))
+#     }
     
     
     # pind = which.max(t0)#the partition which has the most predicted clusters rind =
