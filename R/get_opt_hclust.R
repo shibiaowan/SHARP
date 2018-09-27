@@ -94,7 +94,9 @@ get_opt_hclust <- function(mat, hmethod, N.cluster, minN.cluster, maxN.cluster, 
         # if missing, automatically determine the number of clusters
         
         my = mat
+        nn = nrow(my)#number of data
         nc = minN.cluster:min(maxN.cluster, nrow(my) - 1)
+#         cat("Testing numbers of clusters:", nc, "\n")
         # cat('trying cluster number as: ', nc)
         v = matrix(0, nrow = nrow(my), ncol = length(nc))  #for all different numbers of clusters
         msil = rep(0, length(nc))  #declare a vector of zeros
@@ -107,6 +109,7 @@ get_opt_hclust <- function(mat, hmethod, N.cluster, minN.cluster, maxN.cluster, 
         
         my1 = as.matrix(my)  #convert to full matrix
         my = my1
+        tt = numeric(length(nc))
         # cat(dim(my))
         for (i in 1:length(nc)) {
             # for(i in 1:1){ foreach(i=1:length(nc)) %dopar%{ cat('fast\n')
@@ -125,6 +128,10 @@ get_opt_hclust <- function(mat, hmethod, N.cluster, minN.cluster, maxN.cluster, 
             # wss))
             CHind[i] = get_CH(my, v[, i], disMethod = "1-corr")
             
+#             if(nn>=100){
+#                 tt[i] = length(which(table(v[, i]) < nn/100))#number of clusters whose number of cells is less than 50
+#             }
+            
             # ch0 = intCriteria(data.matrix(my),as.integer(v[,i]),'Calinski_Harabasz')
             # CHind[i] = unlist(ch0, use.names = F)#convert a list to a vector/value
             # cat(Sys.time(), '\n')
@@ -138,6 +145,7 @@ get_opt_hclust <- function(mat, hmethod, N.cluster, minN.cluster, maxN.cluster, 
         # print(wss) print(mdunn) print(mdb) oind = which.max(msil)#the index
         # corresponding to the max sil index
         tmp = which(msil == max(msil))  #in case there are more than one maximum
+         
         if (length(tmp) > 1) {
             oind = tmp[ceiling(length(tmp)/2)]
         } else {
@@ -146,7 +154,29 @@ get_opt_hclust <- function(mat, hmethod, N.cluster, minN.cluster, maxN.cluster, 
         cat("The maximum Silhouette index is", max(msil), "\n")
         
         # if the maximum Silhouette index is smaller than the threshold, we use CH index
-        if (max(msil) <= sil.thre) {
+#         if (max(msil) > sil.thre){#pass through threshold
+#             if(nrow(mat)>=100){
+#             nt = which(tt == 0)#some clustering results having no cases of single-element as a cluster
+#                 if(length(nt) != 0){
+#                     x = rank(-msil[nt])
+#                     oind = nt[x[1]]
+#                 }else{
+#                     cat("contain a cluster with very small number of data\n")
+#                     y = rank(tt)
+#                     oind = y[1]
+#                 }
+#             }
+#            
+# #             if(oind == 1){
+# #                 x = rank(-msil)
+# #                 a1 = max(table(v[, oind]))
+# #                 a2 = min(table(v[, oind]))
+# #                 if(nrow(mat)>=100 && a1/a2 > 10){#significant balance
+# #                     oind = x[2]
+# #                 }
+# #             }
+#         }else{
+        if(max(msil) <= sil.thre){
             oind = which.max(CHind)
             if (oind == 1) {
                 # if the maximum CH index with the minimum number of clusters, it's likely that

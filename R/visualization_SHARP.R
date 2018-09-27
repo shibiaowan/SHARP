@@ -22,12 +22,19 @@
 #'
 #' @import RColorBrewer
 #'
+#' @import parallel
+#'
 #' @export
 
-visualization_SHARP<- function(y, label, w, filename, filetype, width = 900, height = 900, ...){
+visualization_SHARP<- function(y, label, w, filename, filetype, n.cores, width = 900, height = 900, ...){
 
     # timing
     start_time <- Sys.time()  #we exclude the time for loading the input matrix
+    if (missing(n.cores)) {
+        # number of cores to be used, the default is to use all but one cores
+        n.cores = detectCores() - 1
+    }
+    
     cat("Start visualization...\n")
    
 
@@ -40,11 +47,20 @@ visualization_SHARP<- function(y, label, w, filename, filetype, width = 900, hei
     if(missing(w)){#the relative weight of x0 over ensemble RP-based matrices
         w = 2
     }
-    x1 = cbind(w*scale(y$x0), scale(y$viE))
+    
+    if(w >= 100){#if the weight is very large, only the clustering results related matrix is used
+        x1 = as.matrix(y$x0)
+        x1 = jitter(x1, amount = 0)
+    }else if(w <= 0.01){#if the weight is very small, only the RP-projected matrix is used
+        x1 = as.matrix(y$viE)
+    }else{
+        x1 = as.matrix(cbind(w*scale(y$x0), scale(y$viE)))
+    }
+    
 #     x1 = scale(y$viE)
 #     x1 = cbind(y$x0, y$viE)
     #whether PCA is required
-    if (dim(x1)[2] < 50){
+    if (dim(x1)[2] <= 50){
         flag = FALSE
     }else{
         flag = TRUE
@@ -65,7 +81,14 @@ visualization_SHARP<- function(y, label, w, filename, filetype, width = 900, hei
     }
     
     set.seed(10) # Sets seed for reproducibility
-    rtsne_out <- Rtsne(as.matrix(x1), check_duplicates = FALSE, pca = flag, ...)
+    
+#     if(dim(x1)[1] > 1e5){
+#         rM = ranM(t(x1), 30, seedn = 61)
+#         x1 = 1/sqrt(30) * t(rM) %*% t(x1)
+#         x1 = t(x1)
+#     }
+    
+    rtsne_out <- Rtsne(x1, check_duplicates = FALSE, pca = flag, num_threads = n.cores, verbose = TRUE, ...)
     cat("Project to 2-D space...\n")
     file_plot <- filename
     
@@ -88,7 +111,7 @@ visualization_SHARP<- function(y, label, w, filename, filetype, width = 900, hei
     cat("Draw the scatter plots...\n")
     if(!missing(label)){#if the reference clustering label is given
         uc = length(unique(label))
-        palette(brewer.pal(n = uc, name = "Set1"))
+#         palette(brewer.pal(n = uc, name = "Set1"))
         
         plot(rtsne_out$Y, asp = 1, pch = 20, col = label, cex = 0.75, cex.axis = 1.25, cex.lab = 1.25, cex.main = 1.5, xlab = "SHARP Dim-1", ylab = "SHARP Dim-2", main = tt)
     }else{

@@ -18,7 +18,7 @@
 #'
 #' y = SHARP(scExp)
 #' sginfo = get_marker_genes(scExp, y)
-#' sortmarker = plot_markers(scExp, sginfo, y$pred_clusters)
+#' sortmarker = plot_markers(sginfo)
 #'
 #' @import pheatmap
 #'
@@ -31,10 +31,21 @@
 #' @import gplots
 #'
 #' @export
-plot_markers <- function(scExp, sginfo, label, N.marker, filename, ...){
+plot_markers <- function(sginfo, label, N.marker, sN.cluster, filename, n.cores, ...){
 
-    d = cbind(rownames(sginfo), sginfo)
-    colnames(d) = c("genes", colnames(sginfo))
+    if (missing(n.cores)) {
+        # number of cores to be used, the default is to use all but one cores
+        n.cores = detectCores() - 1
+    }
+    registerDoParallel(n.cores)
+    
+    if(missing(label)){
+        label = sginfo$label
+    }
+   
+    mginfo = sginfo$mginfo
+    d = cbind(rownames(mginfo), mginfo)
+    colnames(d) = c("genes", colnames(mginfo))
     d = d[order(d$icluster, d$pvalue), ]#sort in ascending order within each icluster
 
     
@@ -49,12 +60,19 @@ plot_markers <- function(scExp, sginfo, label, N.marker, filename, ...){
     }
     nmarker = N.marker
     
-    ll = length(unique(sortmarker$icluster))
+    if(missing(sN.cluster)){#number of selected clusters
+        sN.cluster = length(unique(mginfo$icluster))
+    }
+    
+    kk = sort(unique(mginfo$icluster))[1:sN.cluster]#the smaller the order of the cluster No, the larger the number of cells in this cluster
+    
+#     ll = length(unique(sortmarker$icluster))
+    ll = sN.cluster
     y0 = numeric(0)
     for(i in 1:ll){
-        x = sortmarker[sortmarker$icluster==i, ]#the i-th cluster
+        x = sortmarker[sortmarker$icluster==kk[i], ]#the i-th cluster
         if(nrow(x) > nmarker){
-            y0 = rbind(y0, x[1:10,])
+            y0 = rbind(y0, x[1:nmarker,])
         }else{
             y0 = rbind(y0, x)
         }
@@ -66,12 +84,36 @@ plot_markers <- function(scExp, sginfo, label, N.marker, filename, ...){
     bk <- seq(-2, 2, by=0.1)
 
 #     cc = y$pred_clusters
+#     cc0 = which(label %in% kk)
+#     cc = label[cc0]
     cc = label
     cellind = order(cc)#order the cells in ascending order
+#     if(length(cellind) > 100){
+#         d = ceiling(table(cellind)*100/length(cellind))
+#         cellind2 = numeric(sum(d))
+#         nd = names(d)
+#         for(x in nd){
+#             x1 = d[x]#times
+#             cellind2[which(cellind == x)[1:x1]] = x
+#         }
+#     }
+    
     newc = cc[cellind]
 
-    mat = as.matrix(scExp)
-    sm = mat[as.character(ssmarker$genes), cellind]
+#     if(class(scExp) == "list"){
+#          len = scExp
+#          dd = foreach(x = 1:len, .combine = "cbind")%dopar%{
+#             scExp[[x]][as.character(ssmarker$genes),]
+#          }
+# #          dd = unlist(sapply(1:len, function(x) scExp[[x]][as.character(ssmarker$genes),]))
+#     }else{
+#         mat = as.matrix(scExp)
+#         sm = mat[as.character(ssmarker$genes), cellind]
+#     }
+    
+    mat = sginfo$mat#expression
+    sm = mat[, cellind]
+    
 
     my = sm
     my = my[apply(my,1,function(x) sd(x)!=0),]

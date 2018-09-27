@@ -6,7 +6,7 @@
 \usage{
 SHARP_small(scExp, ncells, ensize.K, reduced.ndim, hmethod, N.cluster,
   indN.cluster, minN.cluster, maxN.cluster, sil.thre, height.Ntimes, flag,
-  forview, rN.seed)
+  n.cores, forview, rN.seed)
 }
 \arguments{
 \item{scExp}{input single-cell expression matrix}

@@ -15,14 +15,15 @@
 #'
 #' @export
 sMetaC <- function(rerowColor, sE1, folds, hmethod, finalN.cluster, minN.cluster, 
-    maxN.cluster, sil.thre, height.Ntimes) {
+    maxN.cluster, sil.thre, height.Ntimes, n.cores) {
     # This is to do meta-clustering the results obtained for each smaller group of
     # the original large-scale datasets
     R = unique(rerowColor)  #unique clusters
-    # print(R)
+#     print(R)
     # cat("Unique clusters for similarity-based meta-clustering are: \n", R, "\n")
     
-    nC = length(unique(rerowColor))  #number of unique clusters
+    nC = length(R)  #number of unique clusters
+    cat("Number of meta-clusters is:", nC, "\n")
     
 #     # get the number of clusters for each partition groups
 #     T = unique(folds)
@@ -48,14 +49,41 @@ sMetaC <- function(rerowColor, sE1, folds, hmethod, finalN.cluster, minN.cluster
     # t = p alls = apply(cb, 2, getpaircor, rerowColor = rerowColor, E1 =
     # E1)#calculate the correlation/simialrity for all combinations (apply to the
     # columns) parallel programming####
-    alls = foreach(t = 1:dim(cb)[2], .combine = "c") %dopar% {
-        getpaircor(cb[, t], rerowColor, sE1, R)
+    
+    h = dim(cb)[2]#n*(n-1)/2 combinations
+    cat("Number of combinations:", h, "\n")
+    
+    registerDoParallel(n.cores)
+    #get the mean vector for each cluster
+    aG = foreach(t = 1:nC, .combine = "rbind") %dopar%{
+        G1 = sE1[which(rerowColor %in% R[t]), , drop = FALSE]  #find all the cells for cluster i; 'drop = F' is to avoid a one-row/column matrix being converted to a vector
+    
+        aG1 = colMeans(G1)
+        return(aG1)
     }
+
+#     alls = numeric(h)
+    #get the cluster-pairwise correlation
+    alls = foreach(t = 1:h, .combine = "c") %dopar% {
+        corss = cor(aG[cb[1, t], ], aG[cb[2, t], ])
+#         corss = getpaircor(cb[, t], rerowColor, sE1, R)
+# #         if(is.null(corss)){
+# #             cat(cb[, t], "(", t,"-th element) is NULL!\n")
+# #             corss = 0
+# #         }
+#         if(t %% ceiling(h/10) == 0){
+#             cat("The", t, "-th combination\n")
+#         }
+        return(corss)
+    }
+    stopImplicitCluster()
+#     cat("The length of alls is:", length(alls), "\n")
     # alls = foreach(t=1:dim(cb)[2], .combine = 'c') %dopar%{exp(-sum((mf[cb[1, t]] -
     # mf[cb[2, t]])^2)/t)}
     
     S0 = sparseMatrix(i = cb[1, ], j = cb[2, ], x = alls, dims = c(nC, nC))  #triangle part of the S
     S = S0 + t(S0) + diag(nC)
+#     print(S)
     
     # w = matrix(0, nrow = length(R), ncol = 2) for(i in 1:length(R)){ tind
     # =setdiff(1:length(R), which(ff == ff[i]))#rest index w[i,1] = min(S[i, tind]) }
@@ -72,11 +100,25 @@ sMetaC <- function(rerowColor, sE1, folds, hmethod, finalN.cluster, minN.cluster
     
     # res = kmeans(mE, max(t0)) d=as.dist(1-cor(t(mE)))
     
-    mm = floor(length(rerowColor)/10000)
-    baseN = max(mm, 2)
-    if(minN.cluster == 2){
-        minN.cluster = baseN
+    ncells = length(rerowColor)
+    mm = floor(ncells/10000)
+    if(ncells < 1e6){
+        baseN = min(max(mm, 2), 10)
+        if(minN.cluster == 2 && min(maxN.cluster, nrow(S))-baseN >= 3){#in case the maximum tried ncluster is not large enough, we do not change the minimum one
+            minN.cluster = baseN
+        }
+    }else{
+#         maxN.cluster = max(maxN.cluster, mm)
+        mm3 = floor(ncells/50000)
+#         minN.cluster = max(minN.cluster, mm2)
+        mm2 = floor(ncells/5000)
+#         maxN.cluster = max(maxN.cluster, mm)
+#         minN.cluster = max(minN.cluster, mm3)
+        maxN.cluster = max(maxN.cluster, mm2)
+        minN.cluster = max(minN.cluster, mm3)
     }
+    
+    
 #     if (missing(minN.cluster)) {
 #         minN.cluster = max(baseN, min(t0))
 #     }
@@ -86,7 +128,8 @@ sMetaC <- function(rerowColor, sE1, folds, hmethod, finalN.cluster, minN.cluster
     hres = get_opt_hclust(S, hmethod, N.cluster = finalN.cluster, minN.cluster, maxN.cluster, 
         sil.thre, height.Ntimes)
     
-    v = hres$v
+    print(hres$msil)#the silhouette index for different clusters
+    v = hres$v#different numbers of clustering results
 #     cat("Dim of v is:", dim(v), "\n")
     if (length(unique(hres$f)) == 2 && hres$maxsil > sil.thre) {
         s0 = hres$msil
@@ -102,6 +145,7 @@ sMetaC <- function(rerowColor, sE1, folds, hmethod, finalN.cluster, minN.cluster
         tf = s3
     }else{
         tf = hres$f
+        cat("Number of predicted clusters:", hres$optN.cluster, "\n")
     }
    
     
@@ -166,19 +210,32 @@ sMetaC <- function(rerowColor, sE1, folds, hmethod, finalN.cluster, minN.cluster
 
 
 getpaircor <- function(pairind, rerowColor, sE1, R) {
-    G1 = sE1[rerowColor == R[pairind[1]], , drop = FALSE]  #find all the cells for cluster i; 'drop = F' is to avoid a one-row/column matrix being converted to a vector
-    G2 = sE1[rerowColor == R[pairind[2]], , drop = FALSE]  #find all the cells for cluster j
+#     G1 = sE1[rerowColor == R[pairind[1]], , drop = FALSE]  #find all the cells for cluster i; 'drop = F' is to avoid a one-row/column matrix being converted to a vector
+#     G2 = sE1[rerowColor == R[pairind[2]], , drop = FALSE]  #find all the cells for cluster j
     
+    G1 = sE1[which(rerowColor %in% R[pairind[1]]), , drop = FALSE]  #find all the cells for cluster i; 'drop = F' is to avoid a one-row/column matrix being converted to a vector
+    G2 = sE1[which(rerowColor %in% R[pairind[2]]), , drop = FALSE]  #find all the cells for cluster j
     # cor1 = cor(t(G1), t(G2))#correlation between these two clusters t =
     # 1.5*dim(G1)[2]
+    
     aG1 = colMeans(G1)
     aG2 = colMeans(G2)
-    # corss = dist(rbind(aG1, aG2)) corss = exp(-sum((aG1 - aG2)^2)/t)
+        # corss = dist(rbind(aG1, aG2)) corss = exp(-sum((aG1 - aG2)^2)/t)
     corss = cor(aG1, aG2)
+        
+#     if(dim(G1)[1] != 0 && dim(G2)[1] != 0){#if not available or missing, one fo the sd's is 0, and then correlation is 0
+#         aG1 = colMeans(G1)
+#         aG2 = colMeans(G2)
+#         # corss = dist(rbind(aG1, aG2)) corss = exp(-sum((aG1 - aG2)^2)/t)
+#         corss = cor(aG1, aG2)
+#         if(length(corss) == 0){
+#             cat("Cor NULL exists for", R[pairind[1]], "and", R[pairind[2]], "\n")
+#         }
+#     }else{
+#         cat(R[pairind[1]], "and", R[pairind[2]], ": at least one of them is with length 0\n")
+#         corss = 0
+#     }
     
-    if(is.na(corss)){#if not available or missing, one fo the sd's is 0, and then correlation is 0
-        corss = 0
-    }
     # as1 = 1/(1 + exp(-aG1)) as2 = 1/(1 + exp(-aG2)) ass =
     # sum(aG1*aG2)/sqrt(sum(aG1^2)*sum(aG2^2)) corss = 1/(1 + exp(-ass)) cor1 =
     # foreach(i = 1:dim(G1)[1], .combine = 'cbind') %:% foreach(j = 1:dim(G2)[1],

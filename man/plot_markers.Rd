@@ -4,11 +4,9 @@
 \alias{plot_markers}
 \title{Plot marker genes}
 \usage{
-plot_markers(scExp, sginfo, label, N.marker, filename, ...)
+plot_markers(sginfo, label, N.marker, sN.cluster, filename, n.cores, ...)
 }
 \arguments{
-\item{scExp}{the original expression matrix}
-
 \item{sginfo}{the info matrix of selected marker genes, including their correspnding cluster, p-value and AUROC (areas under the curve of the Receiver Operating Characteristic) value.}
 
 \item{label}{the clustering labels, either using ground-truth labels or predicted clustering results.}
@@ -16,6 +14,8 @@ plot_markers(scExp, sginfo, label, N.marker, filename, ...)
 \item{N.marker}{the maximum number of marker genes selected for each cluster. The default value is 10.}
 
 \item{filename}{the output file name to save the heatmap figure. By default ,the filename is "markers_heatmap.pdf".}
+
+\item{scExp}{the original expression matrix}
 }
 \value{
 The heatmap of cell-type-specific marker gene expression will be saved into a file (by default the file will be named as "markers_heatmap.pdf"). Besides, all of the cluser-specific marker genes and their associated information will be returned.
@@ -27,6 +27,6 @@ This function is to plot a heatmap showing the cluster-specific marker genes. On
 
 y = SHARP(scExp)
 sginfo = get_marker_genes(scExp, y)
-sortmarker = plot_markers(scExp, sginfo, y$pred_clusters)
+sortmarker = plot_markers(sginfo)
 
 }

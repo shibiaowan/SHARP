@@ -7,7 +7,7 @@
 SHARP(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partition.ncells,
   hmethod, N.cluster = NULL, enpN.cluster = NULL, indN.cluster = NULL,
   minN.cluster, maxN.cluster, sil.thre, height.Ntimes, logflag, sncells,
-  n.cores, forview = TRUE, prep = TRUE, rN.seed)
+  n.cores, forview = TRUE, prep, rM, rN.seed)
 }
 \arguments{
 \item{scExp}{input single-cell expression matrix, where each column represents a cell and each row represents a gene.}
@@ -43,6 +43,8 @@ SHARP(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partition.ncells,
 \item{n.cores}{number of cores to be used. The default is (n-1) cores, where n is the number of cores in your local computer or server.}
 
 \item{forview}{a logical to indicate whether those feature-vectors for data visualization should be saved or not. By default, it is TRUE.}
+
+\item{rM}{if provided, it should be a list of random matrices for random projection; otherwise, it will be calculated by SHARP_large.}
 
 \item{rN.seed}{a number using which we can set seeds for SHARP to obtain reproducible results.}
 }

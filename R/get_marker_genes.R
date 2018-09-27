@@ -22,7 +22,7 @@
 #' @import data.table
 #'
 #' @export
-get_marker_genes <- function(scExp, y, n.cores){
+get_marker_genes <- function(scExp, y, theta, auc, pvalue, n.cores){
 
     if (missing(n.cores)) {
         # number of cores to be used, the default is to use all but one cores
@@ -31,6 +31,18 @@ get_marker_genes <- function(scExp, y, n.cores){
    
     registerDoParallel(n.cores)
 
+    if(missing(theta)){
+        theta = 1e-4
+    }
+    
+    if(missing(auc)){
+        auc = 0.7
+    }
+    
+    if(missing(pvalue)){
+        pvalue = 0.01
+    }
+    
     ncells = y$N.cells#number of cells
 
     N.cluster = y$N.pred_cluster
@@ -51,7 +63,8 @@ get_marker_genes <- function(scExp, y, n.cores){
         y$pred_clusters  = match(y$pred_clusters, uy)#we use the index instead
     }
 
-    dt <- data.frame(yy = t(mat), ig = y$pred_clusters)#gene expression; cluster
+    label = as.numeric(y$pred_clusters)
+    dt <- data.frame(yy = t(mat), ig = label)#gene expression; cluster
 
     cat("Looking for marker genes...\n")
 
@@ -63,19 +76,29 @@ get_marker_genes <- function(scExp, y, n.cores){
 
     ######parallel
     ginfo = foreach(i = 1:D, .combine = c)%dopar%{
-        r = rank(mat[i, ])#gene rank
+    
+        dd = mat[i, ]
+        dp = length(which(dd!=0))/length(dd)
+        
+        if(dp > theta){
+            r = rank(mat[i, ])#gene rank
    
-        s = aggregate(r~dt$ig, FUN = mean)#average over one gene across cells
-        icluster = which.max(s$r)#the cluster with the maximum value
-        x = r[as.numeric(dt$ig) == icluster]
-        y = r[as.numeric(dt$ig) != icluster]
-        p = wilcox.test(x, y)$p.value
+            s = aggregate(r~dt$ig, FUN = mean)#average over one gene across cells
+            icluster = which.max(s$r)#the cluster with the maximum value
+            x = r[as.numeric(dt$ig) == icluster]
+            y = r[as.numeric(dt$ig) != icluster]
+            p = wilcox.test(x, y)$p.value
     
-        pred <- prediction(r, as.numeric(dt$ig) == icluster)
-        auc <- unlist(performance(pred, "auc")@y.values)
+            pred <- prediction(r, as.numeric(dt$ig) == icluster)
+            auc <- unlist(performance(pred, "auc")@y.values)
+        }else{
+            auc = icluster = p = 0
+        }
+        
     
     
-        tt = c(auc, icluster, p)
+#         tt = c(auc, icluster, p)
+        tt = c(auc, icluster, p, dp)#character
     
         # update progress bar
         setTxtProgressBar(pb, i)
@@ -84,25 +107,33 @@ get_marker_genes <- function(scExp, y, n.cores){
         return(tt)
     }
 
-    ginfo = matrix(ginfo, nrow = 3)
+    ginfo = matrix(ginfo, nrow = 4)
     ###############
 
 
     close(pb)
 
-    ginfo <- data.frame(matrix(unlist(ginfo), ncol = 3, byrow = T))
-    colnames(ginfo) = c("auc", "icluster", "pvalue")
+    ginfo <- data.frame(matrix(unlist(ginfo), ncol = 4, byrow = T))
+    colnames(ginfo) = c("auc", "icluster", "pvalue", "sparsity")
     rownames(ginfo) = rownames(mat)
 
+    ginfo = ginfo[ginfo$sparsity > theta, ]#remove low-expressed genes
+    
+    ginfo = ginfo[!is.nan(ginfo$pvalue), ]#remove those corresponding to p-value == NaN
+    
     ginfo$pvalue = p.adjust(ginfo$pvalue, method = "holm")
 
+    
+    gallinfo = ginfo
     ###in case some clusters do not have any qualified marker genes, we need to lower the AUC threshold (0.85)
     dt = data.table(ginfo)
     dt0 = dt[, list(maxauc = max(auc), minpvalue = min(pvalue)), by = icluster]
 
     ##adjusted AUC and p-value
-    adpvalue = max(0.01, max(dt0$minpvalue))
-    adauc = min(0.8, min(dt0$maxauc))
+#     adpvalue = max(0.01, max(dt0$minpvalue))
+#     adauc = min(0.85, min(dt0$maxauc))
+    adpvalue = pvalue
+    adauc = auc
     
     cat("The adjusted p-avalue is", adpvalue, "and the adjusted AUROC is", adauc, "\n")
 
@@ -117,7 +148,23 @@ get_marker_genes <- function(scExp, y, n.cores){
     xx = intersect(x1, x2)
 
     sginfo = ginfo[xx, ]#selected genes with p-values and their clusters
+    
+    nsgene = nrow(sginfo)
+    cat("Number of selected marker genes:", nsgene, "\n")
+    #the corresponding expressions of marker genes
+#     dd = foreach(i = 1:nsgene, .combine = "rbind")%dopar%{
+#         unlist(sapply(1:len, function(x) scExp[[x]][rownames(sginfo[i, ]),]))
+#     }
+    
+    dd = scExp[rownames(sginfo), ]
 
-    return(sginfo)
+    
+    res = list()
+    res$sginfo = sginfo
+    res$mat = dd
+    res$label = label
+    res$gallinfo = gallinfo
+    return(res)
+#     return(sginfo)
 }
 

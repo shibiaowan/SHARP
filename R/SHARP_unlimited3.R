@@ -26,56 +26,51 @@
 #' @import Matrix
 #'
 #' @export
-SHARP_unlimited <- function(scExp, viewflag = TRUE, n.cores, ensize.K, N.cluster = NULL, minN.cluster, maxN.cluster, rN.seed, ...) {
+SHARP_unlimited3 <- function(ndinfo, viewflag = TRUE, n.cores, ensize.K, rN.seed, N.cluster = NULL, ...) {
     # timing
     start_time <- Sys.time()  #we exclude the time for loading the input matrix
     
     title = "scRNA-Seq Clustering"
     
-    if (missing(scExp)) {#scRNA-seq expression matrix
+     if (missing(ndinfo)) {#scRNA-seq expression matrix
         stop("No expression data is provided!")
     }
     
-    if(class(scExp) != "list"){
-        if(class(scExp) == "matrix"){
-            warning("SHARP is used instead of SHARP_unlimited because the input is a matrix!")
-            enresults = SHARP(scExp)
-            return(enresults)
+    scExp_dir = ndinfo$dir#folder containing the partitions of the single cells datasets
+    ncells = ndinfo$ncells#number of cells given
+    ngenes = ndinfo$ngenes#number of genes
+    if(!dir.exists(scExp_dir)){#the folder to store the results
+	  stop(paste0(scExp_dir, " should be a folder storing several partitions of single-cell datasets!\n"))
+        } 
+        s = scExp_dir
+        if(substr(s, nchar(s), nchar(s)) == "/"){#the last character of the dir is "/"
+            s = substr(s, 1, nchar(s)-1)#remove the last "/"
         }
-        stop("The input should be a LIST of partitioned scRNA-seq expression matrices!")
-    }else if(class(scExp) == "list" && length(scExp) == 1){
-        warning("SHARP is used instead of SHARP_unlimited because the length of the input is 1!")
-        enresults = SHARP(scExp[[1]])
-        return(enresults)
-    }
-    
+        scExp_dir = s
+ 
     if (missing(n.cores)) {
         # number of cores to be used, the default is to use all but one cores
         n.cores = detectCores() - 1
     }
     # registerDoMC(n.cores)
-#     registerDoParallel(n.cores)
+    registerDoParallel(n.cores)
 
-    nnp = length(scExp)#number of partitions/blocks
+    
+    allfiles = list.files(scExp_dir, full.names = TRUE)#include the full path
+    x1 = as.numeric(gsub("\\D*([0-9]+).*$", "\\1", allfiles))#
+    allfiles = allfiles[order(x1)]#reorganize the file order according to the file name with digits
+    len = length(allfiles)
+    nnp = len
+    
+    
+#     nnp = length(scExp)#number of partitions/blocks
     nng = vector("numeric", nnp)
     nnc = vector("numeric", nnp)
     
 #     ncells = sum(sapply(1:length(scExp), function(i) scExp[[i]]@Dim[2]))#number of cells
-    ncells = sum(sapply(1:length(scExp), function(i) dim(scExp[[i]])[2]))#number of cells
+#     ncells = sum(sapply(1:length(scExp), function(i) dim(scExp[[i]])[2]))#number of cells
     p = ceiling(log2(ncells)/(0.2^2))#the reduced dimension
-    gnames = rownames(scExp[[1]])#get the gene names
     
-     # if no minimum number of clusters is provided
-    if (missing(minN.cluster)) {
-        minN.cluster = 2  #by default, we try the minimum number of clusters starting from 2
-    }
-    
-    # if no maximum number of clusters is provided
-    if (missing(maxN.cluster)) {
-        maxN.cluster = max(40, ceiling(ncells/5000))  #by default, we try the maximum number of clusters as large as 40 or the number of cells minus 1, whichever is smaller.
-    }
-  
-
     if (!missing(rN.seed)) {#random seed for reproducible results
         # seed number for reproducible results
         if (!is.numeric(rN.seed)) {
@@ -92,29 +87,13 @@ SHARP_unlimited <- function(scExp, viewflag = TRUE, n.cores, ensize.K, N.cluster
                 ensize.K = 5
     }
             
-    registerDoParallel(n.cores)        
     rM = foreach(k = 1:ensize.K) %dopar% {###to use consistent random matrices across different partitions
             if (rN.seed == 0.5) {
-                ranM(scExp[[1]], p, 0.5)  #for random results
+                ranM2(ngenes, p, 0.5)  #for random results
             } else {
-                ranM(scExp[[1]], p, 50 + rN.seed + k)  #for reproducible result
+                ranM2(ngenes, p, 50 + rN.seed + k)  #for reproducible result
             }
-            
     }
-    stopImplicitCluster()
-    
-    
-#     if(viewflag){
-#         registerDoParallel(n.cores)
-#         rM2 = foreach(k = 1:ensize.K) %dopar% {###to use consistent random matrices across different partitions
-#             if (rN.seed == 0.5) {
-#                 ranM(scExp[[1]], 30, 0.5)  #for random results
-#             } else {
-#                 ranM(scExp[[1]], 30, 50 + rN.seed + k)  #for reproducible result
-#             }
-#         }
-#         stopImplicitCluster()
-#     }
 #     stopImplicitCluster()
         
     ifColor = vector("list", length = nnp)
@@ -123,7 +102,8 @@ SHARP_unlimited <- function(scExp, viewflag = TRUE, n.cores, ensize.K, N.cluster
     y = list()
     for(i in 1:nnp){
         cat("=======================================================================\nProcessing Partition", i, "of the scRNA-seq data...\n")
-        mat = scExp[[i]]
+        mat = readRDS(allfiles[i])
+        cat("Process", allfiles[i], "\n")
         nng[i] = nrow(mat) 
         nnc[i] = ncol(mat)
     
@@ -131,7 +111,7 @@ SHARP_unlimited <- function(scExp, viewflag = TRUE, n.cores, ensize.K, N.cluster
 #         mat = as.matrix(scExp[[i]])
         cat("=======================================================================\n")
         
-        y[[i]] = SHARP(mat, reduced.ndim = p, prep = FALSE, logflag = FALSE, n.cores = n.cores, rM = rM, ensize.K = ensize.K, rN.seed = rN.seed, ...)
+        y[[i]] = SHARP(mat, reduced.ndim = p, prep = FALSE, n.cores = n.cores, rM = rM, ensize.K = ensize.K, rN.seed = rN.seed, ...)
         
 #         folds = c(folds, rep(i, nnc[i]))#folds
 #         fColor = c(fColor, paste(y[[i]]$pred_clusters, "s", i, sep = ""))
@@ -140,6 +120,9 @@ SHARP_unlimited <- function(scExp, viewflag = TRUE, n.cores, ensize.K, N.cluster
         ifolds[[i]] = rep(i, nnc[i])#folds
         ifColor[[i]] = paste(y[[i]]$pred_clusters, "s", i, sep = "")
         iE1[[i]] = t(y[[i]]$viE)###for ease of ordering; by default, R concatenate elements by columns; but here the feature dim (column) is the same for each element of the list
+        
+        rm(mat)
+        gc()
 #         if (!missing(exp.type)) {#expression type
 #             if (exp.type != "CPM" && exp.type != "TPM" && exp.type != "UMI") {#if the type is neither CPM nor TPM
 #                 scExp = t(t(scExp)/colSums(scExp)) * 1e+06#we do normalization
@@ -147,19 +130,32 @@ SHARP_unlimited <- function(scExp, viewflag = TRUE, n.cores, ensize.K, N.cluster
 #         }
     }
     
-    folds = unlist(ifolds)#convert a list to a vector
-    fColor = unlist(ifColor)
-    E1 = t(matrix(unlist(iE1), ncol = ncells))
+#     folds = unlist(ifolds)#convert a list to a vector
+#     fColor = unlist(ifColor)
+#     E1 = t(matrix(unlist(iE1), ncol = ncells))
+    
+    folds = foreach(i = 1:nnp, .combine = c)%dopar%{
+        ifolds[[i]]
+    }
+    
+    fColor = foreach(i = 1:nnp, .combine = c)%dopar%{
+        ifColor[[i]]
+    }
+    E1 = foreach(i = 1:nnp, .combine = cbind)%dopar%{
+        iE1[[i]]
+    }
+    E1 = t(E1)
     
     cat("=======================================================================\n")
-    cat("Total number of single cells:", length(fColor), "\n")
-    cat("Number of unique meta-clusters:", length(unique(fColor)), "\n")
-    cat("Dim of feature matrix for similarity-based meta-clustering:", dim(E1), "\n")
+    cat("Length of fColor:", length(fColor), "\n")
+    cat("Number of unique elements of fColor:", length(unique(fColor)), "\n")
+    cat("Dim of E1:", dim(E1), "\n")
 #     print(y[[1]]$paras)
     
     cat("=======================================================================\n")
-    cat("Similarity-based meta-clustering for combining blockwise results...\n")
-    stmp = sMetaC(fColor, E1, folds, y[[1]]$paras$hmethod, N.cluster, minN.cluster, maxN.cluster, y[[1]]$paras$sil.thre, y[[1]]$paras$height.Ntimes, n.cores)
+    cat("Meta-clustering for combining blockwise results...\n")
+    stmp = sMetaC(fColor, E1, folds, y[[1]]$paras$hmethod, N.cluster, y[[1]]$paras$minN.cluster, 
+            y[[1]]$paras$maxN.cluster, y[[1]]$paras$sil.thre, y[[1]]$paras$height.Ntimes)
     finalrowColor = stmp$finalColor
     
     
@@ -180,9 +176,7 @@ SHARP_unlimited <- function(scExp, viewflag = TRUE, n.cores, ensize.K, N.cluster
     map = setNames(as.character(1:length(x)), names(x))#the former replacing the latter 
     finalrowColor[] <- map[finalrowColor]
     finalrowColor = as.numeric(finalrowColor)
-
     
-
     
     end_time <- Sys.time()
     
@@ -199,17 +193,14 @@ SHARP_unlimited <- function(scExp, viewflag = TRUE, n.cores, ensize.K, N.cluster
     tn = table(finalrowColor)
     tn1 = tn[order(as.numeric(names(tn)))]#order the distributions of the clustering results
     print(tn1)
-#     ncells = sum(nnc)
-    ngenes = nng[1]
     
     enresults = list()
     enresults$pred_clusters = finalrowColor
     enresults$unique_pred_clusters = sort(as.numeric(uf))
     enresults$distr_pred_clusters = tn1
     enresults$N.pred_clusters = luf
-    enresults$N.cells = ncells
-    enresults$N.genes = ngenes
-    enresults$gnames = gnames
+    enresults$N.cells = sum(nnc)
+    enresults$N.genes = nng[1]
     enresults$reduced.dim = y[[1]]$reduced.ndim
     enresults$ensize.K = y[[1]]$ensize.K
     if(viewflag){
@@ -225,10 +216,12 @@ SHARP_unlimited <- function(scExp, viewflag = TRUE, n.cores, ensize.K, N.cluster
         }else{#otherwise, we just used the original one
             enresults$viE = E1
         }
+
 #         x0 = matrix(0, ncells, luf)
 #         for(i in 1:ncells){
 #             x0[i, finalrowColor[i] == uf] = 1
 #         }
+#         cat(length(1:ncells), "and", length(as.numeric(finalrowColor)), "\n")
         x0 = sparseMatrix(i = 1:ncells, j = as.numeric(finalrowColor), x = 1, dims = c(ncells, luf))
         enresults$x0 = x0
     }
@@ -236,6 +229,7 @@ SHARP_unlimited <- function(scExp, viewflag = TRUE, n.cores, ensize.K, N.cluster
     enresults$paras = y[[1]]$paras
     
     
+    stopImplicitCluster()
     
     return(enresults)
 }

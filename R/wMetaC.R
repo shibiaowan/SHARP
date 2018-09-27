@@ -144,6 +144,21 @@ wMetaC <- function(nC, hmethod, enN.cluster, minN.cluster, maxN.cluster, sil.thr
     
     N.cluster = length(unique(finalC))  #note that the number of clusters for meta-clustering is not determined by previous selection, but by the unique number in the final round.
     
+    perc = 0.5
+    if(N.cluster == 1){#better not to have only one cluster
+        finalC = apply(newnC, 1, function(d){
+            x = sort(table(d), decreasing = TRUE)[1:2]
+            n0 = length(x[1])
+            if(x[2] >= n0*perc){
+                y = names(x[2])
+            }else{
+                y = names(x[1])
+            }
+            return(y)
+        })
+        
+        N.cluster = length(unique(finalC))
+    }
     # print(paste('The optimal number of clusters for ensemble clustering is: ',
     # N.cluster, sep = ''))
     cat("The optimal number of clusters for ensemble clustering is:", N.cluster, 

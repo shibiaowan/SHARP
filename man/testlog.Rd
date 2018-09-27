@@ -4,7 +4,7 @@
 \alias{testlog}
 \title{Test if log-transformation is necessary.}
 \usage{
-testlog(scExp, ncells, p, sncells)
+testlog(scExp, ncells, p, sncells, n.cores)
 }
 \arguments{
 \item{scExp}{input single-cell expression matrix}

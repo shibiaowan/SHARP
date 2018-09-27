@@ -19,6 +19,9 @@
 #' @param sncells   number of cells randomly selected for checking log-transform is necessary or not. By default, sncells = 100.
 #' @param n.cores   number of cores to be used. The default is (n-1) cores, where n is the number of cores in your local computer or server.
 #' @param forview   a logical to indicate whether those feature-vectors for data visualization should be saved or not. By default, it is TRUE.
+#'
+#' @param rM if provided, it should be a list of random matrices for random projection; otherwise, it will be calculated by SHARP_large.
+#
 #' @param rN.seed   a number using which we can set seeds for SHARP to obtain reproducible results.
 #'
 #' @details This is the main interface for SHARP to process and analyze different kinds of single-cell RNA-Seq data. Only one parameter is manadatory, i.e., scExp, the single-cell expression matrix. In most cases, most of the parameters can be determined automatically or have been optimized, so users don't have to take efforts to try different parameters. While for some other cases where users need to change parameters, SHARP also provides various parameters, including algorithm-related parameters, hierarchical-clustering-related parameters, parallel-computing parameters and parameters to obtain reproducible results, for better optimizing the performance.
@@ -39,7 +42,7 @@
 #' @export
 SHARP <- function(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partition.ncells, 
     hmethod, N.cluster = NULL, enpN.cluster = NULL, indN.cluster = NULL, minN.cluster, 
-    maxN.cluster, sil.thre, height.Ntimes, logflag, sncells, n.cores, forview = TRUE, prep = TRUE, rN.seed) {
+    maxN.cluster, sil.thre, height.Ntimes, logflag, sncells, n.cores, forview = TRUE, prep, rM, rN.seed) {
     # timing
     start_time <- Sys.time()  #we exclude the time for loading the input matrix
     
@@ -67,6 +70,14 @@ SHARP <- function(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partitio
     
     cat("-----------------------------------------------------------------------\n")
     cat("Preprocessing:\n")
+    if(missing(prep)){
+        if(ncells < 1e4){
+            prep = TRUE
+        }else{
+            prep = FALSE
+        }
+    }
+    
     if(prep){
         if(any(scExp < 0)){
             warning("Your expression matrix contain negative values! SHARP will replace negative values with 0!\n")
@@ -79,6 +90,7 @@ SHARP <- function(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partitio
     
     cat("Normalization...\n")
     if (!missing(exp.type)) {#expression type
+        cat("Converting expression type...\n")
         if (exp.type != "CPM" && exp.type != "TPM") {#if the type is neither CPM nor TPM
             scExp = t(t(scExp)/colSums(scExp)) * 1e+06#we do normalization
         }
@@ -125,19 +137,23 @@ SHARP <- function(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partitio
         height.Ntimes = 2  #by default, we select the first height which is (height.Ntimes) times larger than the immediate consecutive height
     }
     
+    if(missing(rM)){
+        rM = TRUE
+    }
+    
     if (missing(n.cores)) {
         # number of cores to be used, the default is to use all but one cores
         n.cores = detectCores() - 1
     }
     # registerDoMC(n.cores)
-    registerDoParallel(n.cores)
+#     registerDoParallel(n.cores)
     
     if (!missing(rN.seed)) {#random seed for reproducible results
         # seed number for reproducible results
         if (!is.numeric(rN.seed)) {
             stop("The rN.seed should be a numeric!")
         }
-        if (rN.seed%%1 != 0) {
+        if (rN.seed%%1 != 0 && rN.seed != 0.5) {
             stop("The rN.seed should be an integer!")
         }
     } else {
@@ -165,8 +181,13 @@ SHARP <- function(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partitio
 #         "darkmagenta", "darkviolet", "darkturquoise", "darksalmon", "darkgoldenrod", 
 #         "darkorchid", "darkseagreen", "darkslategray", "deeppink", "lightcoral", 
 #         "lightcyan")
-    if (missing(logflag)){#whether we need to check log-transform
-        logflag = TRUE
+    if (missing(logflag)){#whether we need to check log-transform; 
+        if(ncells < 1e4){
+            logflag = TRUE
+        }else{#if the number of cells is too large, we do not check but directly adopt the log-transform
+            logflag = FALSE
+        }
+        
     }
     
     if (logflag){#if we want to check whether log-transform or not
@@ -174,7 +195,7 @@ SHARP <- function(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partitio
             #by default, we randomly select 100 cells to determine log transform or not
             sncells = 100
         }
-        flag = testlog(scExp, ncells, reduced.ndim, sncells)#test whether log transform is necessary or not; by default, it will randomly select 100 cells to test
+        flag = testlog(scExp, ncells, reduced.ndim, sncells, n.cores)#test whether log transform is necessary or not; by default, it will randomly select 100 cells to test
         
         # better not directly do this, because it may involve huge computations for log transform
         if (flag){#if log transform is better
@@ -216,7 +237,7 @@ SHARP <- function(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partitio
         cat("-----------------------------------------------------------------------\n")
         cat("Analysis starts...\n")
         enresults = SHARP_small(scExp, ncells, ensize.K, reduced.ndim, hmethod, N.cluster, 
-            indN.cluster, minN.cluster, maxN.cluster, sil.thre, height.Ntimes, flag, forview, rN.seed)
+            indN.cluster, minN.cluster, maxN.cluster, sil.thre, height.Ntimes, flag, n.cores, forview, rN.seed)
     } else {
         # print('Using SHARP_large...')
         cat("Using SHARP_large...\n")
@@ -231,7 +252,7 @@ SHARP <- function(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partitio
         cat("Analysis starts...\n")
         enresults = SHARP_large(scExp, ncells, ensize.K, reduced.ndim, partition.ncells, 
             hmethod, N.cluster, enpN.cluster, indN.cluster, minN.cluster, maxN.cluster, 
-            sil.thre, height.Ntimes, flag, forview, rN.seed)
+            sil.thre, height.Ntimes, flag, n.cores, forview, rM, rN.seed)
     }
     
     end_time <- Sys.time()
@@ -265,7 +286,7 @@ SHARP <- function(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partitio
     
     enresults$paras = paras
     
-    stopImplicitCluster()
+#     stopImplicitCluster()
     
     return(enresults)
 }
@@ -290,7 +311,7 @@ SHARP <- function(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partitio
 #'
 #' @export
 SHARP_small <- function(scExp, ncells, ensize.K, reduced.ndim, hmethod, N.cluster, 
-    indN.cluster, minN.cluster, maxN.cluster, sil.thre, height.Ntimes, flag, forview, rN.seed) {
+    indN.cluster, minN.cluster, maxN.cluster, sil.thre, height.Ntimes, flag, n.cores, forview, rN.seed) {
     enresults = list()
     
     if(flag){
@@ -299,6 +320,7 @@ SHARP_small <- function(scExp, ncells, ensize.K, reduced.ndim, hmethod, N.cluste
     
     K = ensize.K
     p = reduced.ndim
+    registerDoParallel(n.cores)
     allrpinfo = foreach(k = 1:ensize.K) %dopar% {
 #         print(paste('Random Projection: ', k, sep = ''))
         pid = Sys.getpid()
@@ -335,6 +357,7 @@ SHARP_small <- function(scExp, ncells, ensize.K, reduced.ndim, hmethod, N.cluste
         return(rpinfo)
         # rpname = paste('RP_', k, sep = '') allrpinfo[[rpname]] = rpinfo
     }
+    stopImplicitCluster()
     
     z = length(allrpinfo)
     enrp = matrix("0", nrow = ncells, ncol = ensize.K)
@@ -363,6 +386,7 @@ SHARP_small <- function(scExp, ncells, ensize.K, reduced.ndim, hmethod, N.cluste
     
     viE = as.matrix(enE/K)
     ####reorganize the final prediction results
+    finalrowColor = as.numeric(finalrowColor)
     y = finalrowColor$finalC
     uy = unique(y)
     newy = match(y, uy)#we use the index instead
@@ -373,7 +397,7 @@ SHARP_small <- function(scExp, ncells, ensize.K, reduced.ndim, hmethod, N.cluste
     
     # enresults$finalrowColor = finalrowColor$finalC
     enresults$pred_clusters = newy
-    enresults$unique_pred_clusters = newuy
+    enresults$unique_pred_clusters = sort(as.numeric(newuy))
     enresults$distr_pred_clusters = tn1
     # enresults$finalmetrics = finalmetrics
     enresults$N.pred_cluster = length(newuy)
@@ -412,7 +436,7 @@ SHARP_small <- function(scExp, ncells, ensize.K, reduced.ndim, hmethod, N.cluste
 #' @export
 SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, hmethod, 
     N.cluster, enpN.cluster, indN.cluster, minN.cluster, maxN.cluster, sil.thre, 
-    height.Ntimes, flag, forview, rN.seed) {
+    height.Ntimes, flag, n.cores, forview, rM, rN.seed) {
     # print('The Divide-and-Conquer Strategy is selected!')
     # cat("The Divide-and-Conquer Strategy is selected!\n")
     ######## Partition the large data into several groups###########
@@ -421,7 +445,7 @@ SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, 
     
     K = ensize.K
     allrpinfo <- vector("list", length = K)  #declare a matrix of lists
-    enresults = list()
+   
     # colnames(rpinfo) = c('E', 'tag', 'rowColor', 'metrics')
 #     enrp <- matrix("0", nrow = ncells, ncol = K)  #the ensemble results after several random projection;namely several rowColor's
     
@@ -436,7 +460,7 @@ SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, 
     # reshuffle the data
     E = scExp
     rm(scExp)#remove unnecessary objects for saving memory
-    if(ncol(E) < 5e4){
+    if(ncol(E) < 1e5){
         cat("Reshuffling the order of single cells...\n")
         E = E[, reind]
     }#if the number is larger than 50000, we do not need to reshuffle
@@ -471,16 +495,21 @@ SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, 
     }
     
     # preparing K RP matrices
-    rM = foreach(k = 1:K) %dopar% {
-        if (rN.seed == 0.5) {
-            ranM(E, p, 0.5)  #for random results
-        } else {
-            ranM(E, p, 50 + rN.seed + k)  #for reproducible results
+    if(typeof(rM) != "list"){
+        registerDoParallel(n.cores)
+        rM = foreach(k = 1:K) %dopar% {
+            if (rN.seed == 0.5) {
+                ranM(E, p, 0.5)  #for random results
+            } else {
+                ranM(E, p, 50 + rN.seed + k)  #for reproducible result
+            }
         }
-        
+        stopImplicitCluster()
     }
     
+    
     #### parallel programming#### rerowColor = foreach(t=1:T, .combine = 'c') %dopar%{
+    registerDoParallel(n.cores)
     enlist = foreach(k = 1:K, .combine= "c") %:% foreach(t = 1:T) %dopar% {
         # nested looping; the first for different applications of random projection; the
         # second for different partitions print(paste('The ', k, '-th random projection;
@@ -545,7 +574,7 @@ SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, 
         # rerowColor[rind] = paste(tmp, '_', t, sep = '')#for distinguishing for each
         # smaller group clustering
     }
-    
+    stopImplicitCluster()
     
 #     z = dim(enlist)
     z = length(enlist)
@@ -560,8 +589,9 @@ SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, 
         matind = z1$ind#RP index and partition index
         eind = which(folds == matind[2])
         enrp[eind, matind[1]] = z1$rpc
-        enE[eind, ] = enE[eind, ] + z1$pE#the sum of the ensemble RP matrix
+        enE[eind, ] = enE[eind, ] + z1$pE1#the sum of the ensemble RP matrix
     }
+#     cat("Dim of enrp is", dim(enrp), "\n")
     
     
 #     for (j in 1:z[2]) {
@@ -616,8 +646,10 @@ SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, 
     # finalrowColor = wMetaC(enrp) 
     ####parallel programming####
 #     frowColor = foreach(t = 1:T, .combine = "c") %dopar% {
+    registerDoParallel(n.cores)
     frowColor = foreach(t = 1:T) %dopar% {
         tind = which(folds == t, arr.ind = TRUE)
+#         print(paste("the min and max of tind are:", min(tind), " and ", max(tind), sep = ""))
         # tind = seq((t-1)*ng + 1, t*ng) if(t == T){ tind = tind[tind<=ncells] # tind =
         # seq((T-1)*ng + 1, ncells)#select only those within the indices }
         ftmp = wMetaC(enrp[tind, ], hmethod, enpN.cluster, minN.cluster, maxN.cluster, 
@@ -633,6 +665,7 @@ SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, 
         wres$nwC = length(unique(fC))#number of clusters
         return(wres)
     }
+    stopImplicitCluster()
     
     fColor = character(length = 0)#declare an empty character
     for(t in 1:T){
@@ -640,7 +673,7 @@ SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, 
     }
 	
     uC = unique(fColor)
-    print(uC)
+#     print(uC)
     lenuC = length(uC)#number of meta clusters for sMetaC
     sx0 = matrix(0, ncells, lenuC)
     j1 = 0
@@ -677,7 +710,7 @@ SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, 
 #         stmp = sMetaC(frowColor, E1, folds, hmethod, N.cluster, minN.cluster, 
 #             maxN.cluster, sil.thre, height.Ntimes)
         stmp = sMetaC(fColor, E1, folds, hmethod, N.cluster, minN.cluster, 
-            maxN.cluster, sil.thre, height.Ntimes)
+            maxN.cluster, sil.thre, height.Ntimes, n.cores)
         SrowColor = stmp$finalColor
         # SrowColor = sMetaC(frowColor, E1, folds) SrowColor = sMetaC(frowColor, E, p,
         # folds)
@@ -699,7 +732,7 @@ SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, 
 #     finalrowColor = vector(mode = "character", length = length(SrowColor))  #initialization
     finalrowColor = SrowColor
     viE = enE/K
-    if(ncol(E) < 5e4){
+    if(ncol(E) < 1e5){
         finalrowColor[reind] = SrowColor  #reorganizing the final results
     
         x0[reind, ] = x0#reorganizing
@@ -739,6 +772,7 @@ SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, 
     # 'times.RData', sep = ''))
     
     ####reorganize the final prediction results
+    finalrowColor = as.numeric(finalrowColor)
     y = finalrowColor
     uy = unique(y)
     newy = match(y, uy)#we use the index instead
@@ -747,9 +781,10 @@ SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, 
     tn = table(newy)
     tn1 = tn[order(as.numeric(names(tn)))]#order the distributions of the clustering results
     
+    enresults = list()
     # enresults$finalrowColor = finalrowColor
     enresults$pred_clusters = newy
-    enresults$unique_pred_clusters = newuy
+    enresults$unique_pred_clusters = sort(as.numeric(newuy))
     enresults$distr_pred_clusters = tn1
     # enresults$finalmetrics = finalmetrics
     enresults$N.pred_cluster = length(newuy)
@@ -786,7 +821,7 @@ SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, 
 #' @import doParallel
 #' 
 #' @export
-testlog<- function(scExp, ncells, p, sncells){
+testlog<- function(scExp, ncells, p, sncells, n.cores){
 
     if (missing(sncells)) {
         sncells = 100
@@ -803,6 +838,7 @@ testlog<- function(scExp, ncells, p, sncells){
     
     k = 2
     
+    registerDoParallel(n.cores)
     msil = foreach(k = 1:2, .combine = c) %dopar% {
     # msil = foreach(k = 1:2, .combine = c) %do% {
         if(k == 2){
@@ -822,7 +858,7 @@ testlog<- function(scExp, ncells, p, sncells){
 #                                     0, 2)
         return(tmp$maxsil)
     }
-    
+    stopImplicitCluster()
     # msil = tmp$maxsil
 #     print(msil)
 #     if(msil[1] < msil[2]){#log transform
