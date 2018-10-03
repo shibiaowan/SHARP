@@ -5,8 +5,8 @@
 
 `install.packages("devtools")`#if you do not install the package "devtools"
 
-`library(devtools)`
-`install_github("shibiaowan/SHARP")`
+`library(devtools)
+install_github("shibiaowan/SHARP")`
 
 # Quick Start: 
 
