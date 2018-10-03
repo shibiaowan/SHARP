@@ -14,9 +14,9 @@ SHARP is a bioinformatics tool to process and analyze single-cell RNA-seq (scRNA
 
 # Installation:
 
-#`install.packages("devtools")`#if you have not installed the package "devtools"
-
 ```{r}
+install.packages("devtools")#only if you have not installed the package "devtools"
+
 library(devtools)
 install_github("shibiaowan/SHARP")
 ```
@@ -24,28 +24,47 @@ install_github("shibiaowan/SHARP")
 
 # Quick Start: 
 
-Suppose your input scRNA-seq expression matrix is "scExp"
-`library(SHARP)`
+Load the library:
+```{r}
+library(SHARP)
+```
+An example data (i.e., scExp_tpm.RData) has also been loaded and we can check some basic information about it:
+```{r}
+scExp = scExp_tpm #a TPM-based single-cell pancreas data from Wang et al.
+dim(scExp) #check the numbers of genes and cells
 
-`res = SHARP(scExp)`
+`scExp[1:5,1:5]` #check typical values of the expression matrix
+```
+Run SHARP:
+```{r}
+res = SHARP(scExp)
+```
 
 
-# Example: 
-An example data (i.e., scExp_tpm.RData) has been loaded together with SHARP package. Get to know some information of the example data:
+# Expression Type:
 
-`dim(scExp_tpm)`#the number of genes, number of cells
+# Pre-processing:
 
-`scExp_tpm[1:5,1:5]`#typical values of the expression matrix
+# Number of Single Cells:
 
-SHARP provides choices on multiple configurations per users' requests:
+# Number of Clusters:
 
-1. By default, SHARP automatically determines all of the parameters and/or configurations
-`results_small = SHARP(scExp_tpm)`
+# Number of Reduced Dimension:
 
-2. You can predefine the number of clusters
-`results_small = SHARP(scExp_tpm, N.cluster = 8)`#we predefine the number of clusters as 8
+# Number of Random-Projection Applications:
 
-3. If you 
+# Number of Base Cells and Partition Cells:
+
+# Visualization:
+
+# Marker Genes:
+
+# Multi-Core Processing:
+
+# Others:
+
+# Processing 1.3 Million Single Cells:
+
 try SHARP for small-size datasets (by default, "small-size dataset" means a dataset containing less than 2000 single cells)
 
 `results_small = SHARP(scExp_tpm)`
