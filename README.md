@@ -4,13 +4,13 @@
 ### Table of Contents
 [Introduction](https://github.com/shibiaowan/SHARP/blob/master/README.md#introduction)
 
-[Installation](https://github.com/shibiaowan/SHARP#Installation)
+[Installation](https://github.com/shibiaowan/SHARP/blob/master/README.md#installation)
 
-[Quick Start](https://github.com/shibiaowan/SHARP#Installation)
+[Quick Start](https://github.com/shibiaowan/SHARP/blob/master/README.md#quick-start)
 
 [More Details](https://github.com/shibiaowan/SHARP#Installation)
 
-[Processing 1.3 Million Single Cells](https://github.com/shibiaowan/SHARP#Installation)
+[Processing 1.3 Million Single Cells](https://github.com/shibiaowan/SHARP/blob/master/README.md#processing-13-million-single-cells)
 
 
 # Introduction: 
@@ -52,6 +52,7 @@ Run SHARP:
 res = SHARP(scExp)
 ```
 
+# More Details
 
 ## Expression Type:
 It is recommended, although not mandatory, to specify what type of the input expression matrix. The data type of input expression matrix for SHARP can be fragments/reads per kilo base per million mapped reads (FPKM/RPKM), counts per million mapped reads (CPM), transcripts per million (TPM) or unique molecule identifiers (UMI), or other read counts. For consistency, FPKM/RPKM values are converted into TPM values and UMI values are converted into CPM values. Here is one example for UMI-based input expression matrix: 
