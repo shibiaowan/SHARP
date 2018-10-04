@@ -10,6 +10,8 @@
 
 [More Details](https://github.com/shibiaowan/SHARP#more-details)
 
+<details><summary>* More</summary>
+
 * [Expression Type](https://github.com/shibiaowan/SHARP#expression-type)
 
 * [Pre-processing](https://github.com/shibiaowan/SHARP#pre-processing)
@@ -27,6 +29,7 @@
 * [Multi-Core Processing](https://github.com/shibiaowan/SHARP#multi-core-processing)
 
 * [Others](https://github.com/shibiaowan/SHARP#others)
+</details>
 
 [Visualization](https://github.com/shibiaowan/SHARP#visualization)
 
