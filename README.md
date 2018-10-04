@@ -16,7 +16,7 @@
 
 * [Number of Single Cells](https://github.com/shibiaowan/SHARP#number-of-single-cells)
 
-* <details><summary>More</summary>
+<details><summary>...</summary>
 
 * [Number of Clusters](https://github.com/shibiaowan/SHARP#number-of-clusters)
 
