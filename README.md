@@ -41,7 +41,7 @@ res = SHARP(scExp)
 ```
 
 
-# Expression Type:
+## Expression Type:
 It is recommended, although not mandatory, to specify what type of the input expression matrix. The data type of input expression matrix for SHARP can be fragments/reads per kilo base per million mapped reads (FPKM/RPKM), counts per million mapped reads (CPM), transcripts per million (TPM) or unique molecule identifiers (UMI), or other read counts. For consistency, FPKM/RPKM values are converted into TPM values and UMI values are converted into CPM values. Here is one example for UMI-based input expression matrix: 
 ```{r}
 res = SHARP(scExp, exp.type = "UMI") # SHARP will converts UMI input data into CPM-based values
@@ -49,7 +49,7 @@ res = SHARP(scExp, exp.type = "UMI") # SHARP will converts UMI input data into C
 By default, SHARP treats the input as either TPM or CPM format and will not make the data-type conversion.
 
 
-# Pre-processing:
+## Pre-processing:
 Pre-processing for SHARP includes two parts: <b>removing all-zero genes</b> and <b>log-transform</b>. For the former part, for relatively small-size (e.g., 10,000 single cells) datasets, SHARP, by default, will remove those genes whose expressions are zero across all cells or whose expressions are missing (i.e., "NA") for some cells. SHARP also gives the option of whether removing or not to users:
 
 ```{r}
@@ -63,7 +63,7 @@ res = SHARP(scExp, logflag = FALSE) # do not check whether log-transform is done
 ```
 
 
-# Number of Single Cells:
+## Number of Single Cells:
 
 Depending the number of single cells in the input data, SHARP will automatically determine whether data-partitioning and similarity-based meta-clustering (sMetaC) are adopted or not (Note that if data partitioning is not adopted, sMetaC is neither necessary). For the former, a sub-function SHARP_small will be used, whereas for the latter, SHARP_large will be used. Experiments suggest that these two strategies may affect the clustering performance, especially for small-size (<1,000 single cells) datasets, but may have little effect on relatively large-size datasets (>5,000 single cells). However, data partitioning is undoubtedly able to accelerate the clustering process for SHARP. By default, when the number of single cells is fewer than 5,000, SHARP will not adopt the data-partitioning and sMetaC strategies. You can change the threshold as follows:
 
@@ -78,7 +78,7 @@ res = SHARP(scExp, base.ncells = 2000, partition.ncells = 1000) # when data part
 ```
 
 
-# Number of Clusters:
+## Number of Clusters:
 
 By default, SHARP will automatically determine the optimal number of clusters by integrating Silhouttee index, Calinski-Harabasz index and hierarchical heights. However, you can also pre-define the final number of clusters, the minimum number of clusters checked by SHARP, or the maximum number of clusters checked by SHARP, respectively:
 
@@ -99,7 +99,7 @@ res = SHARP(scExp, indN.cluster = 8) # predefine the cluster number for individu
 res = SHARP(scExp, enpN.cluster = 8) # predefine the cluster number for wMetaC as 8
 ```
 
-# Number of Reduced Dimension:
+## Number of Reduced Dimension:
 
 SHARP uses RP as a dimension-reduction method, which can well preserve the cell-to-cell distance in the reduced dimension. To what extent the dimension can be reduced is an interesting question. By default, SHARP determines the number of reduced dimension as a function of the number of cells (e.g., ceiling(log2(ncells)/(0.2^2))). You can also determine it by your own:
 
@@ -107,7 +107,7 @@ SHARP uses RP as a dimension-reduction method, which can well preserve the cell-
 res = SHARP(scExp, reduced.ndim = 500) # predefine the reduced dimension as 500
 ```
 
-# Number of Random-Projection Applications:
+## Number of Random-Projection Applications:
 
 To make the performance robust, SHARP by default adopts 15 runs of RPs (or ensemble size) for small-size datasets, whereas 5 runs of RPs for large-size datasets. You may also want to change it for either speeding the clustering or yielding more robust performance as follows:
 
@@ -116,13 +116,40 @@ res = SHARP(scExp, ensize.K = 7) # predefine the reduced dimension as 500
 ```
 
 
-# Reproducible Results:
+## Reproducible Results:
 
 SHARP is based ensemble random projection which will produce robust yet stochastic clustering results. To achieve reproducible and deterministic results as follows:
 
 ```{r}
 res = SHARP(scExp, rN.seed = 10) # achieve reproducible results
 ```
+
+
+## Multi-Core Processing:
+
+By default, SHARP is configured in parallel computing using multiple cores, i.e., using (n-1) cores, where n is the number of cores of the host computer. You can choose the number of cores to be used:
+
+```{r}
+res = SHARP(scExp, n.cores = 1) # running in a single core
+```
+
+
+## Others:
+
+SHARP uses the hierarchical clustering (hclust) as the basic clustering method. The parameters related to hclust are also customizable, including hierarchical method (e.g., "ward.D", "complete", "single", etc).
+
+```{r}
+res = SHARP(scExp, hmethod = "ward.D") # using "ward.D" as the hierarchical clustering method
+```
+
+SHARP integrates Silhouttee index, CH index and hierarchical heights to determine the optimal number of clusters. The threshold for using CH index instead of Silhouttee index and the threshold of the hierarchical height difference for cutting trees are also available to adjust.
+
+```{r}
+res = SHARP(scExp, sil.thre = 0.5) # when the avearge Silhouttee index is less than 0.5 (by default, 0.35), CH index will be used to optimize the cluster number
+
+res = SHARP(scExp, height.Ntimes = 3) # when the descending-ordered hierarchical height is 3 times larger than the next immediate height, we cut the tree 
+```
+
 
 # Visualization:
 
@@ -144,30 +171,6 @@ sginfo = get_marker_genes(scExp, res) # detect marker genes
 sortmarker = plot_markers(sginfo) # plot marker gene heatmap
 ```
 
-# Multi-Core Processing:
-
-By default, SHARP is configured in parallel computing using multiple cores, i.e., using (n-1) cores, where n is the number of cores of the host computer. You can choose the number of cores to be used:
-
-```{r}
-res = SHARP(scExp, n.cores = 1) # running in a single core
-```
-
-
-# Others:
-
-SHARP uses the hierarchical clustering (hclust) as the basic clustering method. The parameters related to hclust are also customizable, including hierarchical method (e.g., "ward.D", "complete", "single", etc).
-
-```{r}
-res = SHARP(scExp, hmethod = "ward.D") # using "ward.D" as the hierarchical clustering method
-```
-
-SHARP integrates Silhouttee index, CH index and hierarchical heights to determine the optimal number of clusters. The threshold for using CH index instead of Silhouttee index and the threshold of the hierarchical height difference for cutting trees are also available to adjust.
-
-```{r}
-res = SHARP(scExp, sil.thre = 0.5) # when the avearge Silhouttee index is less than 0.5 (by default, 0.35), CH index will be used to optimize the cluster number
-
-res = SHARP(scExp, height.Ntimes = 3) # when the descending-ordered hierarchical height is 3 times larger than the next immediate height, we cut the tree 
-```
 
 # Processing 1.3 Million Single Cells:
 
