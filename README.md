@@ -37,6 +37,10 @@
 
 [Processing 1.3 Million Single Cells](https://github.com/shibiaowan/SHARP/blob/master/README.md#processing-13-million-single-cells)
 
+[Citation](https://github.com/shibiaowan/SHARP/blob/master/README.md#citation)
+
+[Bug Report](https://github.com/shibiaowan/SHARP/blob/master/README.md#bug-report)
+
 
 # Introduction: 
 
