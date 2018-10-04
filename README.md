@@ -135,11 +135,13 @@ visualization_SHARP(res, label) # label is the reference (or predefined) cluster
 
 # Marker Genes:
 
-SHARP is capable of identifying marker genes.
+SHARP is capable of identifying marker genes. It uses a differential approach which checks the statistical significance of cluster-specific genes vs genes in other clusters. Then, it uses cluster-specific sparsity ratio to exclude those less significant genes. A heatmap of the several top cluster-specific marker genes can be drawn.
 
 ```{r}
 res = SHARP(scExp) # clustering
 sginfo = get_marker_genes(scExp, res) # detect marker genes
+
+sortmarker = plot_markers(sginfo) # plot marker gene heatmap
 ```
 
 # Multi-Core Processing:
@@ -153,11 +155,44 @@ res = SHARP(scExp, n.cores = 1) # running in a single core
 
 # Others:
 
+SHARP uses the hierarchical clustering (hclust) as the basic clustering method. The parameters related to hclust are also customizable, including hierarchical method (e.g., "ward.D", "complete", "single", etc).
+
+```{r}
+res = SHARP(scExp, hmethod = "ward.D") # using "ward.D" as the hierarchical clustering method
+```
+
+SHARP integrates Silhouttee index, CH index and hierarchical heights to determine the optimal number of clusters. The threshold for using CH index instead of Silhouttee index and the threshold of the hierarchical height difference for cutting trees are also available to adjust.
+
+```{r}
+res = SHARP(scExp, sil.thre = 0.5) # when the avearge Silhouttee index is less than 0.5 (by default, 0.35), CH index will be used to optimize the cluster number
+
+res = SHARP(scExp, height.Ntimes = 3) # when the descending-ordered hierarchical height is 3 times larger than the next immediate height, we cut the tree 
+```
+
 # Processing 1.3 Million Single Cells:
 
+One of the unique contributions for SHARP is that it can process a dataset with 1.3 million single cells. To the best of our knowledge, SHARP is the first R package which can process and analyze more than one million single cells. Existing scRNA-seq tools can't tackle it because the 1.3 million scRNA-seq data matrix can not be directly loaded into R due to the lack of 64-bit integers support in R. On the contrary, SHARP can handle it. Because SHARP adopted the divide-and-conquer strategy to analyze huge datasets, we first divided the 1,306,127 scRNA-seq data into 26 smaller-size blocks of data, i.e., each block with 50,000 single cells except the last one with 56,127 single cells. Next, SHARP analyzed each block of data, whose results were integrated by our proposed algorithm sMetaC. If we save the 1.3 million scRNA-seq data in a list format, we can use the following command to deal with:
 
+```{r}
+res = SHARP_unlimited(scExp) # dealing with 1.3 million single cells which are saved as a list of 26 matrices
+```
 
-Briefly speaking, SHARP integrates the following algorithms and techniques to achieve both efficient and effective performance: (1) divide-and-conquer strategy; (2) random-projection based dimension reduction; (3) ensemble learning for both meta-clustering of results from different random projections and of those from different partitions of large-scale datasets; (4) weighted ensemble clustering for tackling difficult-to-cluster single cells and (5) similarity-based meta-clustering for combining results of different mutually-exclusive single-cell groups.
+For memory-efficient processing, we can also save each block of data into an RDS file (RDS files are suggested because they are compact and their sizes are smaller) and each time we only processe one file. In this case, we just need to provide the directory of those files
+
+```{r}
+ndinfo = list()#three elements: the directory of those files to save the 1.3 million single cells, number of cells and number of genes
+ndinfo$dir = "tmp/million_cells/"
+ndinfo$ncells = 1306127
+ndinfo$ngenes = 27998
+res = SHARP_unlimited2(ndinfo) # dealing with 1.3 million single cells which are saved as a list of 26 matrices
+```
+
+After clustering, we can identify the marker genesa as follows:
+
+```{r}
+sginfo = get_marker_genes_unlimited2(gdinfo, res) # detect marker genes
+```
+
 
 # Citation:
 
