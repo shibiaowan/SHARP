@@ -10,13 +10,13 @@
 
 [More Details](https://github.com/shibiaowan/SHARP#more-details)
 
-<details><summary>* More</summary>
-
 * [Expression Type](https://github.com/shibiaowan/SHARP#expression-type)
 
 * [Pre-processing](https://github.com/shibiaowan/SHARP#pre-processing)
 
 * [Number of Single Cells](https://github.com/shibiaowan/SHARP#number-of-single-cells)
+
+* <details><summary>More</summary>
 
 * [Number of Clusters](https://github.com/shibiaowan/SHARP#number-of-clusters)
 
