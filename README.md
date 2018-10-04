@@ -116,7 +116,7 @@ res = SHARP(scExp, ensize.K = 7) # predefine the reduced dimension as 500
 ```
 
 
-# Deterministic Results:
+# Reproducible Results:
 
 SHARP is based ensemble random projection which will produce robust yet stochastic clustering results. To achieve reproducible and deterministic results as follows:
 
