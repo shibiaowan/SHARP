@@ -1,6 +1,14 @@
 # SHARP
 **_SHARP_**: <b><u><i>S</i></u></b>ingle-cell RNA-seq <b><u><i>H</i></u></b>yper-fast and <b><u><i>A</i></u></b>ccurate processing via ensemble <b><u><i>R</i></u></b>andom <b><u><i>P</i></u></b>rojection.
 
+### Table of Contents
+[Introduction](https://github.com/shibiaowan/SHARP#Introduction)
+[Installation](https://github.com/shibiaowan/SHARP#Installation)
+[Quick Start](https://github.com/shibiaowan/SHARP#Installation)
+[More Details](https://github.com/shibiaowan/SHARP#Installation)
+[Processing 1.3 Million Single Cells](https://github.com/shibiaowan/SHARP#Installation)
+
+
 # Introduction: 
 
 SHARP is a bioinformatics tool to process and analyze single-cell RNA-seq (scRNA-seq) data. Algorithmically, SHARP is based on ensemble random projection (RP) and multi-layer meta-clustering which can well preserve cell-to-cell distance in reduced-dimensional space. Compared to other existing tools, it has the following advantages: 
