@@ -2,10 +2,14 @@
 **_SHARP_**: <b><u><i>S</i></u></b>ingle-cell RNA-seq <b><u><i>H</i></u></b>yper-fast and <b><u><i>A</i></u></b>ccurate processing via ensemble <b><u><i>R</i></u></b>andom <b><u><i>P</i></u></b>rojection.
 
 ### Table of Contents
-[Introduction](https://github.com/shibiaowan/SHARP#Introduction)
+[Introduction](https://github.com/shibiaowan/SHARP/blob/master/README.md#introduction)
+
 [Installation](https://github.com/shibiaowan/SHARP#Installation)
+
 [Quick Start](https://github.com/shibiaowan/SHARP#Installation)
+
 [More Details](https://github.com/shibiaowan/SHARP#Installation)
+
 [Processing 1.3 Million Single Cells](https://github.com/shibiaowan/SHARP#Installation)
 
 
