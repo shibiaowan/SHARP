@@ -162,3 +162,7 @@ Briefly speaking, SHARP integrates the following algorithms and techniques to ac
 # Citation:
 
 Shibiao Wan, Junil Kim and Kyoung Jae Won. SHARP: Single-Cell RNA-Seq Hyper-Fast and Accurate Processing via Ensemble Random Projection, submitted, 2018.
+
+# Bug Report:
+
+If you find any bugs or problems, or you have any comments on SHARP, please don't hesitate to contact us at shibiao@upenn.edu.
