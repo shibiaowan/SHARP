@@ -179,7 +179,7 @@ ARI(q, res) # q is the reference (or ground-truth) clustering label
 SHARP will give 5 different ARI-based metrics, in which "HA" (Hubert and Arabie's ARI) is corresponding to the ARI we often use. 
 
 
-# Running multiple times of SHARP:
+## Running Multiple Times of SHARP:
 
 SHARP will produce robust yet stochastic clustering results. To evaluate the clustering performance, running multiple times of SHARP is sometimes necessary. SHARP provides this kind of functions as follows:
 ```{r}
