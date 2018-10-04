@@ -33,7 +33,7 @@ An example data (i.e., scExp_tpm.RData) has also been loaded and we can check so
 scExp = scExp_tpm #a TPM-based single-cell pancreas data from Wang et al.
 dim(scExp) #check the numbers of genes and cells
 
-`scExp[1:5,1:5]` #check typical values of the expression matrix
+scExp[1:5,1:5] #check typical values of the expression matrix
 ```
 Run SHARP:
 ```{r}
