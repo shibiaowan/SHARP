@@ -10,23 +10,23 @@
 
 [More Details](https://github.com/shibiaowan/SHARP#more-details)
 
-[Expression Type](https://github.com/shibiaowan/SHARP#expression-type)
+* [Expression Type](https://github.com/shibiaowan/SHARP#expression-type)
 
-[Pre-processing](https://github.com/shibiaowan/SHARP#pre-processing)
+* [Pre-processing](https://github.com/shibiaowan/SHARP#pre-processing)
 
-[Number of Single Cells](https://github.com/shibiaowan/SHARP#number-of-single-cells)
+* [Number of Single Cells](https://github.com/shibiaowan/SHARP#number-of-single-cells)
 
-[Number of Clusters](https://github.com/shibiaowan/SHARP#number-of-clusters)
+* [Number of Clusters](https://github.com/shibiaowan/SHARP#number-of-clusters)
 
-[Number of Reduced Dimension](https://github.com/shibiaowan/SHARP#number-of-reduced-dimension)
+* [Number of Reduced Dimension](https://github.com/shibiaowan/SHARP#number-of-reduced-dimension)
 
-[Number of Random-Projection Applications](https://github.com/shibiaowan/SHARP#number-of-random-projection-applications)
+* [Number of Random-Projection Applications](https://github.com/shibiaowan/SHARP#number-of-random-projection-applications)
 
-[Reproducible Results](https://github.com/shibiaowan/SHARP#reproducible-results)
+* [Reproducible Results](https://github.com/shibiaowan/SHARP#reproducible-results)
 
-[Multi-Core Processing](https://github.com/shibiaowan/SHARP#multi-core-processing)
+* [Multi-Core Processing](https://github.com/shibiaowan/SHARP#multi-core-processing)
 
-[Others](https://github.com/shibiaowan/SHARP#others)
+* [Others](https://github.com/shibiaowan/SHARP#others)
 
 [Visualization](https://github.com/shibiaowan/SHARP#visualization)
 
