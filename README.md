@@ -32,7 +32,7 @@
 [Processing 1.3 Million Single Cells](https://github.com/shibiaowan/SHARP/blob/master/README.md#processing-13-million-single-cells)
 
 
-# Introduction: 
+## Introduction: 
 
 SHARP is a bioinformatics tool to process and analyze single-cell RNA-seq (scRNA-seq) data. Algorithmically, SHARP is based on ensemble random projection (RP) and multi-layer meta-clustering which can well preserve cell-to-cell distance in reduced-dimensional space. Compared to other existing tools, it has the following advantages: 
 
