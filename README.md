@@ -73,7 +73,7 @@ Run SHARP:
 res = SHARP(scExp)
 ```
 
-# More Details
+# More Details:
 
 ## Expression Type:
 It is recommended, although not mandatory, to specify what type of the input expression matrix. The data type of input expression matrix for SHARP can be fragments/reads per kilo base per million mapped reads (FPKM/RPKM), counts per million mapped reads (CPM), transcripts per million (TPM) or unique molecule identifiers (UMI), or other read counts. For consistency, FPKM/RPKM values are converted into TPM values and UMI values are converted into CPM values. Here is one example for UMI-based input expression matrix: 
