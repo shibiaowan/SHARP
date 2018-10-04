@@ -8,7 +8,7 @@
 
 [Quick Start](https://github.com/shibiaowan/SHARP/blob/master/README.md#quick-start)
 
-[More Details](https://github.com/shibiaowan/SHARP#Installation)
+[More Details](https://github.com/shibiaowan/SHARP#more-details)
 
 [Processing 1.3 Million Single Cells](https://github.com/shibiaowan/SHARP/blob/master/README.md#processing-13-million-single-cells)
 
