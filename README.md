@@ -168,6 +168,25 @@ res = SHARP(scExp, n.cores = 1) # running in a single core
 ```
 
 
+## Performance Evaluation:
+
+SHARP evalulates the clustering performance based on Adjusted Rand Index (ARI) and running time. The running time will be given as soon as SHARP finishes clustering. For the ARI, SHARP calculates as follows:
+
+```{r}
+res = SHARP(scExp)
+ARI(q, res) # q is the reference (or ground-truth) clustering label
+```
+SHARP will give 5 different ARI-based metrics, in which "HA" (Hubert and Arabie's ARI) is corresponding to the ARI we often use. 
+
+
+# Running multiple times of SHARP:
+
+SHARP will produce robust yet stochastic clustering results. To evaluate the clustering performance, running multiple times of SHARP is sometimes necessary. SHARP provides this kind of functions as follows:
+```{r}
+allres = run_Mtimes_SHARP(scExp, Mtimes = 10) # run 10 times of SHARP
+```
+
+
 ## Others:
 
 SHARP uses the hierarchical clustering (hclust) as the basic clustering method. The parameters related to hclust are also customizable, including hierarchical method (e.g., "ward.D", "complete", "single", etc).
@@ -182,6 +201,12 @@ SHARP integrates Silhouttee index, CH index and hierarchical heights to determin
 res = SHARP(scExp, sil.thre = 0.5) # when the avearge Silhouttee index is less than 0.5 (by default, 0.35), CH index will be used to optimize the cluster number
 
 res = SHARP(scExp, height.Ntimes = 3) # when the descending-ordered hierarchical height is 3 times larger than the next immediate height, we cut the tree 
+```
+
+If the number of single cells is very large, even the dimension-reduced feature matrix can be very large. In case that scatter-plot visualization is not necessary, we do not need to store the dimension-reduced feature matrix in the clustering results. The following option can achieve this goal:
+
+```{r}
+res = SHARP(scExp, forview = FALSE) # do not save the feature matrix
 ```
 
 
