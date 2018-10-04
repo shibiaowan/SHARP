@@ -12,7 +12,7 @@
 
 [More Details](https://github.com/shibiaowan/SHARP#more-details)<details><summary>...</summary>
 * [Expression Type](https://github.com/shibiaowan/SHARP#expression-type)
-* [Pre-processing](https://github.com/shibiaowan/SHARP#pre-processing)
+* [Pre-Processing](https://github.com/shibiaowan/SHARP#pre-processing)
 * [Number of Single Cells](https://github.com/shibiaowan/SHARP#number-of-single-cells)
 * [Number of Clusters](https://github.com/shibiaowan/SHARP#number-of-clusters)
 
@@ -83,7 +83,7 @@ res = SHARP(scExp, exp.type = "UMI") # SHARP will converts UMI input data into C
 By default, SHARP treats the input as either TPM or CPM format and will not make the data-type conversion.
 
 
-## Pre-processing:
+## Pre-Processing:
 Pre-processing for SHARP includes two parts: <b>removing all-zero genes</b> and <b>log-transform</b>. For the former part, for relatively small-size (e.g., 10,000 single cells) datasets, SHARP, by default, will remove those genes whose expressions are zero across all cells or whose expressions are missing (i.e., "NA") for some cells. SHARP also gives the option of whether removing or not to users:
 
 ```{r}
