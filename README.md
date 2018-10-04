@@ -8,12 +8,10 @@
 
 [Quick Start](https://github.com/shibiaowan/SHARP/blob/master/README.md#quick-start)
 
-<details><summary>[More Details](https://github.com/shibiaowan/SHARP#more-details)</summary>
+[More Details](https://github.com/shibiaowan/SHARP#more-details)<details><summary>...</summary>
 * [Expression Type](https://github.com/shibiaowan/SHARP#expression-type)
 * [Pre-processing](https://github.com/shibiaowan/SHARP#pre-processing)
-
 * [Number of Single Cells](https://github.com/shibiaowan/SHARP#number-of-single-cells)
-
 * [Number of Clusters](https://github.com/shibiaowan/SHARP#number-of-clusters)
 
 * [Number of Reduced Dimension](https://github.com/shibiaowan/SHARP#number-of-reduced-dimension)
