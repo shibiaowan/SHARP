@@ -24,6 +24,10 @@
 
 * [Multi-Core Processing](https://github.com/shibiaowan/SHARP#multi-core-processing)
 
+* [Performance Evaluation](https://github.com/shibiaowan/SHARP#performance-evaluation)
+
+* [Running Multiple Times of SHARP](https://github.com/shibiaowan/SHARP#running-multiple-times-of-sharp)
+
 * [Others](https://github.com/shibiaowan/SHARP#others)
 </details>
 
