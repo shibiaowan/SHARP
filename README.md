@@ -247,7 +247,7 @@ One of the unique contributions for SHARP is that it can process a dataset with 
 res = SHARP_unlimited(scExp) # dealing with 1.3 million single cells which are saved as a list of 26 matrices
 ```
 
-For memory-efficient processing, we can also save each block of data into an RDS file (RDS files are suggested because they are compact and their sizes are smaller) and each time we only processe one file. In this case, we just need to provide the directory of those files
+For memory-efficient processing, we can also save each block of data into an RDS file (RDS files are suggested because they are compact and their sizes are smaller) and each time we only process one file. In this case, we just need to provide the directory of those files
 
 ```{r}
 ndinfo = list()#three elements: the directory of those files to save the 1.3 million single cells, number of cells and number of genes
