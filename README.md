@@ -69,7 +69,7 @@ Load the library:
 ```{r}
 library(SHARP)
 ```
-An example data (i.e., scExp_tpm.RData) has also been loaded and we can check some basic information about it:
+An example data (i.e., scExp_tpm.RData) has also been loaded and we can check some basic information about it as follows:
 ```{r}
 scExp = scExp_tpm #a TPM-based single-cell pancreas data from Wang et al.
 dim(scExp) #check the numbers of genes and cells
@@ -169,7 +169,7 @@ res = SHARP(scExp, rN.seed = 10) # achieve reproducible results
 
 ## Multi-Core Processing:
 
-By default, SHARP is configured in parallel computing using multiple cores, i.e., using (n-1) cores, where n is the number of cores of the host computer. You can choose the number of cores to be used:
+By default, SHARP is configured in parallel computing using multiple cores, i.e., using (n-1) cores, where n is the number of cores of the host computer. You can choose the number of cores to be used as follows:
 
 ```{r}
 res = SHARP(scExp, n.cores = 1) # running in a single core
