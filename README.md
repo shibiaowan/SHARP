@@ -107,13 +107,13 @@ res = SHARP(scExp, logflag = FALSE) # do not check whether log-transform is done
 
 ## Number of Single Cells:
 
-Depending on the number of single cells in the input data, SHARP will automatically determine whether data-partitioning and similarity-based meta-clustering (sMetaC) are adopted or not (Note that if data partitioning is not adopted, sMetaC is neither necessary). For the former, a sub-function SHARP_small will be used, whereas for the latter, SHARP_large will be used. Experiments suggest that these two strategies may somewhat affect the clustering performance, especially for small-size (<1,000 single cells) datasets, but may have little effect on relatively large-size datasets (>5,000 single cells). However, data partitioning is undoubtedly able to significantly accelerate the clustering process for SHARP, especially for large-scale datasets. By default, when the number of single cells is fewer than 5,000, SHARP will not adopt the data-partitioning and sMetaC strategies. You can change the threshold as follows:
+Depending on the number of single cells in the input data, SHARP will automatically determine whether data-partitioning and similarity-based meta-clustering (sMetaC) are adopted or not (Note that if data partitioning is not adopted, sMetaC is neither necessary). For the former, a sub-function SHARP_small will be used, whereas for the latter, SHARP_large will be used. Experiments suggest that these two strategies may somewhat affect the clustering performance, especially for small-size (<1,000 single cells) datasets, but may have little effect on relatively large-size datasets (>5,000 single cells). However, data partitioning is undoubtedly able to significantly accelerate the clustering process for SHARP, especially for large-scale datasets. By default, when the number of single cells is fewer than 5,000, SHARP will not adopt the data-partitioning and sMetaC strategies. You can change the threshold by "base.ncells" as follows:
 
 ```{r}
 res = SHARP(scExp, base.ncells = 2000) # when the number of single cells is larger than 2000, data partitioning and sMetaC are adopted
 ```
 
-By default, the number of cells in each partition is 2000. You can also change the partition cell number:
+By default, the number of cells in each partition is 2000. You can also change the partition cell number by "partition.ncells":
 
 ```{r}
 res = SHARP(scExp, base.ncells = 2000, partition.ncells = 1000) # when data partitioning and sMetaC are adopted, the number of cells for each partition is set to 1,000
