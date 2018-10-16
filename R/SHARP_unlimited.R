@@ -159,7 +159,7 @@ SHARP_unlimited <- function(scExp, viewflag = TRUE, n.cores, ensize.K, N.cluster
     
     cat("=======================================================================\n")
     cat("Similarity-based meta-clustering for combining blockwise results...\n")
-    stmp = sMetaC(fColor, E1, folds, y[[1]]$paras$hmethod, N.cluster, minN.cluster, maxN.cluster, y[[1]]$paras$sil.thre, y[[1]]$paras$height.Ntimes, n.cores)
+    stmp = sMetaC(fColor, E1, folds, y[[1]]$paras$hmethod, N.cluster, minN.cluster, maxN.cluster, y[[1]]$paras$sil.thre, y[[1]]$paras$height.Ntimes)
     finalrowColor = stmp$finalColor
     
     

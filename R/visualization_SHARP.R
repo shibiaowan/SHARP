@@ -26,7 +26,7 @@
 #'
 #' @export
 
-visualization_SHARP<- function(y, label, w, filename, filetype, n.cores, width = 900, height = 900, ...){
+visualization_SHARP<- function(y, label, w, filename, filetype, legendtxt, n.cores, width = 900, height = 900, ...){
 
     # timing
     start_time <- Sys.time()  #we exclude the time for loading the input matrix
@@ -114,6 +114,7 @@ visualization_SHARP<- function(y, label, w, filename, filetype, n.cores, width =
 #         palette(brewer.pal(n = uc, name = "Set1"))
         
         plot(rtsne_out$Y, asp = 1, pch = 20, col = label, cex = 0.75, cex.axis = 1.25, cex.lab = 1.25, cex.main = 1.5, xlab = "SHARP Dim-1", ylab = "SHARP Dim-2", main = tt)
+        legend("topright", legend = unique(label), col = label)
     }else{
         plot(rtsne_out$Y, asp = 1, pch = 20, cex = 0.75, cex.axis = 1.25, cex.lab = 1.25, cex.main = 1.5, xlab = "SHARP Dim-1", ylab = "SHARP Dim-2", main = tt)
     }

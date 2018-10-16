@@ -4,8 +4,8 @@
 \alias{visualization_SHARP}
 \title{SHARP visualization}
 \usage{
-visualization_SHARP(y, label, w, filename, filetype, n.cores, width = 900,
-  height = 900, ...)
+visualization_SHARP(y, label, w, filename, filetype, legendtxt, n.cores,
+  width = 900, height = 900, ...)
 }
 \arguments{
 \item{y}{the results after running the SHARP function}

@@ -181,7 +181,7 @@ get_marker_genes_unlimited2 <- function(gdinfo, y, theta, auc, pvalue, n.cores){
 #         rm("scExp")
 #         gc()
     
-
+    rr = min(10, N.cluster)
 #     D = 10
 #     total <- D
 #     # create progress bar
@@ -221,6 +221,22 @@ get_marker_genes_unlimited2 <- function(gdinfo, y, theta, auc, pvalue, n.cores){
        
             if(dp > theta){
             r = rank(dd)
+            
+             s = aggregate(r~dt$ig, FUN = mean)#average over one gene across cells
+#         cat("Get the cell index of the maximum expression...\n")
+#             icluster = which.max(s$r)#the cluster with the maximum value
+            
+            iclusters = order(-s$r)[1:rr]#indices of the top rr average ranks
+            auc_res0 <- foreach(icluster = iclusters, .combine = c)%do%{
+                pred = prediction(r, as.numeric(dt$ig) == icluster)
+                auc_res <- unlist(performance(pred, "auc")@y.values)
+                return(auc_res)
+            }
+            ic = which.max(auc_res0)
+            icluster = iclusters[ic]#optimal cluster ID
+            auc0 = auc_res0[ic]#the maximum AUC
+            
+            
 #             r = dd
 #         s1 = which(dd!=0)
 #         dt1 = dt[s1]
@@ -228,15 +244,15 @@ get_marker_genes_unlimited2 <- function(gdinfo, y, theta, auc, pvalue, n.cores){
         
 #         cat("Get average expression on the", i,"-th across different clusters...\n")
    
-            s = aggregate(r~dt$ig, FUN = mean)#average over one gene across cells
-#         cat("Get the cell index of the maximum expression...\n")
-            icluster = which.max(s$r)#the cluster with the maximum value
+           
+            
+            
             x1 = r[as.numeric(dt$ig) == icluster]
             x2 = r[as.numeric(dt$ig) != icluster]
             p = wilcox.test(x1, x2)$p.value
     
-            pred <- prediction(r, as.numeric(dt$ig) == icluster)
-            auc0 <- unlist(performance(pred, "auc")@y.values)
+#             pred <- prediction(r, as.numeric(dt$ig) == icluster)
+#             auc0 <- unlist(performance(pred, "auc")@y.values)
         }else{
             auc0 = icluster = 0
             p = 1

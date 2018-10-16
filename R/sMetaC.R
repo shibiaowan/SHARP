@@ -15,7 +15,7 @@
 #'
 #' @export
 sMetaC <- function(rerowColor, sE1, folds, hmethod, finalN.cluster, minN.cluster, 
-    maxN.cluster, sil.thre, height.Ntimes, n.cores) {
+    maxN.cluster, sil.thre, height.Ntimes) {
     # This is to do meta-clustering the results obtained for each smaller group of
     # the original large-scale datasets
     R = unique(rerowColor)  #unique clusters
@@ -53,7 +53,7 @@ sMetaC <- function(rerowColor, sE1, folds, hmethod, finalN.cluster, minN.cluster
     h = dim(cb)[2]#n*(n-1)/2 combinations
     cat("Number of combinations:", h, "\n")
     
-    registerDoParallel(n.cores)
+#     registerDoParallel(n.cores)
     #get the mean vector for each cluster
     aG = foreach(t = 1:nC, .combine = "rbind") %dopar%{
         G1 = sE1[which(rerowColor %in% R[t]), , drop = FALSE]  #find all the cells for cluster i; 'drop = F' is to avoid a one-row/column matrix being converted to a vector
@@ -76,7 +76,7 @@ sMetaC <- function(rerowColor, sE1, folds, hmethod, finalN.cluster, minN.cluster
 #         }
         return(corss)
     }
-    stopImplicitCluster()
+#     stopImplicitCluster()
 #     cat("The length of alls is:", length(alls), "\n")
     # alls = foreach(t=1:dim(cb)[2], .combine = 'c') %dopar%{exp(-sum((mf[cb[1, t]] -
     # mf[cb[2, t]])^2)/t)}

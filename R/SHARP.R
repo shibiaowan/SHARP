@@ -146,7 +146,7 @@ SHARP <- function(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partitio
         n.cores = detectCores() - 1
     }
     # registerDoMC(n.cores)
-#     registerDoParallel(n.cores)
+    registerDoParallel(n.cores)
     
     if (!missing(rN.seed)) {#random seed for reproducible results
         # seed number for reproducible results
@@ -286,7 +286,7 @@ SHARP <- function(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partitio
     
     enresults$paras = paras
     
-#     stopImplicitCluster()
+    stopImplicitCluster()
     
     return(enresults)
 }
@@ -320,7 +320,7 @@ SHARP_small <- function(scExp, ncells, ensize.K, reduced.ndim, hmethod, N.cluste
     
     K = ensize.K
     p = reduced.ndim
-    registerDoParallel(n.cores)
+    #registerDoParallel(n.cores)
     allrpinfo = foreach(k = 1:ensize.K) %dopar% {
 #         print(paste('Random Projection: ', k, sep = ''))
         pid = Sys.getpid()
@@ -357,7 +357,7 @@ SHARP_small <- function(scExp, ncells, ensize.K, reduced.ndim, hmethod, N.cluste
         return(rpinfo)
         # rpname = paste('RP_', k, sep = '') allrpinfo[[rpname]] = rpinfo
     }
-    stopImplicitCluster()
+    #stopImplicitCluster()
     
     z = length(allrpinfo)
     enrp = matrix("0", nrow = ncells, ncol = ensize.K)
@@ -370,8 +370,9 @@ SHARP_small <- function(scExp, ncells, ensize.K, reduced.ndim, hmethod, N.cluste
         enE = enE + z1$indE
     }
     
-    finalrowColor = wMetaC(enrp, hmethod, enN.cluster = N.cluster, minN.cluster, 
+    fC = wMetaC(enrp, hmethod, enN.cluster = N.cluster, minN.cluster, 
         maxN.cluster, sil.thre, height.Ntimes)
+    finalrowColor = fC$finalC
     # finalmetrics = ARI(gtc, finalrowColor)#performance evaluation print('The
     # ensemble performance metrics are:', quote = FALSE) print(finalmetrics)
     
@@ -385,9 +386,20 @@ SHARP_small <- function(scExp, ncells, ensize.K, reduced.ndim, hmethod, N.cluste
     # RP, thus we do not need to save enrp
     
     viE = as.matrix(enE/K)
+    
+    if(!is.numeric(N.cluster) && ncells > 1e4){#remove those extremely small clusters
+        cat("Adjust clusters with very small number of cells...\n")
+        xt = table(finalrowColor)
+        s = names(which(xt < 10))#combine those clusters whose numbers are less than 10
+        if(length(s) != 0){
+             xi = which(!is.na(match(finalrowColor, as.numeric(s))))
+#         s1 = length(unique(finalrowColor)) - length(s) + 1
+            finalrowColor[xi] = min(as.numeric(s))
+        }
+    }
     ####reorganize the final prediction results
     finalrowColor = as.numeric(finalrowColor)
-    y = finalrowColor$finalC
+    y = finalrowColor
     uy = unique(y)
     newy = match(y, uy)#we use the index instead
     newuy = unique(newy)
@@ -403,7 +415,7 @@ SHARP_small <- function(scExp, ncells, ensize.K, reduced.ndim, hmethod, N.cluste
     enresults$N.pred_cluster = length(newuy)
     enresults$allrpinfo = allrpinfo
     if(forview){#if we want to visualiza data, we need to save the dimension-reduced matrices/feature vectors
-        enresults$x0 = finalrowColor$x0
+        enresults$x0 = fC$x0
         enresults$viE = viE
     }
     
@@ -412,7 +424,7 @@ SHARP_small <- function(scExp, ncells, ensize.K, reduced.ndim, hmethod, N.cluste
     return(enresults)
 }
 
-#' Run SHARP for large-size (>= 5000) single-cell RNA datasets
+#' Run SHARP for large-size (by default, >= 5000) single-cell RNA datasets
 #'
 #' For large-size (>= 5000) datasets, we suggest first partitioning the datasets into several groups, then we run SHARP for each group, and finally and we ensemble the results of each group by a similarity-based meta-clustering algorithm.
 #'
@@ -496,7 +508,7 @@ SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, 
     
     # preparing K RP matrices
     if(typeof(rM) != "list"){
-        registerDoParallel(n.cores)
+        #registerDoParallel(n.cores)
         rM = foreach(k = 1:K) %dopar% {
             if (rN.seed == 0.5) {
                 ranM(E, p, 0.5)  #for random results
@@ -504,12 +516,12 @@ SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, 
                 ranM(E, p, 50 + rN.seed + k)  #for reproducible result
             }
         }
-        stopImplicitCluster()
+        #stopImplicitCluster()
     }
     
     
     #### parallel programming#### rerowColor = foreach(t=1:T, .combine = 'c') %dopar%{
-    registerDoParallel(n.cores)
+    #registerDoParallel(n.cores)
     enlist = foreach(k = 1:K, .combine= "c") %:% foreach(t = 1:T) %dopar% {
         # nested looping; the first for different applications of random projection; the
         # second for different partitions print(paste('The ', k, '-th random projection;
@@ -574,7 +586,7 @@ SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, 
         # rerowColor[rind] = paste(tmp, '_', t, sep = '')#for distinguishing for each
         # smaller group clustering
     }
-    stopImplicitCluster()
+    #stopImplicitCluster()
     
 #     z = dim(enlist)
     z = length(enlist)
@@ -646,7 +658,7 @@ SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, 
     # finalrowColor = wMetaC(enrp) 
     ####parallel programming####
 #     frowColor = foreach(t = 1:T, .combine = "c") %dopar% {
-    registerDoParallel(n.cores)
+    #registerDoParallel(n.cores)
     frowColor = foreach(t = 1:T) %dopar% {
         tind = which(folds == t, arr.ind = TRUE)
 #         print(paste("the min and max of tind are:", min(tind), " and ", max(tind), sep = ""))
@@ -665,7 +677,7 @@ SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, 
         wres$nwC = length(unique(fC))#number of clusters
         return(wres)
     }
-    stopImplicitCluster()
+    #stopImplicitCluster()
     
     fColor = character(length = 0)#declare an empty character
     for(t in 1:T){
@@ -710,7 +722,7 @@ SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, 
 #         stmp = sMetaC(frowColor, E1, folds, hmethod, N.cluster, minN.cluster, 
 #             maxN.cluster, sil.thre, height.Ntimes)
         stmp = sMetaC(fColor, E1, folds, hmethod, N.cluster, minN.cluster, 
-            maxN.cluster, sil.thre, height.Ntimes, n.cores)
+            maxN.cluster, sil.thre, height.Ntimes)
         SrowColor = stmp$finalColor
         # SrowColor = sMetaC(frowColor, E1, folds) SrowColor = sMetaC(frowColor, E, p,
         # folds)
@@ -770,6 +782,17 @@ SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, 
     # save(finalrowColor, file = paste(outdir,'finalrowColor_', K, 'times.RData', sep
     # = '')) save(finalmetrics, file = paste(outdir,'finalmetrics_', K,
     # 'times.RData', sep = ''))
+    
+     if(!is.numeric(N.cluster) && ncells > 1e4){#remove those extremely small clusters
+        cat("Adjust clusters with very small number of cells...\n")
+        xt = table(finalrowColor)
+        s = names(which(xt < 10))#combine those clusters whose numbers are less than 10
+        if(length(s) != 0){
+             xi = which(!is.na(match(finalrowColor, as.numeric(s))))
+#         s1 = length(unique(finalrowColor)) - length(s) + 1
+            finalrowColor[xi] = min(as.numeric(s))
+        }
+    }
     
     ####reorganize the final prediction results
     finalrowColor = as.numeric(finalrowColor)
@@ -838,7 +861,7 @@ testlog<- function(scExp, ncells, p, sncells, n.cores){
     
     k = 2
     
-    registerDoParallel(n.cores)
+    #registerDoParallel(n.cores)
     msil = foreach(k = 1:2, .combine = c) %dopar% {
     # msil = foreach(k = 1:2, .combine = c) %do% {
         if(k == 2){
@@ -858,7 +881,7 @@ testlog<- function(scExp, ncells, p, sncells, n.cores){
 #                                     0, 2)
         return(tmp$maxsil)
     }
-    stopImplicitCluster()
+    #stopImplicitCluster()
     # msil = tmp$maxsil
 #     print(msil)
 #     if(msil[1] < msil[2]){#log transform
