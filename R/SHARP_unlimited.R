@@ -38,7 +38,7 @@ SHARP_unlimited <- function(scExp, viewflag = TRUE, n.cores, ensize.K, N.cluster
     
     if(class(scExp) != "list"){
         if(class(scExp) == "matrix"){
-            warning("SHARP is used instead of SHARP_unlimited because the input is a matrix!")
+            warning(paste(length(dr), "duplicated genes are found and then are removed!"))
             enresults = SHARP(scExp)
             return(enresults)
         }

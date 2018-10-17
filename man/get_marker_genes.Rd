@@ -4,7 +4,7 @@
 \alias{get_marker_genes}
 \title{Get marker genes for each cluster}
 \usage{
-get_marker_genes(scExp, y, theta, auc, pvalue, n.cores)
+get_marker_genes(scExp, y, theta, auc, pvalue, ng, n.cores)
 }
 \arguments{
 \item{scExp}{the original expression matrix}

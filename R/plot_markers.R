@@ -12,7 +12,9 @@
 #'
 #' @param filename the output file name to save the heatmap figure. By default ,the filename is "markers_heatmap.pdf".
 #'
-#' @return The heatmap of cell-type-specific marker gene expression will be saved into a file (by default the file will be named as "markers_heatmap.pdf"). Besides, all of the cluser-specific marker genes and their associated information will be returned.
+#' @param filetype the type of the output file. Suggested file types are PDF or PNG, while other common types (e.g., JPEG or TIFF) are also acceptable. If not given, the type will be determined as follows: when the number of single cells is less than 5000, the type will be PDF; otherwise, it will be PNG.
+#'
+#' @return The heatmap of cell-type-specific marker gene expression will be saved into a file (by default the file will be named as "markers_heatmap.pdf" or "markers_heatmap.png", depending on the number of cells). Besides, all of the cluser-specific marker genes and their associated information will be returned.
 #'
 #' @examples
 #'
@@ -26,12 +28,14 @@
 #'
 #' @import data.table
 #'
+#' @import doParallel
+#'
 #' @import viridis
 #'
 #' @import gplots
 #'
 #' @export
-plot_markers <- function(sginfo, label, N.marker, sN.cluster, filename, n.cores, ...){
+plot_markers <- function(sginfo, label, N.marker, sN.cluster, filename, filetype, nratio, n.cores, width = 900, height = 900, ...){
 
     if (missing(n.cores)) {
         # number of cores to be used, the default is to use all but one cores
@@ -41,6 +45,10 @@ plot_markers <- function(sginfo, label, N.marker, sN.cluster, filename, n.cores,
     
     if(missing(label)){
         label = sginfo$label
+    }
+    
+    if(missing(nratio)){#extraction cell ratio when the number of single cells is larger than 1e4
+        nratio = 1e4/length(label)
     }
    
     mginfo = sginfo$mginfo
@@ -68,20 +76,27 @@ plot_markers <- function(sginfo, label, N.marker, sN.cluster, filename, n.cores,
     
 #     ll = length(unique(sortmarker$icluster))
     ll = sN.cluster
-    y0 = numeric(0)
-    for(i in 1:ll){
-        x = sortmarker[sortmarker$icluster==kk[i], ]#the i-th cluster
-        if(nrow(x) > nmarker){
-            y0 = rbind(y0, x[1:nmarker,])
-        }else{
-            y0 = rbind(y0, x)
-        }
+#     y0 = numeric(0)
+#     for(i in 1:ll){
+#         x = sortmarker[sortmarker$icluster==kk[i], ]#the i-th cluster
+#         if(nrow(x) > nmarker){
+#             y0 = rbind(y0, x[1:nmarker,])
+#         }else{
+#             y0 = rbind(y0, x)
+#         }
+#     }
+#     ssmarker = y0
+    
+    #selected marker genes for showing
+    ssmarker = foreach(i = 1:ll, .combine  = rbind)%dopar%{
+        x = sortmarker[sortmarker$icluster==kk[i], ]
+        x1 = x[1:min(nrow(x), nmarker), ]
+        return(x1)
     }
-    ssmarker = y0
 #     ssmarker = sortmarker
 #     ssmarker = sortmarker1[, head(.SD, nmarker), by=icluster]#select the top N values in each icluster
 
-    bk <- seq(-2, 2, by=0.1)
+    bk <- seq(-2, 2, by=0.01)
 
 #     cc = y$pred_clusters
 #     cc0 = which(label %in% kk)
@@ -112,8 +127,20 @@ plot_markers <- function(sginfo, label, N.marker, sN.cluster, filename, n.cores,
 #     }
     
     mat = sginfo$mat#expression
-    sm = mat[, cellind]
+    sm = mat[rownames(ssmarker), cellind]#selected marker genes; selected cells
     
+    scind = which(newc %in% c(kk))#selected clusters
+    newc = newc[scind]
+    sm = sm[, scind]
+    #if the number of cells is too large
+    if(length(cellind) > 1e4){
+        kt = ceiling(table(newc)*nratio)
+        xu = unique(newc)
+        xx = length(xu)
+        ki = foreach(i = 1:xx, .combine = c)%dopar%{which(newc == xu[i])[1:kt[i]]}
+        sm = sm[, ki]
+        newc = newc[ki]
+    }
 
     my = sm
     my = my[apply(my,1,function(x) sd(x)!=0),]
@@ -140,19 +167,40 @@ plot_markers <- function(sginfo, label, N.marker, sN.cluster, filename, n.cores,
     uc = length(unique(col_groups))
 #     print(uc)
     mat_col <- data.frame(cell_type = col_groups)
-    rownames(mat_col) <- colnames(sm)
+    k0 = colnames(sm)
+    k1 = duplicated(k0)
+    nk = length(which(k1))
+    if(nk >0){k0[k1] = paste0("d", 1:nk)}
+    rownames(mat_col) <- k0
 
     # List with colors for each annotation.
     mat_colors <- list(cell_type = brewer.pal(uc, "Set1"))
     names(mat_colors$cell_type) <- unique(col_groups)
 
+    #if the file type is not given
+    if(missing(filetype)){
+        if(length(cellind) < 5000){
+            filetype = "pdf"
+        }else{
+            filetype = "png"
+        }
+    }
+  
      #if the file name is not given
     if(missing(filename)){
-        filename = "markers_heatmap.pdf"
+        filename = paste0("markers_heatmap.", filetype)
     }
     
     file_plot = filename
-    pdf(file_plot,width=6.69, height=6.69)
+    
+    if (filetype == "pdf"){
+        pdf(file_plot)
+    }else if (filetype == "png"){
+        png(file_plot, width = width, height = height)
+    }
+    
+    
+#     pdf(file_plot,width=6.69, height=6.69)
     
     # inferno(10)#different colors
     pheatmap(

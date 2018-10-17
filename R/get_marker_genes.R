@@ -22,7 +22,7 @@
 #' @import data.table
 #'
 #' @export
-get_marker_genes <- function(scExp, y, theta, auc, pvalue, n.cores){
+get_marker_genes <- function(scExp, y, theta, auc, pvalue, ng, n.cores){
 
     # timing
     start_time <- Sys.time()  #we exclude the time for loading the input matrix
@@ -45,12 +45,22 @@ get_marker_genes <- function(scExp, y, theta, auc, pvalue, n.cores){
         pvalue = 0.01
     }
     
+    if(missing(ng)){
+        ng = 5
+    }
+   
     ncells = y$N.cells#number of cells
 
     N.cluster = y$N.pred_cluster
 
-    ##remove those unnecessary (no changes) genes
+    ##remove those unnecessary (no changes) and duplicated genes
     cat("Preprocessing...\n")
+    r = duplicated(rownames(scExp))#find any duplicated genes in the input expression
+    dr = which(r)#duplicated indices
+    if(length(dr)>0){
+        warning(paste(length(dr), "duplicated genes are found and then are removed!"))
+        scExp = scExp[!r, ]
+    }
     
 #     scExp = scExp[rowSums(scExp)!=0, ]#much faster than using standard deviation
 #     scExp = scExp[apply(scExp,1,function(x) sd(x)!=0),]
@@ -89,7 +99,7 @@ get_marker_genes <- function(scExp, y, theta, auc, pvalue, n.cores){
 
     gn0 = rownames(scExp)
 
-    rr = min(10, N.cluster)
+    rr = min(ng, N.cluster)#number of top genes whose AUC to be checked
     ######parallel
 #     ginfo = foreach(i = 1:D, .combine = c)%dopar%{
     g4 = foreach(i = 1:D, .combine = "rbind")%dopar%{
@@ -114,7 +124,7 @@ get_marker_genes <- function(scExp, y, theta, auc, pvalue, n.cores){
             ic = which.max(auc_res0)
             icluster = iclusters[ic]#optimal cluster ID
             auc0 = auc_res0[ic]#the maximum AUC
-            cat("AUC:", auc_res0, "--maxAUC:", auc0, "--icluster:", icluster, "\n")
+#             cat("AUC:", auc_res0, "--maxAUC:", auc0, "--icluster:", icluster, "\n")
             
             x1 = r[as.numeric(dt$ig) == icluster]
             x2 = r[as.numeric(dt$ig) != icluster]
@@ -210,7 +220,7 @@ get_marker_genes <- function(scExp, y, theta, auc, pvalue, n.cores){
 #     dd = scExp[rownames(sginfo), ]
 #     dd = scExp[which(gn0 %in% rownames(sginfo)), ]
     
-#     dd = scExp[rownames(sginfo), ]
+    dd = scExp[rownames(sginfo), ]#after removing the duplicated genes
     
     end_time <- Sys.time()
     
@@ -219,7 +229,7 @@ get_marker_genes <- function(scExp, y, theta, auc, pvalue, n.cores){
     
     res = list()
     res$mginfo = sginfo
-#     res$mat = dd
+    res$mat = dd
     res$label = label
     res$gallinfo = gallinfo
     return(res)

@@ -2,7 +2,7 @@
 % Please edit documentation in R/SHARP.R
 \name{SHARP_large}
 \alias{SHARP_large}
-\title{Run SHARP for large-size (>= 5000) single-cell RNA datasets}
+\title{Run SHARP for large-size (by default, >= 5000) single-cell RNA datasets}
 \usage{
 SHARP_large(scExp, ncells, ensize.K, reduced.dim, partition.ncells, hmethod,
   N.cluster, enpN.cluster, indN.cluster, minN.cluster, maxN.cluster, sil.thre,

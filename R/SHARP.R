@@ -78,6 +78,14 @@ SHARP <- function(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partitio
         }
     }
     
+    #remove duplicated genes
+    r = duplicated(rownames(scExp))#find any duplicated genes in the input expression
+    dr = which(r)#duplicated indices
+    if(length(dr)>0){
+        warning(paste(length(dr), "duplicated genes are found and then are removed!"))
+        scExp = scExp[!r, ]
+    }
+
     if(prep){
         if(any(scExp < 0)){
             warning("Your expression matrix contain negative values! SHARP will replace negative values with 0!\n")

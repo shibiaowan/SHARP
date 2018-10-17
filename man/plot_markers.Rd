@@ -4,7 +4,8 @@
 \alias{plot_markers}
 \title{Plot marker genes}
 \usage{
-plot_markers(sginfo, label, N.marker, sN.cluster, filename, n.cores, ...)
+plot_markers(sginfo, label, N.marker, sN.cluster, filename, filetype, nratio,
+  n.cores, width = 900, height = 900, ...)
 }
 \arguments{
 \item{sginfo}{the info matrix of selected marker genes, including their correspnding cluster, p-value and AUROC (areas under the curve of the Receiver Operating Characteristic) value.}
@@ -15,10 +16,12 @@ plot_markers(sginfo, label, N.marker, sN.cluster, filename, n.cores, ...)
 
 \item{filename}{the output file name to save the heatmap figure. By default ,the filename is "markers_heatmap.pdf".}
 
+\item{filetype}{the type of the output file. Suggested file types are PDF or PNG, while other common types (e.g., JPEG or TIFF) are also acceptable. If not given, the type will be determined as follows: when the number of single cells is less than 5000, the type will be PDF; otherwise, it will be PNG.}
+
 \item{scExp}{the original expression matrix}
 }
 \value{
-The heatmap of cell-type-specific marker gene expression will be saved into a file (by default the file will be named as "markers_heatmap.pdf"). Besides, all of the cluser-specific marker genes and their associated information will be returned.
+The heatmap of cell-type-specific marker gene expression will be saved into a file (by default the file will be named as "markers_heatmap.pdf" or "markers_heatmap.png", depending on the number of cells). Besides, all of the cluser-specific marker genes and their associated information will be returned.
 }
 \description{
 This function is to plot a heatmap showing the cluster-specific marker genes. Only the top 10 marker genes for each cluster are shown.
