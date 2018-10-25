@@ -172,6 +172,9 @@ res = SHARP(scExp, rN.seed = 10) # achieve reproducible results
 By default, SHARP is configured in parallel computing using multiple cores, i.e., using (n-1) cores, where n is the number of cores of the host computer. You can choose the number of cores to be used as follows:
 
 ```{r}
+res = SHARP(scExp) # running with multi-cores, where (n-1) cores are used and n is the total number of CPU cores
+
+
 res = SHARP(scExp, n.cores = 1) # running in a single core
 ```
 
