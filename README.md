@@ -83,8 +83,6 @@ res = SHARP(scExp)
 
 #the last several lines should be something as follows:
 #
-##The number of clusters before voting is:  36 
-##The optimal number of clusters for ensemble clustering is: 6 
 ##Analysis complete!
 ##-----------------------------------------------------------------------
 ##Total running time: 0.07285088 minutes
