@@ -85,7 +85,7 @@ res = SHARP(scExp)
 #
 ##Analysis complete!
 ##-----------------------------------------------------------------------
-##Total running time: 0.07285088 minutes
+##Total running time: 0.16285088 minutes
 ```
 The running time for the example is less than 11 seconds for a computer with configuration of Intel Core i5-7300U @ 2.60GHz with 64 bit OS and a hard disk of 500 GB. Then, you can check the perfornance by comparing your prediction results with the given reference clustering label of the example:
 ```{r}
