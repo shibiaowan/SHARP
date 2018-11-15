@@ -60,6 +60,7 @@ install.packages("devtools")#only if you have not installed the package "devtool
 
 library(devtools)
 install_github("shibiaowan/SHARP")
+#The installation process usually takes less than one minute for a typical computer like with configuration of Intel Core i5-7300U @ 2.60GHz with 64 bit OS and a hard disk of 500 GB
 ```
 
 
@@ -79,6 +80,7 @@ scExp[1:5,1:5] #check typical values of the expression matrix
 Run SHARP:
 ```{r}
 res = SHARP(scExp)
+#The running time for the example is less than 11 seconds for a computer with configuration of Intel Core i5-7300U @ 2.60GHz with 64 bit OS and a hard disk of 500 GB
 ```
 
 # More Details:
