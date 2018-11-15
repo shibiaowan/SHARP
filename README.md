@@ -60,8 +60,9 @@ install.packages("devtools")#only if you have not installed the package "devtool
 
 library(devtools)
 install_github("shibiaowan/SHARP")
-```
 
+```
+The installation process takes around 47 seconds for a typical computer like with configuration of Intel Core i5-7300U @ 2.60GHz with 64 bit OS and a hard disk of 500 GB
 
 # Quick Start: 
 
@@ -79,7 +80,22 @@ scExp[1:5,1:5] #check typical values of the expression matrix
 Run SHARP:
 ```{r}
 res = SHARP(scExp)
+
+#the last several lines should be something as follows:
+#
+##The number of clusters before voting is:  36 
+##The optimal number of clusters for ensemble clustering is: 6 
+##Analysis complete!
+##-----------------------------------------------------------------------
+##Total running time: 0.07285088 minutes
 ```
+The running time for the example is less than 11 seconds for a computer with configuration of Intel Core i5-7300U @ 2.60GHz with 64 bit OS and a hard disk of 500 GB. Then, you can check the perfornance by comparing your prediction results with the given reference clustering label of the example:
+```{r}
+ARI(label, y)
+##     Rand        HA        MA        FM   Jaccard 
+##0.9594431 0.9022884 0.9027769 0.9329517 0.8705243 
+```
+The variable "label" has already been loaded automatically when starting using SHARP.
 
 # More Details:
 
@@ -172,6 +188,9 @@ res = SHARP(scExp, rN.seed = 10) # achieve reproducible results
 By default, SHARP is configured in parallel computing using multiple cores, i.e., using (n-1) cores, where n is the number of cores of the host computer. You can choose the number of cores to be used as follows:
 
 ```{r}
+res = SHARP(scExp) # running with multi-cores, where (n-1) cores are used and n is the total number of CPU cores
+
+
 res = SHARP(scExp, n.cores = 1) # running in a single core
 ```
 
