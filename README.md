@@ -89,15 +89,13 @@ res = SHARP(scExp)
 ##-----------------------------------------------------------------------
 ##Total running time: 0.07285088 minutes
 ```
-The running time for the example is less than 11 seconds for a computer with configuration of Intel Core i5-7300U @ 2.60GHz with 64 bit OS and a hard disk of 500 GB. Then, you can check the perfornance by comparing your prediction results with the given ground-truth label: 
-```
-#The variable "label" for the ground-truth clustering label of the example has already been loaded automatically, so you can simply use it.
+The running time for the example is less than 11 seconds for a computer with configuration of Intel Core i5-7300U @ 2.60GHz with 64 bit OS and a hard disk of 500 GB. Then, you can check the perfornance by comparing your prediction results with the given reference clustering label:
 ```{r}
 ARI(label, y)
 ##     Rand        HA        MA        FM   Jaccard 
 ##0.9594431 0.9022884 0.9027769 0.9329517 0.8705243 
 ```
-
+The variable "label" for the reference clustering label of the example has already been loaded automatically when starting using SHARP.
 
 # More Details:
 
