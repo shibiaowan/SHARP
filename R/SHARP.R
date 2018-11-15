@@ -61,10 +61,10 @@ SHARP <- function(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partitio
     
 #     if (!missing(exp.type)) {
 #         if (exp.type == "count" || exp.type == "UMI") {
-#             scExp = log10(t(t(scExp)/colSums(scExp)) * 1e+06 + 1)
+#             scExp = log2(t(t(scExp)/colSums(scExp)) * 1e+06 + 1)
 #         } else if (exp.type == "CPM" || exp.type == "TPM" || exp.type == "FPKM" || 
 #             exp.type == "RPKM") {
-#             scExp = log10(scExp + 1)
+#             scExp = log2(scExp + 1)
 #         }
 #     }
     
@@ -84,6 +84,15 @@ SHARP <- function(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partitio
     if(length(dr)>0){
         warning(paste(length(dr), "duplicated genes are found and then are removed!"))
         scExp = scExp[!r, ]
+    }
+    
+    r0 = colnames(scExp)#cell barcodes
+    dr0 = which(duplicated(r0))
+    if(length(dr0)>0){
+        warning(paste(length(dr0), "duplicated cell barcodes are found and then are renamed to avoid duplicates!"))
+        r0 = make.unique(r0)
+        colnames(scExp) = r0#unique cell barcodes
+#         scExp = scExp[, !r0]
     }
 
     if(prep){
@@ -284,6 +293,7 @@ SHARP <- function(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partitio
     paras$reduced.ndim = reduced.ndim
     paras$base.ncells = base.ncells
     paras$partition.ncells = partition.ncells
+    paras$logmark = flag
     paras$hmethod = hmethod
     paras$N.cluster = N.cluster
     paras$minN.cluster = minN.cluster
@@ -323,7 +333,7 @@ SHARP_small <- function(scExp, ncells, ensize.K, reduced.ndim, hmethod, N.cluste
     enresults = list()
     
     if(flag){
-        scExp = log10(scExp + 1)#logarithm transform
+        scExp = log2(scExp + 1)#logarithm transform
     }
     
     K = ensize.K
@@ -546,9 +556,9 @@ SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, 
         newE = E[, tind]  #the matrix for each group
 #         cat("newE completed for:", k, "-th RP and", t, "-th partition\n")
         if(flag){#whether log-transform
-            newE = log10(newE + 1)#logarithm transform
+            newE = log2(newE + 1)#logarithm transform
         }
-# # #         newE = log10(newE + 1)#logarithm transform
+# # #         newE = log2(newE + 1)#logarithm transform
         
         inE = data.matrix(newE)
         

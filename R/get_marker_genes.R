@@ -22,7 +22,7 @@
 #' @import data.table
 #'
 #' @export
-get_marker_genes <- function(scExp, y, theta, auc, pvalue, ng, n.cores){
+get_marker_genes <- function(scExp, y, theta, auc, pvalue, FC, ng, n.cores){
 
     # timing
     start_time <- Sys.time()  #we exclude the time for loading the input matrix
@@ -45,8 +45,12 @@ get_marker_genes <- function(scExp, y, theta, auc, pvalue, ng, n.cores){
         pvalue = 0.01
     }
     
+    if(missing(FC)){
+        FC = 2 #fold change >=2 
+    }
+    
     if(missing(ng)){
-        ng = 5
+        ng = 1 #only the top 1 
     }
    
     ncells = y$N.cells#number of cells
@@ -62,6 +66,19 @@ get_marker_genes <- function(scExp, y, theta, auc, pvalue, ng, n.cores){
         scExp = scExp[!r, ]
     }
     
+    r0 = colnames(scExp)#cell barcodes
+    dr0 = which(duplicated(r0))
+    if(length(dr0)>0){
+        warning(paste(length(dr0), "duplicated cell barcodes are found and then are renamed to avoid duplicates!"))
+        r0 = make.unique(r0)
+        colnames(scExp) = r0#unique cell barcodes
+#         scExp = scExp[, !r0]
+    }
+    
+#     if(y$logmark){#if log-transform is applied, then we need to 
+#         scExp = log2(scExp + 1)
+#     }
+
 #     scExp = scExp[rowSums(scExp)!=0, ]#much faster than using standard deviation
 #     scExp = scExp[apply(scExp,1,function(x) sd(x)!=0),]
     #remove those all-zero or all-same-expression genes
@@ -102,14 +119,15 @@ get_marker_genes <- function(scExp, y, theta, auc, pvalue, ng, n.cores){
     rr = min(ng, N.cluster)#number of top genes whose AUC to be checked
     ######parallel
 #     ginfo = foreach(i = 1:D, .combine = c)%dopar%{
-    g4 = foreach(i = 1:D, .combine = "rbind")%dopar%{
+    g5 = foreach(i = 1:D, .combine = "rbind")%dopar%{
         dd = scExp[i, ]
         dp = length(which(dd!=0))/length(dd)
         
         if(dp > theta){
+            r0 = scExp[i, ]
             r = rank(scExp[i, ])#gene rank
    
-   
+            s0 = aggregate(r0~dt$ig, FUN = mean)#average over one gene across cells
              s = aggregate(r~dt$ig, FUN = mean)#average over one gene across cells
 #         cat("Get the cell index of the maximum expression...\n")
 #             icluster = which.max(s$r)#the cluster with the maximum value
@@ -130,6 +148,10 @@ get_marker_genes <- function(scExp, y, theta, auc, pvalue, ng, n.cores){
             x2 = r[as.numeric(dt$ig) != icluster]
             p = wilcox.test(x1, x2)$p.value
             
+            y1 = s0$r0[icluster]#
+            y2 = max(s0$r0[setdiff(1:N.cluster, icluster)])
+            
+            fc = y1/y2
             
 #             s = aggregate(r~dt$ig, FUN = mean)#average over one gene across cells
 #             icluster = which.max(s$r)#the cluster with the maximum value
@@ -140,14 +162,14 @@ get_marker_genes <- function(scExp, y, theta, auc, pvalue, ng, n.cores){
 #             pred <- prediction(r, as.numeric(dt$ig) == icluster)
 #             auc0 <- unlist(performance(pred, "auc")@y.values)
         }else{
-            auc0 = icluster = 0
+            auc0 = icluster = fc = 0
             p = 1
         }
         
     
     
 #         tt = c(auc, icluster, p)
-        tt = c(auc0, icluster, p, dp)#character
+        tt = c(auc0, icluster, p, dp, fc)#character
     
         # update progress bar
         setTxtProgressBar(pb, i)
@@ -165,10 +187,10 @@ get_marker_genes <- function(scExp, y, theta, auc, pvalue, ng, n.cores){
 
     close(pb)
 
-    rownames(g4) = gn0
-    colnames(g4) = c("auc", "icluster", "pvalue", "sparsity")
+    rownames(g5) = gn0
+    colnames(g5) = c("auc", "icluster", "pvalue", "sparsity", "FC")
 
-    ginfo = data.frame(g4)
+    ginfo = data.frame(g5)
     
 #     ginfo <- data.frame(matrix(unlist(ginfo), ncol = 4, byrow = T))
 #     colnames(ginfo) = c("auc", "icluster", "pvalue", "sparsity")
@@ -185,7 +207,7 @@ get_marker_genes <- function(scExp, y, theta, auc, pvalue, ng, n.cores){
 
     
     gallinfo = ginfo
-    colnames(gallinfo) = c("auc", "icluster", "pvalue", "sparsity")
+    colnames(gallinfo) = c("auc", "icluster", "pvalue", "sparsity", "FC")
     ###in case some clusters do not have any qualified marker genes, we need to lower the AUC threshold (0.85)
     dt = data.table(ginfo)
     dt0 = dt[, list(maxauc = max(auc), minpvalue = min(pvalue)), by = icluster]
@@ -208,7 +230,10 @@ get_marker_genes <- function(scExp, y, theta, auc, pvalue, ng, n.cores){
 
     xx = intersect(x1, x2)
 
-    sginfo = ginfo[xx, ]#selected genes with p-values and their clusters
+    sginfo0 = ginfo[xx, ]#selected genes with p-values and their clusters
+    
+    sginfo = sginfo0[sginfo0$FC>=FC, ]#select those passing the fold change threshold
+    sginfo = sginfo[order(sginfo$icluster, -sginfo$FC, -sginfo$auc, sginfo$pvalue, -sginfo$sparsity),]###order by the FC in descending order
     
     nsgene = nrow(sginfo)
     cat("Number of selected marker genes:", nsgene, "\n")
@@ -231,6 +256,7 @@ get_marker_genes <- function(scExp, y, theta, auc, pvalue, ng, n.cores){
     res$mginfo = sginfo
     res$mat = dd
     res$label = label
+    res$logmark = y$paras$logmark
     res$gallinfo = gallinfo
     return(res)
 #     return(sginfo)

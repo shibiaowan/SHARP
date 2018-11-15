@@ -24,9 +24,11 @@
 #'
 #' @import parallel
 #'
+#' @import ggplot2
+#'
 #' @export
 
-visualization_SHARP<- function(y, label, w, filename, filetype, legendtxt, n.cores, width = 900, height = 900, ...){
+visualization_SHARP<- function(y, label, w, filename, filetype, n.cores, legendtitle = "Cell Type", width = 9.5, height = 8.5, res = 400, ...){
 
     # timing
     start_time <- Sys.time()  #we exclude the time for loading the input matrix
@@ -87,17 +89,14 @@ visualization_SHARP<- function(y, label, w, filename, filetype, legendtxt, n.cor
 #         x1 = 1/sqrt(30) * t(rM) %*% t(x1)
 #         x1 = t(x1)
 #     }
-    
-    rtsne_out <- Rtsne(x1, check_duplicates = FALSE, pca = flag, num_threads = n.cores, verbose = TRUE, ...)
     cat("Project to 2-D space...\n")
-    file_plot <- filename
+#     rtsne_out <- Rtsne(x1, check_duplicates = FALSE, pca = flag, num_threads = n.cores, verbose = TRUE, ...)
+    rtsne_out <- Rtsne(x1, check_duplicates = FALSE, pca = flag, num_threads = n.cores, ...)
+        file_plot <- filename
     
-    if (filetype == "pdf"){
-        pdf(file_plot)
-    }else if (filetype == "png"){
-        png(file_plot, width = width, height = height)
-    }
-    
+   
+#     par(xpd = T, mar = par()$mar + c(0,0,0,7))
+   
     tt = "2D SHARP Visualization"
     
 #     allcol =  c("purple",  "pink",  "black",  "orange", "turquoise", "yellow", "beige", "gray", 
@@ -113,13 +112,62 @@ visualization_SHARP<- function(y, label, w, filename, filetype, legendtxt, n.cor
         uc = length(unique(label))
 #         palette(brewer.pal(n = uc, name = "Set1"))
         
-        plot(rtsne_out$Y, asp = 1, pch = 20, col = label, cex = 0.75, cex.axis = 1.25, cex.lab = 1.25, cex.main = 1.5, xlab = "SHARP Dim-1", ylab = "SHARP Dim-2", main = tt)
-        legend("topright", legend = unique(label), col = label)
+#         d0 = data.frame(as.character(label))
+#         colnames(d0) = c("label")
+#         xa = max(nchar(as.character(unique(label))))#the maximum number of characters
+#         cat("Max nchar:", xa, "\n")
+#         #only in this case, we will draw the legend
+#         par(mar=c(5.1, 4.1, 4.1, 2.1 + max(6, xa/2)), xpd=TRUE)
+#         plot(rtsne_out$Y, asp = 1, pch = 20, col = d0$label, cex = 0.75, cex.axis = 1.25, cex.lab = 1.25, cex.main = 1.5, xlab = "SHARP Dim-1", ylab = "SHARP Dim-2", main = tt)
+# #         legend(0.03, 0.015, legend = levels(d0$label), col = 1:length(d0$label), pch = 20)
+#         legend("topright", inset=c(min(-0.1*xa/3.5, -0.2),0), legend = levels(d0$label), col = 1:length(d0$label), pch = 20)
+#         
+        
+        d0 = data.frame(rtsne_out$Y, as.character(label))
+        colnames(d0) = c("x1", "x2", "label")
+        
+        allcol = c("black", "red",  "green", "blue", "cyan", "magenta", "yellow", "grey", "brown", "purple",  "orange", "turquoise",  "beige",  
+         "coral",    "khaki",  "violet", "pink", "salmon", "goldenrod", "orchid", "seagreen", "slategray", "darkred",  "darkblue", "darkcyan", "darkgreen", "darkgray", "darkkhaki", "darkorange", "darkmagenta", "darkviolet", "darkturquoise", "darksalmon", "darkgoldenrod", "darkorchid", "darkseagreen", "darkslategray", "deeppink", "lightcoral", "lightcyan")
+        nl = length(allcol)
+        n0 = 1:uc %% length(allcol)
+        n0[n0 == 0] = nl#replace those 0's'
+        pcol = allcol[n0]#recursively use the colors
+        colScale <- scale_colour_manual(name = "label",values = pcol)#assign colors by ourselves
+        
+        vplot = ggplot(d0, aes(x = x1, y = x2, colour = label, group = label)) +
+        theme_bw(base_size = 14)+
+        theme_classic() +
+        geom_point(size = 1) + 
+        theme(axis.title=element_text(face="bold",size="14"), axis.text.x = element_text(size="14", hjust = 0.5, face="bold", colour= "black"), axis.text.y = element_text(size="14", face="bold", colour= "black"), legend.text=element_text(size="14", face="bold"), legend.title=element_blank(), plot.title = element_text(hjust = 0.5, size="14", face="bold"), panel.background = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.border = element_rect(fill = NA)) + xlab("SHARP Dim-1") + ylab("SHARP Dim-2") + labs(group = legendtitle) + ggtitle(tt) + colScale
+        
+        #legend.title=element_text(size="14")#with legend title
+        
+#         vplot = vplot + scale_fill_discrete(name = legendtitle)
+        #        labs(fill = legendtitle) #### +
+        
+#         print(vplot)
+        if (filetype == "pdf"){
+#             pdf(file_plot, width = width)
+            ggsave(file_plot, vplot, device = filetype, width = width)
+        }else if (filetype == "png"){
+#             png(file_plot, width = width, height = height, units = "in", res = res, pointsize = 4)
+            ggsave(file_plot, vplot, device = filetype, units = "in", dpi = res)
+        }
+        
     }else{
+        if (filetype == "pdf"){
+            pdf(file_plot, width = width)
+        }else if (filetype == "png"){
+            png(file_plot, width = width, height = height, units = "in", res = res)
+        }
+        
         plot(rtsne_out$Y, asp = 1, pch = 20, cex = 0.75, cex.axis = 1.25, cex.lab = 1.25, cex.main = 1.5, xlab = "SHARP Dim-1", ylab = "SHARP Dim-2", main = tt)
+        
+        dev.off()
     }
     
-    dev.off()
+#     par(mar=c(5, 4, 4, 2) + 0.1)#the default axis
+   
     
     end_time <- Sys.time()
     

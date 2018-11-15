@@ -248,6 +248,7 @@ SHARP_unlimited2 <- function(scExp, ensize.K, reduced.ndim, partition.ncells, hm
     paras$ensize.K = ensize.K
     paras$reduced.ndim = reduced.ndim
     paras$partition.ncells = partition.ncells
+    paras$logmark = flag
     paras$hmethod = hmethod
     paras$N.cluster = N.cluster
     paras$minN.cluster = minN.cluster

@@ -96,7 +96,7 @@ plot_markers <- function(sginfo, label, N.marker, sN.cluster, filename, filetype
 #     ssmarker = sortmarker
 #     ssmarker = sortmarker1[, head(.SD, nmarker), by=icluster]#select the top N values in each icluster
 
-    bk <- seq(-2, 2, by=0.01)
+    
 
 #     cc = y$pred_clusters
 #     cc0 = which(label %in% kk)
@@ -143,6 +143,9 @@ plot_markers <- function(sginfo, label, N.marker, sN.cluster, filename, filetype
     }
 
     my = sm
+    if(sginfo$logmark){
+        my = log2(my + 1)#if log-transform is necessary
+    }
     my = my[apply(my,1,function(x) sd(x)!=0),]
     my <- t(scale(t(my)))
     sm = my
@@ -199,6 +202,11 @@ plot_markers <- function(sginfo, label, N.marker, sN.cluster, filename, filetype
         png(file_plot, width = width, height = height)
     }
     
+    bk <- seq(-2, 2, by=0.01)
+    paletteLength = length(bk)-1
+    minx = min(sm)*0.8
+    maxx = max(sm)*0.8
+    myBreaks = c(seq(minx, 0, length.out=ceiling(paletteLength/2)+1),seq(maxx/paletteLength, maxx, length.out=floor(paletteLength/2)))
     
 #     pdf(file_plot,width=6.69, height=6.69)
     
@@ -210,17 +218,18 @@ plot_markers <- function(sginfo, label, N.marker, sN.cluster, filename, filetype
         border_color      = NA,
         Rowv              = FALSE,
         Colv              = FALSE,
-        cluster_rows      = TRUE,
-        cluster_cols      = TRUE,
+        cluster_rows      = T,
+        cluster_cols      = T,
         show_colnames     = FALSE,
         show_rownames     = TRUE,
         annotation_col    = mat_col,
         annotation_colors = mat_colors,
         drop_levels       = TRUE,
         fontsize          = 12,
-        scale             = 'column',
+        scale             = 'row',
     #   kmeans_k          = uc,
         clustering_method = "ward.D",
+#         breaks            = myBreaks,
 #         cutree_rows       = uc,
 #         cutree_cols       = uc,
         ...
