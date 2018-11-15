@@ -62,7 +62,7 @@ library(devtools)
 install_github("shibiaowan/SHARP")
 
 ```
-The installation process usually takes less than one minute for a typical computer like with configuration of Intel Core i5-7300U @ 2.60GHz with 64 bit OS and a hard disk of 500 GB
+The installation process takes around 47 seconds for a typical computer like with configuration of Intel Core i5-7300U @ 2.60GHz with 64 bit OS and a hard disk of 500 GB
 
 # Quick Start: 
 
