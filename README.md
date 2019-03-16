@@ -288,3 +288,31 @@ Shibiao Wan, Junil Kim and Kyoung Jae Won. SHARP: Single-Cell RNA-Seq Hyper-Fast
 # Bug Report:
 
 If you find any bugs or problems, or you have any comments on SHARP, please don't hesitate to contact Shibiao Wan at shibiao@upenn.edu.
+
+## Copyright
+
+Copyright © 2018-2019 [Shibiao Wan](https://sites.google.com/site/shibiaowan/)
+All rights reserved.
+
+
+
+
+## License 
+
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
+GNU GENERAL PUBLIC LICENSE  
+Version 3, 29 June 2007
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
