@@ -287,7 +287,7 @@ Shibiao Wan, Junil Kim and Kyoung Jae Won. SHARP: Single-Cell RNA-Seq Hyper-Fast
 
 # Bug Report:
 
-If you find any bugs or problems, or you have any comments on SHARP, please don't hesitate to contact Shibiao Wan at shibiao@upenn.edu.
+If you find any bugs or problems, or you have any comments on SHARP, please don't hesitate to contact the software package maintaner Shibiao Wan at shibiao@upenn.edu.
 
 
 # Copyright
