@@ -4,10 +4,11 @@
 \alias{SHARP}
 \title{Run SHARP for single-cell RNA data clustering}
 \usage{
-SHARP(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partition.ncells,
-  hmethod, N.cluster = NULL, enpN.cluster = NULL, indN.cluster = NULL,
-  minN.cluster, maxN.cluster, sil.thre, height.Ntimes, logflag, sncells,
-  n.cores, forview = TRUE, prep, rM, rN.seed)
+SHARP(scExp, exp.type, ensize.K, reduced.ndim, base.ncells,
+  partition.ncells, hmethod, N.cluster = NULL, enpN.cluster = NULL,
+  indN.cluster = NULL, minN.cluster, maxN.cluster, sil.thre,
+  height.Ntimes, logflag, sncells, n.cores, forview = TRUE, prep, rM,
+  rN.seed)
 }
 \arguments{
 \item{scExp}{input single-cell expression matrix, where each column represents a cell and each row represents a gene.}

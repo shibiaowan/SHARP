@@ -24,7 +24,7 @@ ARI <- function(ground_true_clusters, y, ...) {
     
     rowColor = y$pred_clusters  #the predicted clusters
     
-    truec = truelabel  #make a copy
+    truec = factor(truelabel)  #make a copy
     levels(truec) = c(1:length(levels(truec)))  #convert the categorical to numeric
     
     truecl = as.numeric(as.character(truec))  #convert to numeric vector

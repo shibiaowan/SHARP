@@ -277,6 +277,7 @@ SHARP <- function(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partitio
     t <- difftime(end_time, start_time, units = "mins")  #difference time in minutes
     # print(t)
     
+    cat("Number of clusters:", enresults$N.pred_cluster, "\n")
     cat("Analysis complete!\n")
     cat("-----------------------------------------------------------------------\n")
     cat("Total running time:", t, "minutes\n")
@@ -371,7 +372,8 @@ SHARP_small <- function(scExp, ncells, ensize.K, reduced.ndim, hmethod, N.cluste
         rpinfo$rowColor = rowColor  #the resulting clusters
         # rpinfo$metrics = metrics#the performance for each individual RPs
         rpinfo$N.cluster = length(unique(rowColor))
-        rpinfo$indE = E1
+#         rpinfo$indE = E1
+        rpinfo$indE = tmp$mat
         return(rpinfo)
         # rpname = paste('RP_', k, sep = '') allrpinfo[[rpname]] = rpinfo
     }
@@ -419,14 +421,14 @@ SHARP_small <- function(scExp, ncells, ensize.K, reduced.ndim, hmethod, N.cluste
     finalrowColor = as.numeric(finalrowColor)
     y = finalrowColor
     uy = unique(y)
-    newy = match(y, uy)#we use the index instead
-    newuy = unique(newy)
+    clusterID = match(y, uy)#we use the index instead
+    newuy = unique(clusterID)
     
-    tn = table(newy)
+    tn = table(clusterID)
     tn1 = tn[order(as.numeric(names(tn)))]#order the distributions of the clustering results
     
     # enresults$finalrowColor = finalrowColor$finalC
-    enresults$pred_clusters = newy
+    enresults$pred_clusters = clusterID
     enresults$unique_pred_clusters = sort(as.numeric(newuy))
     enresults$distr_pred_clusters = tn1
     # enresults$finalmetrics = finalmetrics
@@ -591,7 +593,8 @@ SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, 
         
         tmplist = list()
         tmplist$rpc = ptc
-        tmplist$pE1 = newE1
+#         tmplist$pE1 = newE1
+        tmplist$pE1 = tmp$mat
         tmplist$ind = c(k, t)
         tmplist$maxsil = tmp$maxsil
         
@@ -816,15 +819,15 @@ SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, 
     finalrowColor = as.numeric(finalrowColor)
     y = finalrowColor
     uy = unique(y)
-    newy = match(y, uy)#we use the index instead
-    newuy = unique(newy)
+    clusterID = match(y, uy)#we use the index instead
+    newuy = unique(clusterID)
     
-    tn = table(newy)
+    tn = table(clusterID)
     tn1 = tn[order(as.numeric(names(tn)))]#order the distributions of the clustering results
     
     enresults = list()
     # enresults$finalrowColor = finalrowColor
-    enresults$pred_clusters = newy
+    enresults$pred_clusters = clusterID
     enresults$unique_pred_clusters = sort(as.numeric(newuy))
     enresults$distr_pred_clusters = tn1
     # enresults$finalmetrics = finalmetrics

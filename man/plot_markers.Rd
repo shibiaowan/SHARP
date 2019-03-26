@@ -4,8 +4,8 @@
 \alias{plot_markers}
 \title{Plot marker genes}
 \usage{
-plot_markers(sginfo, label, N.marker, sN.cluster, filename, filetype, nratio,
-  n.cores, width = 900, height = 900, ...)
+plot_markers(sginfo, label, N.marker, sN.cluster, filename, filetype,
+  nratio, n.cores, width = 900, height = 900, ...)
 }
 \arguments{
 \item{sginfo}{the info matrix of selected marker genes, including their correspnding cluster, p-value and AUROC (areas under the curve of the Receiver Operating Characteristic) value.}

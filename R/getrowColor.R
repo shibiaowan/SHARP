@@ -111,6 +111,7 @@ getrowColor <- function(Emat, hmethod, indN.cluster, minN.cluster, maxN.cluster,
     res = list()
     res$rowColor = rowColor
     res$maxsil = hres$maxsil
+    res$mat = my
     # return(rowColor)
     return(res)
 }

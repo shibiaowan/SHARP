@@ -5,7 +5,8 @@
 \title{SHARP visualization}
 \usage{
 visualization_SHARP(y, label, w, filename, filetype, n.cores,
-  legendtitle = "Cell Type", width = 9.5, height = 8.5, res = 400, ...)
+  legendtitle = "Cell Type", width = 9.5, height = 8.5, res = 400,
+  ...)
 }
 \arguments{
 \item{y}{the results after running the SHARP function}

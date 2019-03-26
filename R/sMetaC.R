@@ -131,11 +131,13 @@ sMetaC <- function(rerowColor, sE1, folds, hmethod, finalN.cluster, minN.cluster
     print(hres$msil)#the silhouette index for different clusters
     v = hres$v#different numbers of clustering results
 #     cat("Dim of v is:", dim(v), "\n")
-    if (length(unique(hres$f)) == 2 && hres$maxsil > sil.thre) {
-        s0 = hres$msil
+
+    s0 = hres$msil
 #         cat("Dim of s0 is:", dim(s0), "\n")
-        n = length(s0)
+    n = length(s0)
 #         cat("n:", n, "\n")
+    if (n > 1 && length(unique(hres$f)) == 2 && hres$maxsil > sil.thre) {
+       
         s1 = sort(s0,partial=n-1)[n-1]#the second largest value
 #         cat("s1:", s1, "\n")
         s2 = which(s0 == s1)#the index

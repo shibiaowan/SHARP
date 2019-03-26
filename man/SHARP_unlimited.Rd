@@ -4,8 +4,8 @@
 \alias{SHARP_unlimited}
 \title{Run SHARP for clustering single-cell RNA data whose size (e.g., dim > 2,147,483,647) is beyond R to handle.}
 \usage{
-SHARP_unlimited(scExp, viewflag = TRUE, n.cores, ensize.K, N.cluster = NULL,
-  minN.cluster, maxN.cluster, rN.seed, ...)
+SHARP_unlimited(scExp, viewflag = TRUE, n.cores, ensize.K,
+  N.cluster = NULL, minN.cluster, maxN.cluster, rN.seed, ...)
 }
 \arguments{
 \item{scExp}{a list of input single-cell expression matrices, where each element represents a partition of the huge-size single-cell RNA-seq data matrix.}

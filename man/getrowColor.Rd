@@ -4,8 +4,8 @@
 \alias{getrowColor}
 \title{hierarchical clustering with number of clusters determined automatically}
 \usage{
-getrowColor(Emat, hmethod, indN.cluster, minN.cluster, maxN.cluster, sil.thre,
-  height.Ntimes)
+getrowColor(Emat, hmethod, indN.cluster, minN.cluster, maxN.cluster,
+  sil.thre, height.Ntimes)
 }
 \arguments{
 \item{Emat}{the feature matrix whose columns represent the features and whose rows represent data/cells.}
