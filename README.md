@@ -83,15 +83,13 @@ res = SHARP(scExp)
 
 #the last several lines should be something as follows:
 #
-##The number of clusters before voting is:  36 
-##The optimal number of clusters for ensemble clustering is: 6 
 ##Analysis complete!
 ##-----------------------------------------------------------------------
-##Total running time: 0.07285088 minutes
+##Total running time: 0.16285088 minutes
 ```
 The running time for the example is less than 11 seconds for a computer with configuration of Intel Core i5-7300U @ 2.60GHz with 64 bit OS and a hard disk of 500 GB. Then, you can check the perfornance by comparing your prediction results with the given reference clustering label of the example:
 ```{r}
-ARI(label, y)
+ARI(label, res)
 ##     Rand        HA        MA        FM   Jaccard 
 ##0.9594431 0.9022884 0.9027769 0.9329517 0.8705243 
 ```
@@ -285,8 +283,36 @@ sginfo = get_marker_genes_unlimited2(gdinfo, res) # detect marker genes
 
 # Citation:
 
-Shibiao Wan, Junil Kim and Kyoung Jae Won. SHARP: Single-Cell RNA-Seq Hyper-Fast and Accurate Processing via Ensemble Random Projection, submitted, 2018.
+Shibiao Wan, Junil Kim and Kyoung Jae Won. SHARP: Single-Cell RNA-Seq Hyper-Fast and Accurate Processing via Ensemble Random Projection, 2018. ([Preprint](https://www.biorxiv.org/content/early/2018/11/04/461640))
 
 # Bug Report:
 
-If you find any bugs or problems, or you have any comments on SHARP, please don't hesitate to contact Shibiao Wan at shibiao@upenn.edu.
+If you find any bugs or problems, or you have any comments on SHARP, please don't hesitate to contact the software package maintaner Shibiao Wan at shibiao@upenn.edu.
+
+
+# Copyright
+
+Copyright © 2018-2019 [Shibiao Wan](https://sites.google.com/site/shibiaowan/)
+
+
+
+
+# License 
+
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
+GNU GENERAL PUBLIC LICENSE  
+Version 3, 29 June 2007
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
