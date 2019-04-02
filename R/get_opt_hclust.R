@@ -60,10 +60,10 @@ get_opt_hclust <- function(mat, hmethod, N.cluster, minN.cluster, maxN.cluster, 
     if (isSymmetric(mat)) {
         # symmmetric matrix
         d = as.dist(1 - mat)
-        flag = 1
+        flag1 = 1
     } else {
         d = as.dist(1 - cor(t(mat)))
-        flag = 0
+        flag1 = 0
     }
     
     h = hclust(d, method = hmethod)  #ward to ward.D
