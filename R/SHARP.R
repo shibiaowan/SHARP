@@ -369,8 +369,8 @@ SHARP_small <- function(scExp, ncells, ensize.K, reduced.ndim, hmethod, N.cluste
         # rpinfo$rpmat = E1#the after-random-projected matrix rpinfo$R = newE$R#the
         # random matrix
         rpinfo$tag = tag  #tag
-#         rpinfo$rowColor = rowColor  #the resulting clusters
-        rpinfo$clusters = rowColor  #the resulting clusters
+        rpinfo$rowColor = rowColor  #the resulting clusters
+        #rpinfo$clusters = rowColor  #the resulting clusters
         # rpinfo$metrics = metrics#the performance for each individual RPs
         rpinfo$N.cluster = length(unique(rowColor))
 #         rpinfo$indE = E1
