@@ -255,7 +255,7 @@ SHARP <- function(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partitio
         cat("-----------------------------------------------------------------------\n")
         cat("Analysis starts...\n")
         enresults = SHARP_small(scExp, ncells, ensize.K, reduced.ndim, hmethod, N.cluster, 
-            indN.cluster, minN.cluster, maxN.cluster, sil.thre, height.Ntimes, flag, n.cores, forview, rN.seed)
+            indN.cluster, minN.cluster, maxN.cluster, sil.thre, height.Ntimes, flashmark, flag, n.cores, forview, rN.seed)
     } else {
         # print('Using SHARP_large...')
         cat("Using SHARP_large...\n")
@@ -270,7 +270,7 @@ SHARP <- function(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partitio
         cat("Analysis starts...\n")
         enresults = SHARP_large(scExp, ncells, ensize.K, reduced.ndim, partition.ncells, 
             hmethod, N.cluster, enpN.cluster, indN.cluster, minN.cluster, maxN.cluster, 
-            sil.thre, height.Ntimes, flag, n.cores, forview, rM, rN.seed)
+            sil.thre, height.Ntimes, flashmark, flag, n.cores, forview, rM, rN.seed)
     }
     
     end_time <- Sys.time()
