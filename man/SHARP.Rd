@@ -7,8 +7,8 @@
 SHARP(scExp, exp.type, ensize.K, reduced.ndim, base.ncells,
   partition.ncells, hmethod, N.cluster = NULL, enpN.cluster = NULL,
   indN.cluster = NULL, minN.cluster, maxN.cluster, sil.thre,
-  height.Ntimes, logflag, sncells, n.cores, forview = TRUE, prep, rM,
-  rN.seed)
+  height.Ntimes, flashmark, logflag, sncells, n.cores, forview = TRUE,
+  prep, rM, rN.seed)
 }
 \arguments{
 \item{scExp}{input single-cell expression matrix, where each column represents a cell and each row represents a gene.}
@@ -37,6 +37,8 @@ SHARP(scExp, exp.type, ensize.K, reduced.ndim, base.ncells,
 
 \item{height.Ntimes}{the number of times of the height versus the immediate next height in the hierarchical clustering. SHARP uses this parameter as a threshold to determine the location where to cut the hierarchical tree. In other words, if the current height is (height.Ntimes) times larger than the immediate next height in the descending order of heights, then SHARP cuts the tree at the median of these two heights.}
 
+\item{flashmark}{a logical to determine whether flashClust is used. By default, flashmark = FALSE, i.e., traditional hclust is used.}
+
 \item{logflag}{a logical to determine whether to check a log-transform of the input expression matrix. By default, logflag = TRUE, i.e., SHARP will check the log-transform operation.}
 
 \item{sncells}{number of cells randomly selected for checking log-transform is necessary or not. By default, sncells = 100.}
@@ -44,6 +46,8 @@ SHARP(scExp, exp.type, ensize.K, reduced.ndim, base.ncells,
 \item{n.cores}{number of cores to be used. The default is (n-1) cores, where n is the number of cores in your local computer or server.}
 
 \item{forview}{a logical to indicate whether those feature-vectors for data visualization should be saved or not. By default, it is TRUE.}
+
+\item{prep}{a logical to determine whether preprocessing (e.g., removing all-zero rows and replace negative value with 0) is employed or not. By default, prep = TRUE only when the number of single cells is smaller than 10,000.}
 
 \item{rM}{if provided, it should be a list of random matrices for random projection; otherwise, it will be calculated by SHARP_large.}
 

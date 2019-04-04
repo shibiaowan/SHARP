@@ -27,9 +27,11 @@
 #'
 #' @import clusterCrit
 #'
+#' @import flashClust
+#'
 #' @export
 get_opt_hclust <- function(mat, hmethod, N.cluster, minN.cluster, maxN.cluster, sil.thre, 
-    height.Ntimes) {
+    height.Ntimes, flashmark) {
     # if no agglomeration method for hierarchical clustering is provided
     if (missing(hmethod) || is.null(hmethod)) {
         hmethod = "ward.D"  #the default hierarchical clustering agglomeration method is 'ward.D'
@@ -55,6 +57,10 @@ get_opt_hclust <- function(mat, hmethod, N.cluster, minN.cluster, maxN.cluster, 
         height.Ntimes = 2  #by default, we select the first height which is (height.Ntimes) times larger than the immediate consecutive height
     }
     
+    if(missing(flashmark) || is.null(flashmark)){#by default, we use hclust
+	flashmark = FALSE
+    }
+    
     # just use simple criteria to determine whether they are feature vectors or
     # similarity matrix, and then we use different ways to measure the distance
     if (isSymmetric(mat)) {
@@ -66,7 +72,15 @@ get_opt_hclust <- function(mat, hmethod, N.cluster, minN.cluster, maxN.cluster, 
         flag1 = 0
     }
     
-    h = hclust(d, method = hmethod)  #ward to ward.D
+    if(flashmark == FALSE){##use traditional hclust
+	h = stats::hclust(d, method = hmethod)  #ward to ward.D
+    }else{##if flashmark is true, use flashClust
+	if(hmethod == "ward.D" || "ward.D2"){#a slight difference from the hclust
+		hmethod = "ward"
+	}
+	h = flashClust(d, method = hmethod)  #ward to ward.D
+    }
+    
     
     
     # if N.cluster is given, we simply use the given N.cluster for hierarchical

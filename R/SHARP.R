@@ -15,11 +15,12 @@
 #' @param maxN.cluster  the maximum number of clusters that SHARP will try when determining the optimal number of clusters
 #' @param sil.thre  the threshold of Silhouette index that SHARP will use the Silhouette index to determine the optimal number of clusters. In other words, if the maximum Silhouette index is larger than sil.thre, then SHARP uses the Silhouette index to determine the number of clusters; otherwise, SHARP uses the other indices (i.e., CH index and/or hierarchical heights) to determine 
 #' @param height.Ntimes the number of times of the height versus the immediate next height in the hierarchical clustering. SHARP uses this parameter as a threshold to determine the location where to cut the hierarchical tree. In other words, if the current height is (height.Ntimes) times larger than the immediate next height in the descending order of heights, then SHARP cuts the tree at the median of these two heights.
+#' @param flashmark a logical to determine whether flashClust is used. By default, flashmark = FALSE, i.e., traditional hclust is used.
 #' @param logflag   a logical to determine whether to check a log-transform of the input expression matrix. By default, logflag = TRUE, i.e., SHARP will check the log-transform operation.
 #' @param sncells   number of cells randomly selected for checking log-transform is necessary or not. By default, sncells = 100.
 #' @param n.cores   number of cores to be used. The default is (n-1) cores, where n is the number of cores in your local computer or server.
 #' @param forview   a logical to indicate whether those feature-vectors for data visualization should be saved or not. By default, it is TRUE.
-#'
+#' @param prep a logical to determine whether preprocessing (e.g., removing all-zero rows and replace negative value with 0) is employed or not. By default, prep = TRUE only when the number of single cells is smaller than 10,000. 
 #' @param rM if provided, it should be a list of random matrices for random projection; otherwise, it will be calculated by SHARP_large.
 #
 #' @param rN.seed   a number using which we can set seeds for SHARP to obtain reproducible results.
@@ -42,7 +43,7 @@
 #' @export
 SHARP <- function(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partition.ncells, 
     hmethod, N.cluster = NULL, enpN.cluster = NULL, indN.cluster = NULL, minN.cluster, 
-    maxN.cluster, sil.thre, height.Ntimes, logflag, sncells, n.cores, forview = TRUE, prep, rM, rN.seed) {
+    maxN.cluster, sil.thre, height.Ntimes, flashmark, logflag, sncells, n.cores, forview = TRUE, prep, rM, rN.seed) {
     # timing
     start_time <- Sys.time()  #we exclude the time for loading the input matrix
     
@@ -330,7 +331,7 @@ SHARP <- function(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partitio
 #'
 #' @export
 SHARP_small <- function(scExp, ncells, ensize.K, reduced.ndim, hmethod, N.cluster, 
-    indN.cluster, minN.cluster, maxN.cluster, sil.thre, height.Ntimes, flag, n.cores, forview, rN.seed) {
+    indN.cluster, minN.cluster, maxN.cluster, sil.thre, height.Ntimes, flashmark, flag, n.cores, forview, rN.seed) {
     enresults = list()
     
     if(flag){
@@ -357,7 +358,7 @@ SHARP_small <- function(scExp, ncells, ensize.K, reduced.ndim, hmethod, N.cluste
         
         tag = paste("_RP", p, "_", k, sep = "")  #k is the application times of random projection; p is the reduced dimension
         tmp = getrowColor(E1, hmethod, indN.cluster, minN.cluster, maxN.cluster, 
-            sil.thre, height.Ntimes)
+            sil.thre, height.Ntimes, flashmark)
         rowColor = tmp$rowColor
         # rowColor= getrowColor(E1, tag, outdir, colorL)#hierarchical clustering metrics=
         # ARI(gtc, rowColor)#performance evaluation print(metrics)
@@ -470,7 +471,7 @@ SHARP_small <- function(scExp, ncells, ensize.K, reduced.ndim, hmethod, N.cluste
 #' @export
 SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, hmethod, 
     N.cluster, enpN.cluster, indN.cluster, minN.cluster, maxN.cluster, sil.thre, 
-    height.Ntimes, flag, n.cores, forview, rM, rN.seed) {
+    height.Ntimes, flashmark, flag, n.cores, forview, rM, rN.seed) {
     # print('The Divide-and-Conquer Strategy is selected!')
     # cat("The Divide-and-Conquer Strategy is selected!\n")
     ######## Partition the large data into several groups###########
@@ -583,7 +584,7 @@ SHARP_large <- function(scExp, ncells, ensize.K, reduced.dim, partition.ncells, 
         
 #         cat("Dim reduction completed for:", k, "-th RP and", t, "-th partition\n")
         tmp = getrowColor(newE1, hmethod, indN.cluster, minN.cluster, maxN.cluster, 
-            sil.thre, height.Ntimes)  #hierarchical clustering; the result is a list containing both the predicted clusters and the maximum silhouette index
+            sil.thre, height.Ntimes, flashmark)  #hierarchical clustering; the result is a list containing both the predicted clusters and the maximum silhouette index
         # metrics= ARI(gtc[reind[tind], ], tmp$rowColor)#performance evaluation
         # print(metrics) rerowColor[, t] = paste(tmp, '_', t, sep = '')#for
         # distinguishing for each smaller group clustering rind = c((t-1)*ng + 1:
@@ -898,7 +899,7 @@ testlog<- function(scExp, ncells, p, sncells, n.cores){
         newsE1 = data.matrix(t(sE1))
     
         tmp = invisible(getrowColor(newsE1, "ward.D", indN.cluster = NULL, 2, 40, 
-            0, 2))
+            0, 2, FALSE))
         
 #         tmp = getrowColor(newsE1, "ward.D", indN.cluster = NULL, 2, 40, 
 #                                     0, 2)

@@ -5,7 +5,7 @@
 \title{get the optimal hierarchical clustering results with the optimal number of clusters}
 \usage{
 get_opt_hclust(mat, hmethod, N.cluster, minN.cluster, maxN.cluster,
-  sil.thre, height.Ntimes)
+  sil.thre, height.Ntimes, flashmark)
 }
 \arguments{
 \item{mat}{either a feature matrix or a similarity matrix derived from the single-cell expression matrix}

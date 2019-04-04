@@ -6,8 +6,8 @@
 \usage{
 SHARP_large(scExp, ncells, ensize.K, reduced.dim, partition.ncells,
   hmethod, N.cluster, enpN.cluster, indN.cluster, minN.cluster,
-  maxN.cluster, sil.thre, height.Ntimes, flag, n.cores, forview, rM,
-  rN.seed)
+  maxN.cluster, sil.thre, height.Ntimes, flashmark, flag, n.cores, forview,
+  rM, rN.seed)
 }
 \arguments{
 \item{scExp}{input single-cell expression matrix}
