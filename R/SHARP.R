@@ -43,7 +43,7 @@
 #' @export
 SHARP <- function(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partition.ncells, 
     hmethod, N.cluster = NULL, enpN.cluster = NULL, indN.cluster = NULL, minN.cluster, 
-    maxN.cluster, sil.thre, height.Ntimes, flashmark, logflag, sncells, n.cores, forview = TRUE, prep, rM, rN.seed) {
+    maxN.cluster, sil.thre, height.Ntimes, flashmark = FALSE, logflag, sncells, n.cores, forview = TRUE, prep, rM, rN.seed) {
     # timing
     start_time <- Sys.time()  #we exclude the time for loading the input matrix
     
