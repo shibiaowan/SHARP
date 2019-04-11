@@ -215,7 +215,7 @@ allres = run_Mtimes_SHARP(scExp, Mtimes = 10) # run 10 times of SHARP
 
 ## hclust vs flashClust:
 
-The flashClust package is a fast implementation of hierarchical clustering. It is claimed to run faster than the traditional hierarchical clustering package (i.e., hclust) for large-scale datasets. Therefore, for users' convenience, we have also embedded flashClust into SHARP. We added the option (i.e., flashmark) in the SHARP package to allow users to select whether flashClust (i.e., flashmark = TRUE) or the traditional hclust (i.e., flashmark = FALSE) is used as the base clustering method for SHARP. SHARP uses flashClust as the base clustering method as follows: 
+The <a href="https://cran.r-project.org/web/packages/flashClust/index.html" target="_blank">flashClust</a> package is a fast implementation of hierarchical clustering. It is claimed to run faster than the traditional hierarchical clustering package (i.e., hclust) for large-scale datasets. Therefore, for users' convenience, we have also embedded flashClust into SHARP. We added the option (i.e., flashmark) in the SHARP package to allow users to select whether flashClust (i.e., flashmark = TRUE) or the traditional hclust (i.e., flashmark = FALSE) is used as the base clustering method for SHARP. SHARP uses flashClust as the base clustering method as follows: 
 
 ```{r}
 res = SHARP(scExp, flashmark = TRUE) # use the flashClust as the base clustering method
