@@ -51,8 +51,9 @@ SHARP, short for <b><u><i>S</i></u></b>ingle-cell RNA-seq <b><u><i>H</i></u></b>
 1. <b>scalable</b> to processing <b>1.3 million single cells</b>; 
 2. <b>hyper-fast</b>; 
 3. <b>accurate</b>;
-4. <b>robust</b>; and 
-5. <b>multi-functional</b>, including clustering, dimension reduction, fast single-cell data visualization, marker gene identification, etc.
+4. <b>robust</b>; 
+5. <b>R-based, which can be readily used with other R-based scRNA-seq data analysis tools </b>; and 
+6. <b>multi-functional</b>, including clustering, dimension reduction, fast single-cell data visualization, marker gene identification, etc.
 
 
 # Installation:
