@@ -285,7 +285,7 @@ ndinfo$ngenes = 27998
 res = SHARP_unlimited2(ndinfo) # dealing with 1.3 million single cells which are saved as a list of 26 matrices
 ```
 
-After clustering, we can identify the marker genesa as follows:
+After clustering, we can identify the marker genes as follows:
 
 ```{r}
 sginfo = get_marker_genes_unlimited2(gdinfo, res) # detect marker genes
