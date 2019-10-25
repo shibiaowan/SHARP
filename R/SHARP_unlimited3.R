@@ -13,7 +13,7 @@
 #' @return a list containing the SHARP clustering results, distribution of the clustering results, the predicted optimal number of clusters, time SHARP consumes for clustering, some intermediate results including clustering results by each random-projection based hierarchical clustering and other related statstical information including number of cells, genes, reduced dimensions and number of applications of random projection.
 #'
 #' @examples
-#' enresults = SHARP_unlimited(scExp)
+#' enresults = SHARP_unlimited3(ndinfo)
 #'
 #' @author Shibiao Wan <shibiao@pennmedicine.upenn.edu>
 #'
