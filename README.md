@@ -282,7 +282,7 @@ ndinfo = list()#three elements: the directory of those files to save the 1.3 mil
 ndinfo$dir = "tmp/million_cells/"
 ndinfo$ncells = 1306127
 ndinfo$ngenes = 27998
-res = SHARP_unlimited2(ndinfo) # dealing with 1.3 million single cells which are saved as a list of 26 matrices
+res = SHARP_unlimited3(ndinfo) # dealing with 1.3 million single cells which are saved as a list of 26 matrices
 ```
 
 After clustering, we can identify the marker genes as follows:
