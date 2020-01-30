@@ -303,7 +303,7 @@ If you find any bugs or problems, or you have any comments on SHARP, please don'
 
 # Copyright
 
-Copyright © 2018-2019 [Shibiao Wan](https://sites.google.com/site/shibiaowan/)
+Copyright © 2018-2020 [Shibiao Wan](https://sites.google.com/site/shibiaowan/)
 
 
 
