@@ -294,7 +294,7 @@ sginfo = get_marker_genes_unlimited2(gdinfo, res) # detect marker genes
 
 # Citation:
 
-Shibiao Wan, Junil Kim and Kyoung Jae Won. SHARP: Single-Cell RNA-Seq Hyper-Fast and Accurate Processing via Ensemble Random Projection, <b><i>Genome Research</i></b>, 2020. ([link](https://genome.cshlp.org/content/early/2020/01/28/gr.254557.119.abstract)) ([Preprint](https://www.biorxiv.org/content/early/2018/11/04/461640))
+Shibiao Wan, Junil Kim and Kyoung Jae Won. SHARP: Single-Cell RNA-Seq Hyper-Fast and Accurate Processing via Ensemble Random Projection, <b><i>Genome Research</i></b>, 2020, vol. 30, pp. 205-213. ([link](https://genome.cshlp.org/content/30/2/205)) ([Preprint](https://www.biorxiv.org/content/early/2018/11/04/461640))
 
 # Bug Report:
 
