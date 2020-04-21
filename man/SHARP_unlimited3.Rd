@@ -4,8 +4,15 @@
 \alias{SHARP_unlimited3}
 \title{Run SHARP for clustering single-cell RNA data whose size (e.g., dim > 2,147,483,647) is beyond R to handle.}
 \usage{
-SHARP_unlimited3(ndinfo, viewflag = TRUE, n.cores, ensize.K, rN.seed,
-  N.cluster = NULL, ...)
+SHARP_unlimited3(
+  ndinfo,
+  viewflag = TRUE,
+  n.cores,
+  ensize.K,
+  rN.seed,
+  N.cluster = NULL,
+  ...
+)
 }
 \arguments{
 \item{viewflag}{a logic to indicate whether to save the ensemble random-projection feature vectors for further visualization. The default is TRUE.}

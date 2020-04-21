@@ -4,9 +4,23 @@
 \alias{SHARP_fpart}
 \title{Run SHARP for clustering single-cell RNA data whose size (e.g., dim > 2,147,483,647) is beyond R to handle.}
 \usage{
-SHARP_fpart(scExp, ensize.K, reduced.ndim, partition.ncells, hmethod,
-  N.cluster, enpN.cluster, indN.cluster, minN.cluster, maxN.cluster,
-  sil.thre, height.Ntimes, flag, rM, rN.seed)
+SHARP_fpart(
+  scExp,
+  ensize.K,
+  reduced.ndim,
+  partition.ncells,
+  hmethod,
+  N.cluster,
+  enpN.cluster,
+  indN.cluster,
+  minN.cluster,
+  maxN.cluster,
+  sil.thre,
+  height.Ntimes,
+  flag,
+  rM,
+  rN.seed
+)
 }
 \arguments{
 \item{scExp}{a list of input single-cell expression matrices, where each element represents a partition of the huge-size single-cell RNA-seq data matrix.}

@@ -239,6 +239,12 @@ SHARP <- function(scExp, exp.type, ensize.K, reduced.ndim, base.ncells, partitio
     # genes: ', ngenes, sep = '')) # print(paste('Ground-truth Number of clusters: ',
     # length(unique(gtc$cellType)), sep = '')) print(paste('The dimension has been
     # reduced from ', ngenes, ' to ', reduced.ndim, sep=''))
+    
+#     if(flashmark){
+# 	f0 = "flashClust"
+#     }else{
+# 	f0 = "hclust"
+#     }
     cat("-----------------------------------------------------------------------\n")
     cat("Parameter Setting:\n")
     # cat("The dimension has been reduced from ", ngenes, " to ", reduced.ndim, "\n")

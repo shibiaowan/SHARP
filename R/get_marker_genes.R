@@ -66,12 +66,12 @@ get_marker_genes <- function(scExp, y, theta, auc, pvalue, FC, ng, n.cores){
         scExp = scExp[!r, ]
     }
     
-    r0 = colnames(scExp)#cell barcodes
-    dr0 = which(duplicated(r0))
-    if(length(dr0)>0){
-        warning(paste(length(dr0), "duplicated cell barcodes are found and then are renamed to avoid duplicates!"))
-        r0 = make.unique(r0)
-        colnames(scExp) = r0#unique cell barcodes
+    r1 = colnames(scExp)#cell barcodes
+    dr1 = which(duplicated(r1))
+    if(length(dr1)>0){
+        warning(paste(length(dr1), "duplicated cell barcodes are found and then are renamed to avoid duplicates!"))
+        r1 = make.unique(r1)
+        colnames(scExp) = r1#unique cell barcodes
 #         scExp = scExp[, !r0]
     }
     
