@@ -32,7 +32,7 @@
 #' @examples
 #' enresults = SHARP(scExp)
 #'
-#' @author Shibiao Wan <shibiao@pennmedicine.upenn.edu>
+#' @author Shibiao Wan <shibiaowan.work@gmail.com>
 #'
 #' @import foreach
 #'

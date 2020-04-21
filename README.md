@@ -1,6 +1,6 @@
 # SHARP
 
-<b><u><i>S</i></u></b>ingle-cell RNA-seq <b><u><i>H</i></u></b>yper-fast and <b><u><i>A</i></u></b>ccurate processing via ensemble <b><u><i>R</i></u></b>andom <b><u><i>P</i></u></b>rojection
+<b><u><i><font size="6"><span style="color:red">S</span></font></i></u></b>ingle-cell RNA-seq <b><u><i>H</i></u></b>yper-fast and <b><u><i>A</i></u></b>ccurate processing via ensemble <b><u><i>R</i></u></b>andom <b><u><i>P</i></u></b>rojection
 
 
 ### Table of Contents
@@ -28,6 +28,8 @@
 
 * [Running Multiple Times of SHARP](https://github.com/shibiaowan/SHARP#running-multiple-times-of-sharp)
 
+* [hclust vs flashClust](https://github.com/shibiaowan/SHARP#hclust-vs-flashclust)
+
 * [Others](https://github.com/shibiaowan/SHARP#others)
 </details>
 
@@ -46,11 +48,12 @@
 
 SHARP, short for <b><u><i>S</i></u></b>ingle-cell RNA-seq <b><u><i>H</i></u></b>yper-fast and <b><u><i>A</i></u></b>ccurate processing via ensemble <b><u><i>R</i></u></b>andom <b><u><i>P</i></u></b>rojection, is a bioinformatics tool to process and analyze single-cell RNA-seq (scRNA-seq) data. Algorithmically, SHARP is based on ensemble random projection (RP) and multi-layer meta-clustering which can well preserve cell-to-cell distance in reduced-dimensional space. Compared to other existing tools, it has the following advantages: 
 
-1. <b>scalable</b> to processing <b>1.3 million single cells</b>; 
+1. <b>scalable</b> to processing <b>10 million single cells</b>; 
 2. <b>hyper-fast</b>; 
 3. <b>accurate</b>;
-4. <b>robust</b>; and 
-5. <b>multi-functional</b>, including clustering, dimension reduction, fast single-cell data visualization, marker gene identification, etc.
+4. <b>robust</b>; 
+5. <b>R-based</b>, which can be readily used and combined with other R-based scRNA-seq data analysis tools; and 
+6. <b>multi-functional</b>, including clustering, dimension reduction, fast single-cell data visualization, marker gene identification, etc.
 
 
 # Installation:
@@ -211,6 +214,14 @@ SHARP will produce robust yet stochastic clustering results. To evaluate the clu
 allres = run_Mtimes_SHARP(scExp, Mtimes = 10) # run 10 times of SHARP
 ```
 
+## hclust vs flashClust:
+
+The <a href="https://cran.r-project.org/web/packages/flashClust/index.html" target="_blank">flashClust</a> package is a fast implementation of hierarchical clustering. It is claimed to run faster than the traditional hierarchical clustering package (i.e., hclust) for large-scale datasets. Therefore, for users' convenience, we have also embedded flashClust into SHARP. We added the option (i.e., flashmark) in the SHARP package to allow users to select whether flashClust (i.e., flashmark = TRUE) or the traditional hclust (i.e., flashmark = FALSE) is used as the base clustering method for SHARP. SHARP uses flashClust as the base clustering method as follows: 
+
+```{r}
+res = SHARP(scExp, flashmark = TRUE) # use the flashClust as the base clustering method
+```
+By default, flashmark = FALSE, i.e., hclust is used as the base clustering method.
 
 ## Others:
 
@@ -271,10 +282,10 @@ ndinfo = list()#three elements: the directory of those files to save the 1.3 mil
 ndinfo$dir = "tmp/million_cells/"
 ndinfo$ncells = 1306127
 ndinfo$ngenes = 27998
-res = SHARP_unlimited2(ndinfo) # dealing with 1.3 million single cells which are saved as a list of 26 matrices
+res = SHARP_unlimited3(ndinfo) # dealing with 1.3 million single cells which are saved as a list of 26 matrices
 ```
 
-After clustering, we can identify the marker genesa as follows:
+After clustering, we can identify the marker genes as follows:
 
 ```{r}
 sginfo = get_marker_genes_unlimited2(gdinfo, res) # detect marker genes
@@ -283,16 +294,16 @@ sginfo = get_marker_genes_unlimited2(gdinfo, res) # detect marker genes
 
 # Citation:
 
-Shibiao Wan, Junil Kim and Kyoung Jae Won. SHARP: Single-Cell RNA-Seq Hyper-Fast and Accurate Processing via Ensemble Random Projection, 2018. ([Preprint](https://www.biorxiv.org/content/early/2018/11/04/461640))
+Shibiao Wan, Junil Kim and Kyoung Jae Won. SHARP: Single-Cell RNA-Seq Hyper-Fast and Accurate Processing via Ensemble Random Projection, <b><i>Genome Research</i></b>, 2020, vol. 30, pp. 205-213. ([link](https://genome.cshlp.org/content/30/2/205)) ([Preprint](https://www.biorxiv.org/content/early/2018/11/04/461640))
 
 # Bug Report:
 
-If you find any bugs or problems, or you have any comments on SHARP, please don't hesitate to contact the software package maintaner Shibiao Wan at shibiao@upenn.edu.
+If you find any bugs or problems, or you have any comments on SHARP, please don't hesitate to contact the software package maintaner Shibiao Wan at shibiaowan.work@gmail.com.
 
 
 # Copyright
 
-Copyright © 2018-2019 [Shibiao Wan](https://sites.google.com/site/shibiaowan/)
+Copyright © 2018-2020 [Shibiao Wan](https://sites.google.com/site/shibiaowan/)
 
 
 
