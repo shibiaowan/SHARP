@@ -18,7 +18,6 @@
 #'
 #' @export
 run_Mtimes_SHARP <- function(scExp, Mtimes = 10, Kset = 15, ...) {
-    rm(list = ls())  #remove all
     
     ########## Input matrix files###########
     
