@@ -124,7 +124,7 @@ get_marker_genes <- function(scExp, y, theta, auc, pvalue, FC, ng, n.cores){
         dp = length(which(dd!=0))/length(dd)
         
         if(dp > theta){
-            r0 = scExp[i, ]
+            r0 = as.numeric(as.character(scExp[i, ]))
             r = rank(scExp[i, ])#gene rank
    
             s0 = aggregate(r0~dt$ig, FUN = mean)#average over one gene across cells

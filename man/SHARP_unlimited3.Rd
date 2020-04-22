@@ -31,7 +31,7 @@ Because the current R lacks 64-bit integers support, it is recommended to divide
 This is a complementary SHARP function to deal with the case where R itself can not handle a matrix whose non-zero element is over 2,147,483,647. The huge-size matrix is first divided into several partitions which are susequently saved into a list. SHARP_unlimited() can directly deal with this list.
 }
 \examples{
-enresults = SHARP_unlimited(scExp)
+enresults = SHARP_unlimited3(ndinfo)
 
 }
 \author{

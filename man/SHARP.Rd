@@ -86,5 +86,5 @@ enresults = SHARP(scExp)
 
 }
 \author{
-Shibiao Wan <shibiao@pennmedicine.upenn.edu>
+Shibiao Wan <shibiaowan.work@gmail.com>
 }
