@@ -17,7 +17,7 @@ ARI(ground_true_clusters, y)
 Five clustering metrics, including Rand index (Rand), Hubert and Arabie's adjusted Rand index (HA), Morey and Agresti's adjusted Rand index (MA), Fowlkes and Mallows's index (FM), and Jaccard index. HA is the one metric that we often refer to as ARI.
 }
 \description{
-This function is to calculate the performance of the algorithm by 5 metrics, including Rand index (Rand), Hubert and Arabie's adjusted Rand index (HA), Morey and Agresti's adjusted Rand index (MA), Fowlkes and Mallows's index (FM), and Jaccard index. HA is the one metric that we often refer to as ARI.
+This function is to calculate the performance of the algorithm by the adjusted Rand index (ARI).
 }
 \examples{
 y = SHARP(scExp)
