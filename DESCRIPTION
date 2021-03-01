@@ -1,14 +1,14 @@
 Package: SHARP
 Type: Package
 Title: hyperfast and accurate single-cell RNA-Seq data clustering
-Version: 1.0.2
-Date: 2018-11-08
+Version: 1.1.0
+Date: 2021-03-01
 Authors@R: person("Shibiao", "Wan", email = "shibiaowan.work@gmail.com", role = c("aut", "cre"))
 Maintainer: Shibiao Wan <shibiaowan.work@gmail.com>
 Description: SHARP: Single-Cell RNA-Seq Hyper-Fast and Accurate Clustering via Ensemble Random Projection
-Imports: Matrix, RColorBrewer, ROCR, Rtsne, clues, cluster, clusterCrit, data.table, doParallel, flashClust, foreach, gplots, parallel, pheatmap, viridis
+Imports: Matrix, RColorBrewer, ROCR, Rtsne, mclust, cluster, clusterCrit, data.table, doParallel, flashClust, foreach, gplots, parallel, pheatmap, viridis
 Depends: R (>= 3.3)
 License: GNU General Public License v3.0
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1

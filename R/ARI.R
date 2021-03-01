@@ -12,12 +12,12 @@
 #'
 #' @examples
 #' y = SHARP(scExp)
-#' finalmetrics = ARI(ground_true_clusters, y, randMethod = "HA")
+#' finalmetrics = ARI(ground_true_clusters, y)
 #'
-#' @import clues
+#' @import mclust
 #'
 #' @export
-ARI <- function(ground_true_clusters, y, ...) {
+ARI <- function(ground_true_clusters, y) {
     # w: the ground-truth clusters; rowColor: the predicted clusters
     
     truelabel = ground_true_clusters  #get the label (categorical)
@@ -34,7 +34,8 @@ ARI <- function(ground_true_clusters, y, ...) {
     levels(t1) = c(1:length(levels(t1)))  #convert the categorical to numeric
     t1 = as.numeric(as.character(t1))
     
-    metrics = adjustedRand(truecl, t1, ...)  #the ARI performance metrics
+    metrics = adjustedRandIndex(truecl, t1)  #the ARI performance metrics
+    # metrics = adjustedRand(truecl, t1, ...)  #the ARI performance metrics
     
 #     cat("HA is the metric that we often refer to as ARI (adjusted Rand index), i.e., Hubert and Arabie's ARI.\n")
     return(metrics)

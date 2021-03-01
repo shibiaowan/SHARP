@@ -4,7 +4,7 @@
 \alias{ARI}
 \title{Calculate the adjusted rand index (ARI), including 5 different ARI-related metrics}
 \usage{
-ARI(ground_true_clusters, y, ...)
+ARI(ground_true_clusters, y)
 }
 \arguments{
 \item{ground_true_clusters}{the ground-truth clusters}
@@ -21,6 +21,6 @@ This function is to calculate the performance of the algorithm by 5 metrics, inc
 }
 \examples{
 y = SHARP(scExp)
-finalmetrics = ARI(ground_true_clusters, y, randMethod = "HA")
+finalmetrics = ARI(ground_true_clusters, y)
 
 }
