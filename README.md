@@ -4,6 +4,9 @@
 
 
 ### Table of Contents
+
+[News](https://github.com/shibiaowan/SHARP/blob/master/README.md#news)
+
 [Introduction](https://github.com/shibiaowan/SHARP/blob/master/README.md#introduction)
 
 [Installation](https://github.com/shibiaowan/SHARP/blob/master/README.md#installation)
@@ -45,6 +48,10 @@
 
 [Bug Report](https://github.com/shibiaowan/SHARP/blob/master/README.md#bug-report)
 
+
+# News:
+
+* Mar-01-2021: The version 1.1.0 of SHARP has been released. The new version SHARP addressed the problem arising from the "clues" package removed from CRAN.
 
 # Introduction: 
 
