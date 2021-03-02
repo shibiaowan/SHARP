@@ -92,11 +92,10 @@ res = SHARP(scExp)
 ##-----------------------------------------------------------------------
 ##Total running time: 0.16285088 minutes
 ```
-The running time for the example is less than 11 seconds for a computer with configuration of Intel Core i5-7300U @ 2.60GHz with 64 bit OS and a hard disk of 500 GB. Then, you can check the perfornance by comparing your prediction results with the given reference clustering label of the example:
+The running time for the example is less than 11 seconds for a computer with configuration of Intel Core i5-7300U @ 2.60GHz with 64 bit OS and a hard disk of 500 GB. Then, you can check the perfornance using the ARI (adjusted Rand index) by comparing your prediction results with the given reference clustering label of the example:
 ```{r}
-ARI(label, res)
-##     Rand        HA        MA        FM   Jaccard 
-##0.9594431 0.9022884 0.9027769 0.9329517 0.8705243 
+ARI(label, res) 
+##0.9022884
 ```
 The variable "label" has already been loaded automatically when starting using SHARP.
 
