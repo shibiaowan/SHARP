@@ -8,7 +8,7 @@
 #'
 #' @param ... other parameters like randMethod which is used to specify the rand measure method chosen from the aforementioned five metrics.
 #'
-#' @return Five clustering metrics, including Rand index (Rand), Hubert and Arabie's adjusted Rand index (HA), Morey and Agresti's adjusted Rand index (MA), Fowlkes and Mallows's index (FM), and Jaccard index. HA is the one metric that we often refer to as ARI.
+#' @return The clustering metric, i.e., adjusted Rand index (ARI).
 #'
 #' @examples
 #' y = SHARP(scExp)
