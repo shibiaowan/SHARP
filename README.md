@@ -41,6 +41,8 @@
 
 [Citation](https://github.com/shibiaowan/SHARP/blob/master/README.md#citation)
 
+[FAQs](https://github.com/shibiaowan/SHARP#faqs)
+
 [Bug Report](https://github.com/shibiaowan/SHARP/blob/master/README.md#bug-report)
 
 
@@ -295,6 +297,19 @@ sginfo = get_marker_genes_unlimited2(gdinfo, res) # detect marker genes
 # Citation:
 
 Shibiao Wan, Junil Kim and Kyoung Jae Won. SHARP: Single-Cell RNA-Seq Hyper-Fast and Accurate Processing via Ensemble Random Projection, <b><i>Genome Research</i></b>, 2020, vol. 30, pp. 205-213. ([link](https://genome.cshlp.org/content/30/2/205)) ([Preprint](https://www.biorxiv.org/content/early/2018/11/04/461640))
+
+# FAQs:
+
+__Q__: When installing SHARP, I came across a problem stating that "ERROR: dependency 'clues' is not available for package 'SHARP'". What should I do?
+
+__A__: Please install the latest version of SHARP. The latest version (i.e., v1.1.0) of SHARP has replaced the package "clues" which was removed from CRAN, so it should be cleared off the problem aforementioned.
+
+<br/>
+
+__Q__: When installing SHARP, I came across a problem stating that "clang: error: unsupported option '-fopenmp'" and/or "ERROR: compilation failed for package ‘data.table’". What should I do?
+
+__A__: Please select "no" when prompted about a question "Do you want to install from sources the package which needs compilation? (Yes/no/cancel)".
+
 
 # Bug Report:
 
