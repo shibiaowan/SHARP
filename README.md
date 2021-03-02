@@ -4,7 +4,7 @@
 
 ### News:
 
-* <b>Mar-01-2021</b>: The version 1.1.0 of SHARP has been released. The new version SHARP addressed the problem arising from the "clues" package removed from CRAN.
+* <b>Mar-01-2021</b>: The version 1.1.0 of SHARP has been released. The new version SHARP addressed the installation problem arising from the "clues" package removed from CRAN.
 * <b>Apr-22-2020</b>: The SHARP_unlimited function has been updated for better processing ultra-large-scale single-cell data.
 * <b>Feb-20-2020</b>: An example of detailing the installation time and configurations has been added.
 * <b>Jun-28-2019</b>: The documentations of SHARP have been significantly enriched to include details of parameter settings for SHARP.
