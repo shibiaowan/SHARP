@@ -2,7 +2,7 @@
 
 <b><u><i><font size="6"><span style="color:red">S</span></font></i></u></b>ingle-cell RNA-seq <b><u><i>H</i></u></b>yper-fast and <b><u><i>A</i></u></b>ccurate processing via ensemble <b><u><i>R</i></u></b>andom <b><u><i>P</i></u></b>rojection
 
-# News:
+### News:
 
 * <b>Mar-01-2021</b>: The version 1.1.0 of SHARP has been released. The new version SHARP addressed the problem arising from the "clues" package removed from CRAN.
 
