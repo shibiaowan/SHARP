@@ -14,7 +14,7 @@ ARI(ground_true_clusters, y)
 \item{...}{other parameters like randMethod which is used to specify the rand measure method chosen from the aforementioned five metrics.}
 }
 \value{
-Five clustering metrics, including Rand index (Rand), Hubert and Arabie's adjusted Rand index (HA), Morey and Agresti's adjusted Rand index (MA), Fowlkes and Mallows's index (FM), and Jaccard index. HA is the one metric that we often refer to as ARI.
+The clustering metric, i.e., adjusted Rand index (ARI).
 }
 \description{
 This function is to calculate the performance of the algorithm by the adjusted Rand index (ARI).
