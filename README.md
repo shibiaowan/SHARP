@@ -2,8 +2,16 @@
 
 <b><u><i><font size="6"><span style="color:red">S</span></font></i></u></b>ingle-cell RNA-seq <b><u><i>H</i></u></b>yper-fast and <b><u><i>A</i></u></b>ccurate processing via ensemble <b><u><i>R</i></u></b>andom <b><u><i>P</i></u></b>rojection
 
+### News:
+
+* <b>Mar-01-2021</b>: The version 1.1.0 of SHARP has been released. The new version SHARP addressed the installation problem arising from the "clues" package removed from CRAN.
+* <b>Apr-22-2020</b>: The SHARP_unlimited function has been updated for better processing ultra-large-scale single-cell data.
+* <b>Feb-20-2020</b>: An example of detailing the installation time and configurations has been added.
+* <b>Jun-28-2019</b>: The documentations of SHARP have been significantly enriched to include details of parameter settings for SHARP.
+* <b>Apr-04-2019</b>: The flashClust function has been added for fast implementation of hierarchical clustering.
 
 ### Table of Contents
+
 [Introduction](https://github.com/shibiaowan/SHARP/blob/master/README.md#introduction)
 
 [Installation](https://github.com/shibiaowan/SHARP/blob/master/README.md#installation)
@@ -92,11 +100,10 @@ res = SHARP(scExp)
 ##-----------------------------------------------------------------------
 ##Total running time: 0.16285088 minutes
 ```
-The running time for the example is less than 11 seconds for a computer with configuration of Intel Core i5-7300U @ 2.60GHz with 64 bit OS and a hard disk of 500 GB. Then, you can check the perfornance by comparing your prediction results with the given reference clustering label of the example:
+The running time for the example is less than 11 seconds for a computer with configuration of Intel Core i5-7300U @ 2.60GHz with 64 bit OS and a hard disk of 500 GB. Then, you can check the perfornance using the ARI (adjusted Rand index) by comparing your prediction results with the given reference clustering label of the example:
 ```{r}
-ARI(label, res)
-##     Rand        HA        MA        FM   Jaccard 
-##0.9594431 0.9022884 0.9027769 0.9329517 0.8705243 
+ARI(label, res) 
+##0.9022884
 ```
 The variable "label" has already been loaded automatically when starting using SHARP.
 
