@@ -14,6 +14,8 @@
 #' y = SHARP(scExp)
 #' finalmetrics = ARI(ground_true_clusters, y)
 #'
+#' @import clues
+#'
 #' @export
 ARI <- function(ground_true_clusters, y, ...) {
     # w: the ground-truth clusters; rowColor: the predicted clusters
