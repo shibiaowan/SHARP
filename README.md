@@ -315,9 +315,15 @@ Shibiao Wan, Junil Kim and Kyoung Jae Won. SHARP: Single-Cell RNA-Seq Hyper-Fast
 
 # FAQs:
 
+__Q__: When installing SHARP, I came across a problem stating that 'Error in {: task 1 failed-"there is no "get_CH""'. What should I do?
+
+__A__: Please install the latest version of SHARP. The latest version (i.e., v1.1.0) of SHARP has addressed the problem from the package "clues" which was removed from CRAN, so it should be cleared off the problem aforementioned.
+
+<br/>
+
 __Q__: When installing SHARP, I came across a problem stating that "ERROR: dependency 'clues' is not available for package 'SHARP'". What should I do?
 
-__A__: Please install the latest version of SHARP. The latest version (i.e., v1.1.0) of SHARP has replaced the package "clues" which was removed from CRAN, so it should be cleared off the problem aforementioned.
+__A__: Please install the latest version of SHARP. The latest version (i.e., v1.1.0) of SHARP has addressed the problem from the package "clues" which was removed from CRAN, so it should be cleared off the problem aforementioned.
 
 <br/>
 
