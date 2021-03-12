@@ -4,7 +4,7 @@
 \alias{ARI}
 \title{Calculate the adjusted rand index (ARI), including 5 different ARI-related metrics}
 \usage{
-ARI(ground_true_clusters, y)
+ARI(ground_true_clusters, y, ...)
 }
 \arguments{
 \item{ground_true_clusters}{the ground-truth clusters}

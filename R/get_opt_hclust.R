@@ -23,8 +23,6 @@
 #'
 #' @import cluster
 #'
-#' @import clues
-#'
 #' @import clusterCrit
 #'
 #' @import flashClust

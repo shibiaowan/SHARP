@@ -6,7 +6,8 @@ Date: 2021-03-01
 Authors@R: person("Shibiao", "Wan", email = "shibiaowan.work@gmail.com", role = c("aut", "cre"))
 Maintainer: Shibiao Wan <shibiaowan.work@gmail.com>
 Description: SHARP: Single-Cell RNA-Seq Hyper-Fast and Accurate Clustering via Ensemble Random Projection
-Imports: Matrix, RColorBrewer, ROCR, Rtsne, mclust, cluster, clusterCrit, data.table, doParallel, flashClust, foreach, gplots, parallel, pheatmap, viridis
+Imports: Matrix, RColorBrewer, ROCR, Rtsne, cluster, clusterCrit, data.table, doParallel, flashClust, foreach, gplots, parallel, pheatmap, viridis
+Remotes: url::https://cran.r-project.org/src/contrib/Archive/clues/clues_0.6.2.2.tar.gz
 Depends: R (>= 3.3)
 License: GNU General Public License v3.0
 Encoding: UTF-8
