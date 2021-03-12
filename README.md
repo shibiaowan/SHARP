@@ -103,9 +103,17 @@ res = SHARP(scExp)
 The running time for the example is less than 11 seconds for a computer with configuration of Intel Core i5-7300U @ 2.60GHz with 64 bit OS and a hard disk of 500 GB. Then, you can check the perfornance using the ARI (adjusted Rand index) by comparing your prediction results with the given reference clustering label of the example:
 ```{r}
 ARI(label, res) 
-##0.9022884
+ Rand        HA        MA        FM   Jaccard
+0.9675143 0.9201827 0.9206001 0.9435416 0.8918298
 ```
 The variable "label" has already been loaded automatically when starting using SHARP.
+
+If you want to yield reproducible results (e.g., the results above) by SHARP, you can set a fixed number for the parameter rN.seed:
+```{r}
+rN = 2103; 
+res = SHARP(scExp_tpm, rN.seed=rN); 
+ARI(label, res)
+```
 
 # More Details:
 
