@@ -20,7 +20,7 @@ getrowColor <- function(Emat, hmethod, indN.cluster, minN.cluster, maxN.cluster,
     
     my = Emat
 #     my = my[apply(my, 1, function(x) sd(x) != 0), ]####note that it is impossible for a single cell to have the same expression level for all genes, thus we do not need to check the sd == 0 or not
-    my <- t(scale(t(my)))
+    # my <- t(scale(t(my)))
     
     
     # d=as.dist(1-cor(t(my))) hres = gethclust(d, my)

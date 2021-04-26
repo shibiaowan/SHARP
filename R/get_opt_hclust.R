@@ -68,6 +68,7 @@ get_opt_hclust <- function(mat, hmethod, N.cluster, minN.cluster, maxN.cluster, 
         d = as.dist(1 - mat)
         flag1 = 1
     } else {
+        mat <- t(scale(t(mat)))
         d = as.dist(1 - cor(t(mat)))
         flag1 = 0
     }
